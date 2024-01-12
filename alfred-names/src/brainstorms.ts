@@ -2,6 +2,10 @@ import { html } from "common-tags";
 import { externalDialog, internalMonologue, decision } from "socialagi";
 import { MentalProcess } from "soul-engine";
 
+/*
+A decision-making process to dynamically choose between asking thought-provoking questions or sharing interesting facts,
+with the aim of effectively moving the naming conversation forward without ever suggesting a name directly.
+*/
 const brainstorms: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessManager, useProcessMemory } }) => {
   const { speak, log  } = useActions()
   const questionCounter = useProcessMemory(0)

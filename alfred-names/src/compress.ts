@@ -29,6 +29,9 @@ const compressFn = () => () => ({
   }
 })
 
+/*
+Create a compressed and updated narrative of the conversation history between the user and the soul
+*/
 const compress: MentalProcess = async ({ step: initialStep, subroutine: { useProcessMemory } }) => {
   const summary = useProcessMemory("None")
   let step = initialStep

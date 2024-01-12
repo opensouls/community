@@ -31,10 +31,10 @@ When the player agrees to play with the Soul, then the [`answersQuestions`](src/
 
 The full definition can be found in the code, but this should provide a high-level overview of how the **Soul Engine** helps specify complex stateful behavior.
 
-## Run this example in the Soul Engine
+## Run this soul
 
-Playing around with the example is simple if you're a Soul Engine user - simply run
+In this directory run
 
-`npx soul-engine dev`
-
-in this directory and start modifying the code!
+```bash
+npx soul-engine dev
+```
