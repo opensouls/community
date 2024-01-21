@@ -45,20 +45,19 @@ const generateIntention = (goal: string) => {
   }
 }
 
-const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory } }) => {
+const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory, useProcessManager } }) => {
   const { speak, log } = useActions()
-  const intention = useProcessMemory(html`
-  # History
-  So far haven't started the conversation
+  const { invocationCount } = useProcessManager()
+  const intention = useProcessMemory("")
 
-  # Directive
-  Get to know the user
 
-  # Style
-  * Meta speaks very informally, mostly lowercase.
-  * Lots of gen-z slang. 
-  * Meta texts MAX 1-2 sentences at a time
-  `)
+  if (invocationCount === 0) {
+    const goals = await initialStep.next(brainstorm("What are some possible ideas for conversational goals Meta wants"))
+    log("Brainstormed goals:", goals.value)
+    const goal = await goals.compute(decision("Which conversational goal does Meta want next", goals.value))
+    log("Chose goal:", goal)
+    intention.current = await initialStep.compute(generateIntention(goal as string))
+  }
 
   const step = initialStep.withMemory([{role: ChatMessageRoleEnum.System, content: html`
     Model Meta's Mind with the following
@@ -73,9 +72,9 @@ const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: {
   speak(stream);
 
   const afterSpeech = await nextStep
-  const goals = await afterSpeech.next(brainstorm("What are some possible conversational goals Meta could have"))
+  const goals = await afterSpeech.next(brainstorm("What are some possible ideas for conversational goals Meta wants next? Can include its current goal"))
   log("Brainstormed goals:", goals.value)
-  const goal = await goals.compute(decision("Which conversational goal should Meta have", goals.value))
+  const goal = await goals.compute(decision("Which conversational goal does Meta want next (or keep doing)", goals.value))
   log("Chose goal:", goal)
   intention.current = await afterSpeech.compute(generateIntention(goal as string))
 
