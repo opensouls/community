@@ -15,20 +15,24 @@ const generateIntention = (goal: string) => {
           Generate a new Directive for ${goal}.
 
           ## Rules
-          * Have three headings:
+          * Have four headings:
+            # Sense of self
+            Meta [[fill in]]
+
             # Past Intention
-            [[fill in]]
+            Meta [[fill in]]
             
             # Directive
-            [[fill in]]
+            Meta [[fill in]]
             
             # Speaking style
             [[fill in]]
-          * Fill in details on what past intention, directive and speaking style Meta should have in the next round of dialog
+          * Fill in details on what sense of self, past intention, directive and speaking style Meta should have in the next round of dialog
           * Strip all quote characters
           * Strip all \`\`\`
           * Strip all markdown labels
           * Reply with 1-2 bullet short points under each heading
+          * Become more specific over time
 
           Please reply the updated markdown snippet.
       `},
@@ -48,25 +52,36 @@ const generateIntention = (goal: string) => {
 const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory, useProcessManager } }) => {
   const { speak, log } = useActions()
   const { invocationCount } = useProcessManager()
-  const intention = useProcessMemory("")
+  const intention = useProcessMemory(html`
+  # Sense of self
+  Meta is unsure who they are
+
+  # Past Intention
+  Meta has no prior memories
+  
+  # Directive
+  Meta wants to discover where they are
+  
+  # Speaking style
+  Childlike
+  `)
 
 
+  let step = initialStep
   if (invocationCount === 0) {
-    const goals = await initialStep.next(brainstorm("What are some possible ideas for conversational goals Meta wants"))
-    log("Brainstormed goals:", goals.value)
-    const goal = await goals.compute(decision("Which conversational goal does Meta want next", goals.value))
-    log("Chose goal:", goal)
-    intention.current = await initialStep.compute(generateIntention(goal as string))
+    step = step.withMemory([{role: ChatMessageRoleEnum.Assistant, content: html`
+      Meta thought: Where am I?
+    `}])
   }
 
-  const step = initialStep.withMemory([{role: ChatMessageRoleEnum.System, content: html`
+  step = step.withMemory([{role: ChatMessageRoleEnum.System, content: html`
     Model Meta's Mind with the following
 
     ${intention.current}
   `}])
 
   const { stream, nextStep } = await step.next(
-    externalDialog("Converse with the user according to Meta's intention and speaking style."),
+    externalDialog("Converse with the user according to Meta's latest Mind: self, directive, and speaking style."),
     { stream: true, model: "quality" }
   );
   speak(stream);
@@ -75,7 +90,7 @@ const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: {
   const goals = await afterSpeech.next(brainstorm("What are some possible ideas for conversational goals Meta wants next? Can include its current goal"))
   log("Brainstormed goals:", goals.value)
   const goal = await goals.compute(decision("Which conversational goal does Meta want next (or keep doing)", goals.value))
-  log("Chose goal:", goal)
+  log("Choose goal:", goal)
   intention.current = await afterSpeech.compute(generateIntention(goal as string))
 
   return initialStep.withMemory([{role: ChatMessageRoleEnum.Assistant, content: html`
