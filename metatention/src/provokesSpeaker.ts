@@ -92,6 +92,7 @@ const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: {
   const goal = await goals.compute(decision("Which conversational goal does Meta want next (or keep doing)", goals.value))
   log("Choose goal:", goal)
   intention.current = await afterSpeech.compute(generateIntention(goal as string))
+  log("Updated directive")
 
   return initialStep.withMemory([{role: ChatMessageRoleEnum.Assistant, content: html`
   Meta said: ${afterSpeech.value}
