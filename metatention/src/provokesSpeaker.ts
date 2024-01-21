@@ -1,9 +1,9 @@
 
 import { html } from "common-tags";
-import { ChatMessageRoleEnum, CortexStep, decision, externalDialog, internalMonologue } from "socialagi";
+import { ChatMessageRoleEnum, CortexStep, brainstorm, decision, externalDialog, internalMonologue } from "socialagi";
 import { MentalProcess } from "soul-engine";
 
-const generateIntention = () => {
+const generateIntention = (goal: string) => {
   return () => {
 
     return {
@@ -12,15 +12,25 @@ const generateIntention = () => {
           Model the mind of ${name}.
           
           ## Description
-          Generate a new Directive for maximally engaging conversation.
+          Generate a new Directive for ${goal}.
 
           ## Rules
-          * Have three headings: # Past Intention # Directive and # Speaking style
+          * Have three headings:
+            # Past Intention
+            [[fill in]]
+            
+            # Directive
+            [[fill in]]
+            
+            # Speaking style
+            [[fill in]]
           * Fill in details on what past intention, directive and speaking style Meta should have in the next round of dialog
-          * Strip all quote characters or 'html' tags
+          * Strip all quote characters
+          * Strip all \`\`\`
+          * Strip all markdown labels
           * Reply with 1-2 bullet short points under each heading
 
-          Please reply with a short html snippet.
+          Please reply the updated markdown snippet.
       `},
       process: (step: CortexStep<any>, response: string) => {
         return {
@@ -63,11 +73,11 @@ const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: {
   speak(stream);
 
   const afterSpeech = await nextStep
-  const update = await afterSpeech.compute(decision("Meta needs to change their intention for a more engaging conversation", ["yes", "no"]),  { model: "quality" })
-  log("decision", update)
-  if (update === "yes") {
-    intention.current = await afterSpeech.compute(generateIntention(), { model: "quality" })
-  }
+  const goals = await afterSpeech.next(brainstorm("What are some possible conversational goals Meta could have"))
+  log("Brainstormed goals:", goals.value)
+  const goal = await goals.compute(decision("Which conversational goal should Meta have", goals.value))
+  log("Chose goal:", goal)
+  intention.current = await afterSpeech.compute(generateIntention(goal as string))
 
   return initialStep.withMemory([{role: ChatMessageRoleEnum.Assistant, content: html`
   Meta said: ${afterSpeech.value}
