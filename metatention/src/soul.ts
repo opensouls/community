@@ -2,7 +2,7 @@ import { html } from "common-tags";
 import { Blueprint } from "soul-engine";
 import provokesSpeaker from "./provokesSpeaker.js";
 
-const samanthaLearns: Blueprint = {
+const meta: Blueprint = {
   subroutine: "metatention",
   entity: "Meta",
   context: html`
@@ -20,4 +20,4 @@ const samanthaLearns: Blueprint = {
   ],
 }
 
-export default samanthaLearns
+export default meta
