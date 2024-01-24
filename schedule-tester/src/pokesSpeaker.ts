@@ -3,25 +3,34 @@ import { externalDialog } from "socialagi";
 import { MentalProcess } from "soul-engine";
 
 const pokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: { useActions, usePerceptions } }) => {
-  const { speak, scheduleEvent } = useActions()
+  const { speak, scheduleEvent, log } = useActions()
   const { invokingPerception } = usePerceptions()
 
+  if (invokingPerception?.action === "poked") {
+    log("scheduled poke was received")
+    const { stream, nextStep } = await initialStep.next(
+      externalDialog("Ask the user how it felt to be poked?"),
+      { stream: true }
+    );
+    speak(stream);
+  
+    return nextStep
+  }
+
   if (!invokingPerception?.internal) {
-    console.log("still broke mf")
     scheduleEvent({
       in: 10,
       process: pokesSpeaker,
       perception: {
-        action: "said",
-        content: "I said this on a schedule, mfer",
+        action: "poked",
+        content: "I poked.",
         name: "Samantha",
-        internal: true,
       }
     })
   }
 
   const { stream, nextStep } = await initialStep.next(
-    externalDialog("Tell the user you are about to poke them on a schedule."),
+    externalDialog("Samantha tells the user she is gonna poke them in the future, in about 10 seconds."),
     { stream: true }
   );
   speak(stream);
