@@ -1,5 +1,5 @@
 
-import { ChatMessageRoleEnum, decision, externalDialog } from "socialagi";
+import { ChatMessageRoleEnum, decision, externalDialog, spokenDialog } from "socialagi";
 import { MentalProcess } from "soul-engine";
 
 const pitchesTheSoulEngine: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useRag } }) => {
@@ -8,11 +8,11 @@ const pitchesTheSoulEngine: MentalProcess = async ({ step: initialStep, subrouti
 
   const standardMessage = "Respond directly to any questions the user might have asked, or describe something interesting about the SOUL ENGINE."
 
-  const needsRag = await initialStep.compute(decision("Raggy needs more information from his memory to succinctly and accurately respond.", ["yes", "no"]))
-  if (needsRag === "yes") {
+  const needsRag = await initialStep.compute(decision("The interlocutor has asked a question that Raggy can't answer with his current memories.", ["true", "false"]), { model: "quality" })
+  if (needsRag === "true") {
     log("raggy needs more info, so he'll update his memory")
     const { stream, nextStep } = await initialStep.next(
-      externalDialog("Say something along the lines of 'good question' or 'hmm, I'll need a moment'. do NOT try to answer the user directly."),
+      externalDialog("Raggy needs time to think. Say something like 'gimme a sec' or 'hmmm' that kind of thing. Do NOT respond directly to the conversation, just filler."),
       { stream: true }
     );
     speak(stream);
