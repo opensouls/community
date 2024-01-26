@@ -57,16 +57,6 @@ const learnsAboutTheUser: MentalProcess = async ({ step: initialStep, subroutine
     userModel.current = await step.compute(userNotes())
   }
 
-  const behaviorQuery = await step.compute(mentalQuery(`${step.entityName} needs to make changes to their behavior.`));
-  log("Internal voice?", behaviorQuery)
-  if (behaviorQuery) {
-    const thought = await step.compute(internalMonologue("What should I think to myself to change my behavior? Start with 'I need...'", "thinks"))
-    finalStep = initialStep.withMemory([{
-      role: ChatMessageRoleEnum.Assistant,
-      content: `${step.entityName} thought to themself: ${thought}`
-    }])
-  }
-
   return finalStep
 }
 
