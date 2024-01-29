@@ -1,4 +1,4 @@
-# Cycle variables example
+# Soul environment variables example
 
 **Soul Designer:** [@tobowers](https://github.com/tobowers)
 

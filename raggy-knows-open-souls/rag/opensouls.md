@@ -35,8 +35,8 @@ const samantha = new Soul({
   blueprint: "samantha-provokes",
 })
 
-// start a new cycle with the soul
-const soulId = await samantha.start()
+// connect to the soul.
+const soulId = await samantha.connect()
 
 // register listener to "SAYS" events from the soul
 samantha.on(Actions.SAYS, ({ content, stream }) => {
