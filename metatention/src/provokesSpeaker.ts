@@ -49,7 +49,7 @@ const generateIntention = (goal: string) => {
   }
 }
 
-const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory, useProcessManager } }) => {
+const provokesSpeaker: MentalProcess = async ({ step: initialStep, soul: { useActions, useProcessMemory, useProcessManager } }) => {
   const { speak, log } = useActions()
   const { invocationCount } = useProcessManager()
   const intention = useProcessMemory(html`

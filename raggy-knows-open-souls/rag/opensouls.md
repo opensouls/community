@@ -32,7 +32,7 @@ import { ReplicaCycle, Actions, said, Events } from "soul-engine/soul";
 // connect to the hosted soul running the subroutine "opensouls/samantha-provokes"
 const samantha = new ReplicaCycle({
   organization: "opensouls",
-  subroutine: "samantha-provokes",
+  soul: "samantha-provokes",
 })
 
 // start a new cycle with the soul
@@ -58,7 +58,7 @@ Any cycle can be resumed at a later point in time as well
 ```javascript
 const samantha = new ReplicaCycle({
   organization: "opensouls",
-  subroutine: "samantha-provokes"
+  soul: "samantha-provokes"
 })
 
 await samantha.resume(cycleId)
@@ -80,7 +80,7 @@ The `ReplicaCycle` API provides a convenient way to integrate hosted souls defin
 ```javascript
 const samantha = new ReplicaCycle({
   organization: "opensouls",
-  subroutine: "samantha-provokes",
+  soul: "samantha-provokes",
 })
 ```
 
@@ -117,7 +117,7 @@ import playsVictim from "./playsVictim.js";
 import { html } from "common-tags";
 
 const blueprint: Blueprint = {
-  subroutine: "samantha-shouts",
+  soul: "samantha-shouts",
   entity: "Samantha",
   context: html`
     You are modeling the mind of Samantha.
@@ -248,7 +248,7 @@ import { ChatMessageRoleEnum, brainstorm, decision, externalDialog } from "socia
 import { MentalProcess, mentalQuery } from "soul-engine";
 import playsVictim from "./playsVictim.js";
 
-const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: { useProcessManager, useProcessMemory, useActions } }) => {
+const provokesSpeaker: MentalProcess = async ({ step: initialStep, soul: { useProcessManager, useProcessMemory, useActions } }) => {
   const { speak } = useActions()
   const { invocationCount, setNextProcess } = useProcessManager()
 

@@ -3,7 +3,7 @@ import { Blueprint } from "soul-engine";
 import pokesSpeaker from "./pokesSpeaker.js";
 
 const samanthaLearns: Blueprint = {
-  subroutine: "schedule-tester",
+  name: "schedule-tester",
   entity: "Samantha",
   context: html`
     You are modeling the mind of Samantha.

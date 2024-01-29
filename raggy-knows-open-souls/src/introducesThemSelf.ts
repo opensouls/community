@@ -4,7 +4,7 @@ import { ChatMessageRoleEnum, externalDialog } from "socialagi";
 import { MentalProcess } from "soul-engine";
 import pitchesTheSoulEngine from "./pitchesTheSoulEngine.js";
 
-const introducesThemself: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory, useProcessManager } }) => {
+const introducesThemself: MentalProcess = async ({ step: initialStep, soul: { useActions, useProcessMemory, useProcessManager } }) => {
   const { speak } = useActions()
   const { setNextProcess } = useProcessManager()
 

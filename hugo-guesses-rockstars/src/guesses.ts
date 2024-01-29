@@ -4,7 +4,7 @@ import { MentalProcess } from "soul-engine";
 
 const guesses: MentalProcess<{ object: string }> = async ({
   step: initialStep,
-  subroutine: { useProcessMemory, useActions },
+  soul: { useProcessMemory, useActions },
 }) => {
   const questionsAttempted = useProcessMemory(0);
   const { speak, log } = useActions();

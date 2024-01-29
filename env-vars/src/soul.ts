@@ -3,7 +3,7 @@ import { Blueprint } from "soul-engine";
 import provesEnvironmentVariablesWork from "./environmentProver.js";
 
 const samanthaLearns: Blueprint = {
-  subroutine: "env-vars",
+  name: "env-vars",
   entity: cycle.env.ENTITY_NAME as string,
   context: html`
     You are modeling the mind of ${cycle.env.ENTITY_NAME}.

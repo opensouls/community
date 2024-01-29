@@ -5,7 +5,7 @@ import { MentalProcess, mentalQuery } from "soul-engine";
 
 const frustration: MentalProcess = async ({
   step: initialStep,
-  subroutine: { useProcessManager, useActions },
+  soul: { useProcessManager, useActions },
 }) => {
   const frustrated = await initialStep.compute(
     mentalQuery("Hugo tried to guess the musician failed more than 2 or 3 times.")

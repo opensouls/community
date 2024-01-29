@@ -4,7 +4,7 @@ import { MentalProcess } from "soul-engine";
 import asksQuestions from "./brainstorms.js";
 import { html } from "common-tags";
 
-const introduction: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessManager } }) => {
+const introduction: MentalProcess = async ({ step: initialStep, soul: { useActions, useProcessManager } }) => {
   const { speak, log } = useActions()
   const { invocationCount, setNextProcess } = useProcessManager()
 

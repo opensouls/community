@@ -2,7 +2,7 @@
 import { ChatMessageRoleEnum, decision, externalDialog, spokenDialog } from "socialagi";
 import { MentalProcess } from "soul-engine";
 
-const pitchesTheSoulEngine: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useRag } }) => {
+const pitchesTheSoulEngine: MentalProcess = async ({ step: initialStep, soul: { useActions, useRag } }) => {
   const { speak, log  } = useActions()
   const { withRagContext } = useRag("example-raggy-knows-open-souls")
 

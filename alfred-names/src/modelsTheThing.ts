@@ -30,7 +30,7 @@ const thingNotes = () => () => ({
   }
 })
 
-const modelsTheThing: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory } }) => {
+const modelsTheThing: MentalProcess = async ({ step: initialStep, soul: { useActions, useProcessMemory } }) => {
   const thingModel = useProcessMemory("Unkown Thing")
   const { speak, log } = useActions()
 

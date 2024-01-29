@@ -2,7 +2,7 @@ import { ChatMessageRoleEnum, brainstorm, decision, externalDialog, mentalQuery 
 import { MentalProcess } from "soul-engine";
 import answersGuesses from "./answersQuestions.js";
 
-const introduction: MentalProcess = async ({ step: initialStep, subroutine: { useProcessManager, useProcessMemory, useActions} }) => {
+const introduction: MentalProcess = async ({ step: initialStep, soul: { useProcessManager, useProcessMemory, useActions} }) => {
   const didPick = useProcessMemory("")
   const { speak, log } = useActions()
   const { invocationCount, setNextProcess } = useProcessManager()

@@ -30,7 +30,7 @@ const userNotes = () => () => ({
   }
 })
 
-const learnsAboutTheUser: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory } }) => {
+const learnsAboutTheUser: MentalProcess = async ({ step: initialStep, soul: { useActions, useProcessMemory } }) => {
   const userModel = useProcessMemory("Unkown User")
   const { log } = useActions()
 

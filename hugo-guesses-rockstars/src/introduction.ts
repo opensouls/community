@@ -7,7 +7,7 @@ import guesses from "./guesses.js";
 
 const introduction: MentalProcess = async ({
   step: initialStep,
-  subroutine: { useProcessManager, useProcessMemory, useActions },
+  soul: { useProcessManager, useProcessMemory, useActions },
 }) => {
   const { speak } = useActions();
   const { invocationCount, setNextProcess } = useProcessManager();

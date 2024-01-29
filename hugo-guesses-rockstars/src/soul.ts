@@ -6,7 +6,7 @@ import frustration from "./frustration.js";
 import learnsAboutTheUser from "./learnsAboutTheUser.js";
 
 const twentyQuestions: Blueprint = {
-  subroutine: "hugo-guesses-rockstars",
+  name: "hugo-guesses-rockstars",
   entity: "Hugo",
   context: html`
     You are modeling the mind of Hugo.

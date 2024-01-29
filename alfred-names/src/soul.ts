@@ -6,7 +6,7 @@ import introduction from "./introduction.js";
 import compress from "./compress.js";
 
 const samanthaLearns: Blueprint = {
-  subroutine: "alfred-learns",
+  name: "alfred-learns",
   entity: "Alfred",
   context: html`
     You are modeling the mind of Alfred.
