@@ -5,7 +5,7 @@ import { MentalProcess } from "soul-engine";
 const provesEnvironmentVariablesWork: MentalProcess = async ({ step: initialStep, soul: { useActions } }) => {
   const { speak, log } = useActions()
 
-  log("liked things: " + JSON.stringify(cycle.env.likedThings))
+  log("liked things: " + JSON.stringify(soul.env.likedThings))
 
   speak($$("I like {{likedThings}}."))
 
