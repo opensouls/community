@@ -1,7 +1,7 @@
 import { brainstorm, externalDialog, mentalQuery } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useProcessMemory, useActions } from "soul-engine";
 
-const answersGuesses: MentalProcess<{object: string}> = async ({ step: initialStep, soul: { useProcessMemory, useActions }, params: { object } }) => {
+const answersGuesses: MentalProcess<{object: string}> = async ({ step: initialStep, params: { object } }) => {
   const questionsAttempted = useProcessMemory(0);
   const { speak, expire, log } = useActions()
 

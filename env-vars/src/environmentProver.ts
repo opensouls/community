@@ -1,8 +1,8 @@
 
 import { externalDialog } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useActions } from "soul-engine";
 
-const provesEnvironmentVariablesWork: MentalProcess = async ({ step: initialStep, soul: { useActions } }) => {
+const provesEnvironmentVariablesWork: MentalProcess = async ({ step: initialStep }) => {
   const { speak, log } = useActions()
 
   log("liked things: " + JSON.stringify(soul.env.likedThings))

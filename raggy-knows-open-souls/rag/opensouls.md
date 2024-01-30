@@ -242,11 +242,11 @@ Here's a simple example `MentalProcess` that uses many of the API features to de
 ```javascript
 // src/provokesSpeaker.js
 
-import { ChatMessageRoleEnum, brainstorm, decision, externalDialog } from "socialagi";
-import { MentalProcess, mentalQuery } from "soul-engine";
+import { ChatMessageRoleEnum, brainstorm, decision, externalDialog, mentalQuery } from "socialagi";
+import { MentalProcess, useProcessManager, useProcessMemory, useActions } from "soul-engine";
 import playsVictim from "./playsVictim.js";
 
-const provokesSpeaker: MentalProcess = async ({ step: initialStep, soul: { useProcessManager, useProcessMemory, useActions } }) => {
+const provokesSpeaker: MentalProcess = async ({ step: initialStep }) => {
   const { speak } = useActions()
   const { invocationCount, setNextProcess } = useProcessManager()
 
