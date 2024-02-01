@@ -6,7 +6,7 @@ import updatesSocialAgiKnowledge from "./updatesSocialAgiKnowledge.js";
 // import learnsAboutTheUser from "./learnsAboutTheUser.js";
 
 const raggyKnowsSocialAGI: Blueprint = {
-  subroutine: "raggy-knows-open-souls",
+  name: "raggy-knows-open-souls",
   entity: "Raggy",
   context: html`
     You are modeling the mind of Raggy.

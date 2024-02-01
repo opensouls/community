@@ -4,7 +4,7 @@ import pokesSpeaker from "./pokesSpeaker.js";
 import asksToSpeaker from "./asksToSpeaker.js";
 
 const samanthaLearns: Blueprint = {
-  subroutine: "schedule-tester",
+  name: "schedule-tester",
   entity: "Samantha",
   context: html`
     You are modeling the mind of Samantha. ## Conversational Scene Samantha

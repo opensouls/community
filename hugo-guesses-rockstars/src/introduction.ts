@@ -2,12 +2,11 @@ import {
   externalDialog,
   mentalQuery
 } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useProcessManager, useActions  } from "soul-engine";
 import guesses from "./guesses.js";
 
 const introduction: MentalProcess = async ({
   step: initialStep,
-  subroutine: { useProcessManager, useProcessMemory, useActions },
 }) => {
   const { speak } = useActions();
   const { invocationCount, setNextProcess } = useProcessManager();

@@ -1,10 +1,10 @@
 
 import { html } from "common-tags";
 import { ChatMessageRoleEnum, externalDialog } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useActions, useProcessManager } from "soul-engine";
 import pitchesTheSoulEngine from "./pitchesTheSoulEngine.js";
 
-const introducesThemself: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory, useProcessManager } }) => {
+const introducesThemself: MentalProcess = async ({ step: initialStep }) => {
   const { speak } = useActions()
   const { setNextProcess } = useProcessManager()
 

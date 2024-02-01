@@ -1,7 +1,7 @@
 
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useActions, useRag } from "soul-engine";
 
-const updatesSocialAgiKnowledge: MentalProcess = async ({ step, subroutine: { useActions, useRag } }) => {
+const updatesSocialAgiKnowledge: MentalProcess = async ({ step }) => {
   const { withRagContext } = useRag("example-raggy-knows-open-souls")
   const { log } = useActions()
 

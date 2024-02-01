@@ -1,25 +1,19 @@
 import { externalDialog, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess } from "soul-engine";
-import { useReplicaMemory } from "./useReplicaMemory.js";
+import { MentalProcess, useActions, useSoulStore } from "soul-engine";
 import pokesSpeaker from "./pokesSpeaker.js";
 
 const asksToSpeaker: MentalProcess = async ({
-  step: initialStep,
-  subroutine: { useActions, useCycleMemory },
+  step: initialStep
 }) => {
   const { speak, scheduleEvent, log } = useActions();
-  const [isPoke, setIsPoke] = await useReplicaMemory(
-    "isPoke",
-    true,
-    useCycleMemory
-  );
+  const { set } = useSoulStore();
 
   const pokeQuery = await initialStep.compute(
     mentalQuery(`The user tells Samantha not to poke them`)
   );
   log("don't poke? ", pokeQuery);
   if (pokeQuery) {
-    setIsPoke(false);
+    set("ignoringPokes", true)
     initialStep = await initialStep.next(
       internalMonologue("What can I say to make the user accepts to be poked?"),
       { model: "quality" }
@@ -34,7 +28,7 @@ const asksToSpeaker: MentalProcess = async ({
 
     return nextStep;
   } else {
-    setIsPoke(true);
+    set("ignoringPokes", false)
     scheduleEvent({
       in: 1,
       process: pokesSpeaker,

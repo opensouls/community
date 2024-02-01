@@ -1,7 +1,7 @@
 
 import { html } from "common-tags";
 import { ChatMessageRoleEnum, CortexStep, brainstorm, decision, externalDialog, internalMonologue } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useActions, useProcessMemory, useProcessManager } from "soul-engine";
 
 const generateIntention = (goal: string) => {
   return () => {
@@ -49,7 +49,7 @@ const generateIntention = (goal: string) => {
   }
 }
 
-const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory, useProcessManager } }) => {
+const provokesSpeaker: MentalProcess = async ({ step: initialStep }) => {
   const { speak, log } = useActions()
   const { invocationCount } = useProcessManager()
   const intention = useProcessMemory(html`

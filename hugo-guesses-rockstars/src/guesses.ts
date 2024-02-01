@@ -1,10 +1,9 @@
 import { html } from "common-tags";
 import { brainstorm, externalDialog, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useProcessMemory, useActions } from "soul-engine";
 
 const guesses: MentalProcess<{ object: string }> = async ({
   step: initialStep,
-  subroutine: { useProcessMemory, useActions },
 }) => {
   const questionsAttempted = useProcessMemory(0);
   const { speak, log } = useActions();

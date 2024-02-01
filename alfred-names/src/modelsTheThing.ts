@@ -1,7 +1,7 @@
 
 import { html } from "common-tags";
 import { ChatMessageRoleEnum, CortexStep, externalDialog, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useActions, useProcessMemory } from "soul-engine";
 
 const thingNotes = () => () => ({
   command: ({ entityName: name }: CortexStep) => {
@@ -30,7 +30,7 @@ const thingNotes = () => () => ({
   }
 })
 
-const modelsTheThing: MentalProcess = async ({ step: initialStep, subroutine: { useActions, useProcessMemory } }) => {
+const modelsTheThing: MentalProcess = async ({ step: initialStep }) => {
   const thingModel = useProcessMemory("Unkown Thing")
   const { speak, log } = useActions()
 

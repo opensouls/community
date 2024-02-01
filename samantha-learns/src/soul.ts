@@ -4,7 +4,7 @@ import provokesSpeaker from "./provokesSpeaker.js";
 import learnsAboutTheUser from "./learnsAboutTheUser.js";
 
 const samanthaLearns: Blueprint = {
-  subroutine: "samantha-learns",
+  name: "samantha-learns",
   entity: "Samantha",
   context: html`
     You are modeling the mind of Samantha.

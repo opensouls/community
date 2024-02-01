@@ -1,27 +1,22 @@
 import { externalDialog } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useActions, usePerceptions, useSoulStore, useProcessManager } from "soul-engine";
 import asksToSpeaker from "./asksToSpeaker.js";
-import { useReplicaMemory } from "./useReplicaMemory.js";
 
 const pokesSpeaker: MentalProcess = async ({
-  step: initialStep,
-  subroutine: { useActions, usePerceptions, useCycleMemory, useProcessManager },
+  step: initialStep
 }) => {
   const { speak, scheduleEvent, log } = useActions();
   const { invokingPerception } = usePerceptions();
   const { setNextProcess } = useProcessManager();
-  const [isPoke, setIsPoke] = await useReplicaMemory(
-    "isPoke",
-    true,
-    useCycleMemory
-  );
+  const { get, set } = useSoulStore();
 
   setNextProcess(asksToSpeaker);
-  if (!isPoke) return initialStep;
+  
+  if (get("ignoringPokes")) return initialStep;
 
   if (invokingPerception?.action === "poked") {
     log("scheduled poke was received");
-    setIsPoke(false);
+    set("ignoringPokes", true);
     const { stream, nextStep } = await initialStep.next(
       externalDialog("Ask the user how it felt to be poked?"),
       { stream: true }

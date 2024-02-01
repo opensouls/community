@@ -24,19 +24,19 @@ which will connect your soul to the engine.
 
 # Integrating with your application
 
-Integrating a soul with your application is simple via the `soul-engine/souls` API. The API offers `ReplicaCycle`, a client that manages connections with a soul running on the engine, including across cycles with different users.
+Integrating a soul with your application is simple via the `soul-engine/souls` API. The API offers `Soul`, a client that manages connections with a soul running on the engine, including across souls with different users.
 
 ```javascript
-import { ReplicaCycle, Actions, said, Events } from "soul-engine/soul";
+import { Soul, Actions, said, Events } from "soul-engine/soul";
 
-// connect to the hosted soul running the subroutine "opensouls/samantha-provokes"
-const samantha = new ReplicaCycle({
+// connect to the hosted soul running the soul "opensouls/samantha-provokes"
+const samantha = new Soul({
   organization: "opensouls",
-  subroutine: "samantha-provokes",
+  blueprint: "samantha-provokes",
 })
 
-// start a new cycle with the soul
-const cycleId = await samantha.start()
+// connect to the soul.
+const soulId = await samantha.connect()
 
 // register listener to "SAYS" events from the soul
 samantha.on(Actions.SAYS, ({ content, stream }) => {
@@ -53,15 +53,16 @@ samantha.on(Actions.SAYS, ({ content, stream }) => {
 await samantha.newPerception(said("User", "Hi!"))
 ```
 
-Any cycle can be resumed at a later point in time as well
+Any soul can be resumed at a later point in time as well
 
 ```javascript
-const samantha = new ReplicaCycle({
+const samantha = new Soul({
   organization: "opensouls",
-  subroutine: "samantha-provokes"
+  blueprint: "samantha-provokes"
+  soulId
 })
 
-await samantha.resume(cycleId)
+await samantha.connect()
 ```
 
 > 🚧 Currently the dev and production environments *are the same*, so whatever files are deployed via `npx soulengine` for your soul are the ones being run by the engine
@@ -75,24 +76,23 @@ The **Soul Engine** API has two major components:
 
 ## Souls API
 
-The `ReplicaCycle` API provides a convenient way to integrate hosted souls defined via the [Engine API](#engine-api) into your applications.
+The `Soul` API provides a convenient way to integrate hosted souls defined via the [Engine API](#engine-api) into your applications.
 
 ```javascript
-const samantha = new ReplicaCycle({
+const samantha = new Soul({
   organization: "opensouls",
-  subroutine: "samantha-provokes",
+  blueprint: "samantha-provokes",
 })
 ```
 
 *Parameters*:
 - `organization`: the organization's unique identifier
-- `subroutine`: unique *url-safe* name for the subroutine to pull from the `organization` organization
+- `blueprint`: unique *url-safe* name for the blueprint to pull from the `organization` organization
 
 *Methods*:
-- `start()`: initiates execution of the new soul's [Subroutine](#soul-blueprint), returns the promise of a `cycleId` upon connection
-- `resume(cycleId: string)`: *resumes* execution of the new soul's [Subroutine](#soul-blueprint) in the cycle associated with the `cycleId`, returns a promise of the cycleId upon connection
-- `newPerception(perception: string)`: pushes a new memory on the soul's working memory and calls execution of the `Subroutine`'s current `MentalProcess`, possibly triggering a `SAYS` event. We provide convenience methods for different perceptions such as `says(userName: string, message: string)`
-- `stop()`: closes the `ReplicaCycle`
+- `connect()`: initiates execution of the new [soul](#soul-blueprint), returns the promise of a `soulId` upon connection
+- `newPerception(perception: string)`: pushes a new memory on the soul's working memory and calls execution of the `Souls`'s current `MentalProcess`, possibly triggering a `SAYS` event. We provide convenience methods for different perceptions such as `says(userName: string, message: string)`
+- `disconnect()`: terminates the connection to the `Soul`
 
 > 🚧 Currently the API is unauthenticated - will add authentication here on request
 
@@ -102,9 +102,7 @@ The **Soul Engine** provides a powerful and extensible API for directing the cog
 
 ### Soul Blueprint
 
-Creating a soul powered by the **Soul Engine** begins with creation of a soul `Blueprint` in the `/src` directory of a soul's project, which defines the execution of a something we call a soul's `Subroutine`.
-
-> ⓘ The nomenclature of subroutine is inspired by named by the subroutines of Data in Star Trek, which encapsulate an entity performing a particular skill or behavior in a defined scenario over some particular time.
+Creating a soul powered by the **Soul Engine** begins with creation of a soul `Blueprint` in the `/src` directory of a soul's project, which defines the execution of the soul.
 
 Specifically, the `Blueprint` is defined and exported in the `src/soul.ts` file of a project. Let's consider the following example `Blueprint`:
 
@@ -117,7 +115,7 @@ import playsVictim from "./playsVictim.js";
 import { html } from "common-tags";
 
 const blueprint: Blueprint = {
-  subroutine: "samantha-shouts",
+  name: "samantha-shouts",
   entity: "Samantha",
   context: html`
     You are modeling the mind of Samantha.
@@ -142,18 +140,18 @@ export blueprint;
 
 *Parameters*:
 The definition of a `Blueprint` comprises:
-- `subroutine`: *url-safe* name of the subroutine
+- `name`: *url-safe* name of the blueprint
 - `entity`: the name of the soul's self identification
-- `context`: the high level context for the soul during the running of the subroutine
+- `context`: the high level context for the soul's initial interaction.
 - `initialProcess`: a reference to a [`MentalProcess`](#mentalprocess). This process serves as the entrypoint to the soul's cognition
-- `mentalProcesses`: a list of every [`MentalProcess`](#mentalprocess) that the Subroutine might visit in the *main thread*
+- `mentalProcesses`: a list of every [`MentalProcess`](#mentalprocess) that the soul might visit in the *main thread*
 - `subprocesses` (optional): a list of every [`MentalProcess`](#mentalprocess) that is run continuously as a [*sub*process](#subprocesses) of the main thread
 
 ### MentalProcess
 
 The `MentalProcess` API gives a powerful and functional way to specify stateful behavior of a soul, triggered by an external `Perception`.
 
-A soul's `Subroutine` only ever has a single (main-threaded) active `MentalProcess`, which defines the current behavior set. When a `MentalProcess` executes, it operates on the current `step` of the `WorkingMemory`, returning a new `step` of the `WorkingMemory`.
+A soul only ever has a single (main-threaded) active `MentalProcess`, which defines the current behavior set. When a `MentalProcess` executes, it operates on the current `step` of the `WorkingMemory`, returning a new `step` of the `WorkingMemory`.
 
 > ⓘ As the `WorkingMemory` grows with new memories, the oldest memories are compressed and stored to potentially be recalled
 
@@ -164,7 +162,7 @@ Every mental process needs to be defined and exported as its own file:
 ```javascript
 // src/exampleProcess.js
 
-const exampleProcess: MentalProcess = async ({ step: initialStep, subroutine, params }) => {
+const exampleProcess: MentalProcess = async ({ step: initialStep, soul, params }) => {
   let step = initialStep
   // operations on the working memory step ...
 
@@ -176,7 +174,7 @@ export default exampleProcess
 
 *Parameters*:
 - `step`: a instance of a `CortexStep` representing the current state of the `WorkingMemory`, containing the latest `Perception` for operation on
-- `subroutine`: the [`Subroutine` object](#subroutine) containing hooks for adding stateful behavior to the functional representation of a `MentalProcess`
+- `soul`: the [`Soul` object](#soul) containing hooks for adding stateful behavior to the functional representation of a `MentalProcess`
 - `params`: static props passed into the `MentalProcess`, e.g. `{ wasProvoked: true }`
 
 #### SubProcesses
@@ -186,21 +184,21 @@ export default exampleProcess
 - Each subprocess runs in order of the `subprocesses` list
 - Any new incoming `Perception` terminates execution of the `subprocesses`
 
-### Subroutine
+### Soul
 
-The engine's `Subroutine` API uses hooks to manage side-effects and stateful behavior during `MentalProcess` execution.
+The engine's `Soul` API uses hooks to manage side-effects and stateful behavior during `MentalProcess` execution.
 
 > ⓘ The `use` paradigm is modelled after React hooks, which allow for stateful dynamics inside functional representations of behavior.
 
-#### useCycleMemory
+#### useSoulStore
 
 ```
-const { set, get, search } = useCycleMemory()
+const { set, get, search } = useSoulStore()
 ```
 
 #### useProcessManager
 
-`useProcessManager` is a `Subroutine` hook that gives access to management of the active `MentalProcess`
+`useProcessManager` is a `Soul` hook that gives access to management of the active `MentalProcess`
 
 ```javascript
 const { invocationCount, setNextProcess } = useProcessManager()
@@ -212,7 +210,7 @@ const { invocationCount, setNextProcess } = useProcessManager()
 
 #### useActions
 
-`useActions` is a subroutine hook that gives access to available actions a soul can take in its environment
+`useActions` is a soul hook that gives access to available actions a soul can take in its environment
 
 ```javascript
 const { speak, leaveConversation } = useActions()
@@ -220,11 +218,11 @@ const { speak, leaveConversation } = useActions()
 
 *Returns*:
 - `speak(message: string)`: tells the soul to send a message externally
-- `leaveConversation()`: terminates execution of the soul's `Subroutine`
+- `expire()`: terminates execution.
 
 #### useProcessMemory
 
-`useProcessMemory` is a `Subroutine` hook that returns a local memory container as a way to persist information outside the `WorkingMemory` across invocations of a `MentalProcess`
+`useProcessMemory` is a `Soul` hook that returns a local memory container as a way to persist information outside the `WorkingMemory` across invocations of a `MentalProcess`
 
 ```javascript
 const wasProvoked = useProcessMemory(false)
@@ -244,11 +242,11 @@ Here's a simple example `MentalProcess` that uses many of the API features to de
 ```javascript
 // src/provokesSpeaker.js
 
-import { ChatMessageRoleEnum, brainstorm, decision, externalDialog } from "socialagi";
-import { MentalProcess, mentalQuery } from "soul-engine";
+import { ChatMessageRoleEnum, brainstorm, decision, externalDialog, mentalQuery } from "socialagi";
+import { MentalProcess, useProcessManager, useProcessMemory, useActions } from "soul-engine";
 import playsVictim from "./playsVictim.js";
 
-const provokesSpeaker: MentalProcess = async ({ step: initialStep, subroutine: { useProcessManager, useProcessMemory, useActions } }) => {
+const provokesSpeaker: MentalProcess = async ({ step: initialStep }) => {
   const { speak } = useActions()
   const { invocationCount, setNextProcess } = useProcessManager()
 

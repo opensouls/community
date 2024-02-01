@@ -1,9 +1,9 @@
 import { brainstorm, externalDialog, mentalQuery } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { MentalProcess, useProcessMemory, useActions } from "soul-engine";
 
-const answersGuesses: MentalProcess<{object: string}> = async ({ step: initialStep, subroutine: { useProcessMemory, useActions }, params: { object } }) => {
+const answersGuesses: MentalProcess<{object: string}> = async ({ step: initialStep, params: { object } }) => {
   const questionsAttempted = useProcessMemory(0);
-  const { speak, endCycle, log } = useActions()
+  const { speak, expire, log } = useActions()
 
   log("questions attempted: ", questionsAttempted.current)
 
@@ -11,7 +11,7 @@ const answersGuesses: MentalProcess<{object: string}> = async ({ step: initialSt
   if (hintOrWin.value) {
     const { stream, nextStep } = await initialStep.next(externalDialog("Congratulations! You've guessed the object! Say thank you and good bye. Do not ask to play again."), { stream: true });
     speak(stream);
-    endCycle();
+    expire();
     return nextStep
   } else {
     questionsAttempted.current = questionsAttempted.current + 1
@@ -20,7 +20,7 @@ const answersGuesses: MentalProcess<{object: string}> = async ({ step: initialSt
     if (questionsAttempted.current === 20) {
       const { stream, nextStep } = await initialStep.next(externalDialog(`Athena tells the user that the object was ${object} and wishes the user better luck next time.`), { stream: true });
       speak(stream);
-      endCycle();
+      expire();
       return nextStep
     }
     // Provide a small hint to the user

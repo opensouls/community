@@ -1,6 +1,6 @@
 import { html } from "common-tags";
-import { externalDialog, internalMonologue, decision, ChatMessageRoleEnum, CortexStep } from "socialagi";
-import { MentalProcess } from "soul-engine";
+import { ChatMessageRoleEnum, CortexStep } from "socialagi";
+import { MentalProcess, useProcessMemory } from "soul-engine";
 
 const compressFn = () => () => ({
   command: ({ entityName: name }: CortexStep) => {
@@ -32,7 +32,7 @@ const compressFn = () => () => ({
 /*
 Create a compressed and updated narrative of the conversation history between the user and the soul
 */
-const compress: MentalProcess = async ({ step: initialStep, subroutine: { useProcessMemory } }) => {
+const compress: MentalProcess = async ({ step: initialStep }) => {
   const summary = useProcessMemory("None")
   let step = initialStep
   const memories = step.memories

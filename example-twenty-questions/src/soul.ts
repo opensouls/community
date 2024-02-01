@@ -4,7 +4,7 @@ import introduction from "./introduction.js";
 import answersGuesses from "./answersQuestions.js";
 
 const twentyQuestions: Blueprint = {
-  subroutine: "athena-plays-20-questions",
+  name: "athena-plays-20-questions",
   entity: "Athena",
   context: html`
     You are modeling the mind of Athena Baltazar (Athena).

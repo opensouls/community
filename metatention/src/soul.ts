@@ -3,7 +3,7 @@ import { Blueprint } from "soul-engine";
 import provokesSpeaker from "./provokesSpeaker.js";
 
 const meta: Blueprint = {
-  subroutine: "metatention",
+  name: "metatention",
   entity: "Meta",
   context: html`
     You are modeling the mind of Meta.

@@ -50,8 +50,7 @@ const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
   log("Update model?", modelQuery)
   if (modelQuery) {
     step = await step.next(
-      internalMonologue("What have I learned specifically about the user from the last few messages?", "noted"),
-      { model: "quality" }
+      internalMonologue("What have I learned specifically about the user from the last few messages?", "noted")
     )
     log("Learnings:", step.value)
     userModel.current = await step.compute(userNotes())
