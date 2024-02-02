@@ -7,6 +7,7 @@ const noticesTheTime: MentalProcess = async ({ step: initialStep }) => {
   const pendingScheduled = useSoulMemory("pendingScheduled", false)
   const { invokingPerception } = usePerceptions()
   if (!invokingPerception) {
+    log("missing invoking perception")
     throw new Error("missing invoking perception, this should not happen")
   }
 
@@ -16,11 +17,12 @@ const noticesTheTime: MentalProcess = async ({ step: initialStep }) => {
 
   const time = new Date(invokingPerception._timestamp)
   // let's take a look at the last message
-  const lastUserMessage = step.memories.reverse().find((m) => m.role === ChatMessageRoleEnum.User)
+  const lastUserMessage = [...step.memories].reverse().find((m) => m.role === ChatMessageRoleEnum.User)
   const timeOfLastUserMessage = new Date((lastUserMessage?.metadata?.timestamp as number | undefined) || 0)
 
   // if it has been greater than 5 minute since the last message then we'll just give up on talking to the user.
   if (time.getTime() - timeOfLastUserMessage.getTime() > 5 * 60 * 1000) {
+    log("sinky gives up on the user")
     return step.next(externalDialog("Looks like you're not there anymore, I'll let you be"))
   }
 
@@ -30,12 +32,13 @@ const noticesTheTime: MentalProcess = async ({ step: initialStep }) => {
     step = await nextStep
   }
 
+  log("rescheduling the events")
   scheduleEvent({
     process: noticesTheTime,
-    in: 60, // notice the time every 60s,
+    in: 10, // notice the time every 60s,
     perception: {
       name: "Sinky",
-      action: "notices",
+      action: "notice",
       content: "the time",
     }
   })

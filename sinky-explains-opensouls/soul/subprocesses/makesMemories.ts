@@ -1,7 +1,7 @@
 
 import { html } from "common-tags";
-import { ChatMessageRoleEnum, CortexStep, internalMonologue, mentalQuery, z } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory, useSoulStore } from "soul-engine";
+import { internalMonologue, mentalQuery, z } from "socialagi";
+import { MentalProcess, useActions, useSoulStore } from "soul-engine";
 
 export const memoryFormatter = () => {
   return () => {
@@ -36,7 +36,15 @@ const makesMemories: MentalProcess = async ({ step: initialStep }) => {
     )
     log("Poignant memory:", step.value)
 
-    const extractedMemory = await step.compute(memoryFormatter())
+    const stepWithJustEvent = await step.withUpdatedMemory(async (memories) => {
+      const newMemories = memories.flat()
+      return [
+        newMemories[0],
+        newMemories.slice(-1)[0]
+      ]
+    })
+
+    const extractedMemory = await stepWithJustEvent.compute(memoryFormatter())
     set(`memory.${extractedMemory.key}`, extractedMemory.memory)
   }
 
