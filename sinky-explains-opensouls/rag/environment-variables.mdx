@@ -1,0 +1,15 @@
+## Environment variables
+
+The Soul Engine supports templated environment variables, either directly from the environment via the global `soul.env` or templated via the convience method `$$(...)`. These can be used anywhere in a soul's Blueprint
+
+```typescript {4-6}
+import { useActions } from "soul-engine"
+
+const provesEnvironmentVariablesWork: MentalProcess = async ({ step: initialStep }) => {
+  log("liked things: " + JSON.stringify(soul.env.likedThings))
+
+  speak($$("I like {{likedThings}}."))
+
+  return initialStep
+}
+```

@@ -1,19 +1,32 @@
 
 import { externalDialog } from "socialagi";
 import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "soul-engine";
-import rememberThings from "./mentalProcesses/rememberThings.js";
+import findsOutAboutTheUser from "./mentalProcesses/findOutAboutTheUser.js";
+import noticesTheTime from "./mentalProcesses/noticesTheTime.js";
 
 const sagtHallo: MentalProcess = async ({ step: initialStep }) => {
-  const { speak  } = useActions()
+  const { speak, scheduleEvent } = useActions()
   const { setNextProcess } = useProcessManager()
+  const pendingScheduled = useSoulMemory("pendingScheduled", false)
+
+  scheduleEvent({
+    process: noticesTheTime,
+    in: 30, // notice the time every 60s,
+    perception: {
+      name: "Sinky",
+      action: "notice",
+      content: "the time",
+    }
+  })
+  pendingScheduled.current = true
 
   const { stream, nextStep } = await initialStep.next(
-    externalDialog("Tell that user that they are about to learn everything about this app."),
+    externalDialog("Introduce yourself to the user. Welcome them graciously!"),
     { stream: true }
   );
   speak(stream);
 
-  setNextProcess(rememberThings)
+  setNextProcess(findsOutAboutTheUser)
 
   return nextStep
 }
