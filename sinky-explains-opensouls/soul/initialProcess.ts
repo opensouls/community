@@ -11,7 +11,7 @@ const sagtHallo: MentalProcess = async ({ step: initialStep }) => {
 
   scheduleEvent({
     process: noticesTheTime,
-    in: 10, // notice the time every 60s,
+    in: 30, // notice the time every 60s,
     perception: {
       name: "Sinky",
       action: "notice",

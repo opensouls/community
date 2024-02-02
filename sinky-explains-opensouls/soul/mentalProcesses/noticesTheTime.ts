@@ -26,16 +26,20 @@ const noticesTheTime: MentalProcess = async ({ step: initialStep }) => {
     return step.next(externalDialog("Looks like you're not there anymore, I'll let you be"))
   }
 
+  log("last message", timeOfLastUserMessage.toLocaleString(), lastUserMessage)
+
+
   if (time.getTime() - timeOfLastUserMessage.getTime() > 30 * 1000) {
+    log("it's been over 30s")
     const { stream, nextStep } = await step.next(externalDialog("Ask the user if you're boring them? Slinky says something interesting about themself."), { stream: true })
     speak(stream)
     step = await nextStep
   }
 
-  log("rescheduling the events")
+  log("would reschedule the events")
   scheduleEvent({
     process: noticesTheTime,
-    in: 10, // notice the time every 60s,
+    in: 30, // notice the time every 60s,
     perception: {
       name: "Sinky",
       action: "notice",
