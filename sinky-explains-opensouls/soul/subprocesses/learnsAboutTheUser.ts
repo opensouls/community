@@ -1,7 +1,7 @@
 
 import { html } from "common-tags";
 import { ChatMessageRoleEnum, CortexStep, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory } from "soul-engine";
+import { MentalProcess, useActions, useProcessMemory, useSoulMemory } from "soul-engine";
 
 const userNotes = () => () => ({
   command: ({ entityName: name }: CortexStep) => {
@@ -31,7 +31,7 @@ const userNotes = () => () => ({
 })
 
 const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
-  const userModel = useProcessMemory("Unkown User")
+  const userModel = useProcessMemory("* Unknown user")
   const { log } = useActions()
 
   let step = initialStep
@@ -54,6 +54,13 @@ const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
     )
     log("Learnings:", step.value)
     userModel.current = await step.compute(userNotes())
+    finalStep = finalStep.withMemory([{
+      role: ChatMessageRoleEnum.Assistant,
+      content: html`
+        ${step.entityName} remembers:
+        ${userModel.current}
+      `,
+    }])
   }
 
   return finalStep

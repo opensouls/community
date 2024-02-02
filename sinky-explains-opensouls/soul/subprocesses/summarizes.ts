@@ -24,12 +24,13 @@ const conversationNotes = (existing: string) => () => ({
 })
 
 const summarizesConversation: MentalProcess = async ({ step: initialStep }) => {
-  const conversationModel = useProcessMemory("Sinky is meeting a new user, and needs to figure out how into the soul engine they are.")
+  const conversationModel = useProcessMemory(html`
+    Sinky met a new user for the first time. They are just getting to know each other and Sinky is trying to learn as much as they can about the user.
+  `)
   const { log } = useActions()
 
   let step = initialStep
   let finalStep = initialStep
- 
 
   if (step.memories.length > 9) {
     log("updating conversation notes")
@@ -50,7 +51,10 @@ const summarizesConversation: MentalProcess = async ({ step: initialStep }) => {
           content: html`
             ## Conversation so far
             ${updatedNotes}
-          `
+          `,
+          metadata: {
+            conversationSummary: true
+          }
         },
         ...newMemories.slice(-4)
       ]
