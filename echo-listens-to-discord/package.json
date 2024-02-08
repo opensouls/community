@@ -20,6 +20,6 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.1",
     "socialagi": "~0.1.7",
-    "soul-engine": "file:../../public/soul-engine"
+    "soul-engine": "^0.0.36"
   }
 }
