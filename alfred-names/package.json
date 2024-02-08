@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "common-tags": "^1.8.2",
-    "socialagi": "~0.1.6",
-    "soul-engine": "^0.0.27"
+    "socialagi": "~0.1.7",
+    "soul-engine": "^0.0.35"
   }
 }
