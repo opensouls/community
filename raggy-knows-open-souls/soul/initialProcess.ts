@@ -2,7 +2,7 @@
 import { html } from "common-tags";
 import { ChatMessageRoleEnum, externalDialog } from "socialagi";
 import { MentalProcess, useActions, useProcessManager } from "soul-engine";
-import pitchesTheSoulEngine from "./pitchesTheSoulEngine.js";
+import pitchesTheSoulEngine from "./mentalProcesses/pitchesTheSoulEngine";
 
 const introducesThemself: MentalProcess = async ({ step: initialStep }) => {
   const { speak } = useActions()

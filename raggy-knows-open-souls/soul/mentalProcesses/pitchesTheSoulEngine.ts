@@ -1,5 +1,5 @@
 
-import { ChatMessageRoleEnum, decision, externalDialog, spokenDialog } from "socialagi";
+import { ChatMessageRoleEnum, decision, externalDialog } from "socialagi";
 import { MentalProcess, useActions, useRag } from "soul-engine";
 
 const pitchesTheSoulEngine: MentalProcess = async ({ step: initialStep }) => {
