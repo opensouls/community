@@ -21,11 +21,11 @@ This is where the **Soul Engine** comes in. The Engine framework allows for expl
 
 The soul in this example models 20 questions with two mental processes `introduction` and `answersQuestions`. As a reminder, each mental process is a functional process that performs operations on working memory and process memory, before returning an updated copy of the memory. To understand in more detail how the **Soul Engine** helps us model the game of 20 questions, let's take a look at some abstract representations of these two processes.
 
-First, the game begins with the [`introduction`](src/introduction.ts):
+First, the game begins with the [`introduction`](soul/initialProcess.ts):
 
 <img src="introduction.png" alt="Introduction" width="350"/>
 
-When the player agrees to play with the Soul, then the [`answersQuestions`](src/answersQuestions.ts) process is run:
+When the player agrees to play with the Soul, then the [`answersQuestions`](soul/mentalProcesses/answersQuestions.ts) process is run:
 
 <img src="answersQuestions.png" alt="Introduction" width="350"/>
 
