@@ -16,10 +16,10 @@ The `modelsTheThing` subprocess learns a model of what the user wants in the nam
 
 The `alfred-names` soul works by using a combination of foreground and background processes to generate and refine names based on user input. Be sure to checkout:
 
-- `src/introduction.ts`: Uses a combination of welcoming dialogues, insightful questions, and internal decision-making processes to determine the course of the conversation
-- `src/brainstorms.ts`: A decision-making process to dynamically choose between asking thought-provoking questions or sharing interesting facts, with the aim of effectively moving the naming conversation forward without ever suggesting a name directly
-- `src/compress.ts`: Create a compressed and updated narrative of the conversation history between the user and the AI entity
-- `src/modelsTheThing.ts`: Process for learning a model of what the user wants in a name, responsible to also bubbling up good names to the main process
+- `soul/initialProcess.ts`: Uses a combination of welcoming dialogues, insightful questions, and internal decision-making processes to determine the course of the conversation
+- `soul/mentalProcesses/brainstorms.ts`: A decision-making process to dynamically choose between asking thought-provoking questions or sharing interesting facts, with the aim of effectively moving the naming conversation forward without ever suggesting a name directly
+- `soul/subProcesses/compress.ts`: Create a compressed and updated narrative of the conversation history between the user and the AI entity
+- `soul/subProcesses/modelsTheThing.ts`: Process for learning a model of what the user wants in a name, responsible to also bubbling up good names to the main process
 
 ## Run this soul
 

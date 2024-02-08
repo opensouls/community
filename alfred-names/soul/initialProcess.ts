@@ -1,7 +1,7 @@
 
 import { ChatMessageRoleEnum, externalDialog, internalMonologue, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, useProcessManager } from "soul-engine";
-import asksQuestions from "./brainstorms.js";
+import asksQuestions from "./mentalProcesses/brainstorms.js";
 import { html } from "common-tags";
 
 const introduction: MentalProcess = async ({ step: initialStep }) => {
