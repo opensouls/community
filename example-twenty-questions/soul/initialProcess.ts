@@ -1,6 +1,6 @@
 import { ChatMessageRoleEnum, brainstorm, decision, externalDialog, mentalQuery } from "socialagi";
 import { MentalProcess, useProcessManager, useProcessMemory, useActions } from "soul-engine";
-import answersGuesses from "./answersQuestions.js";
+import answersGuesses from "./mentalProcesses/answersQuestions.js";
 
 const introduction: MentalProcess = async ({ step: initialStep }) => {
   const didPick = useProcessMemory("")
