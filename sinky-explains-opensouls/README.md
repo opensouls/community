@@ -9,7 +9,7 @@ Sinky is a work in progress. The goal is to use all the features of the SOUL ENG
 In this directory run
 
 ```bash
-npx soul-engine rag push
+npx soul-engine rag push ./rag
 ```
 
 then
