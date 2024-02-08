@@ -1,6 +1,6 @@
 import { externalDialog } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useSoulStore, useProcessManager } from "soul-engine";
-import asksToSpeaker from "./asksToSpeaker.js";
+import asksToSpeaker from "./mentalProcesses/asksToSpeaker";
 
 const pokesSpeaker: MentalProcess = async ({
   step: initialStep

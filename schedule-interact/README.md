@@ -13,7 +13,7 @@ The soul is composed of 2 mental processes:
 
 - `asksToSpeaker`: computes mental query to decide if user denied to be poked or not
 
-The source code for these processes can be found in the `./src` directory.
+The source code for these processes can be found in the `./soul` directory.
 
 ## Run this soul
 
