@@ -13,7 +13,7 @@ To create and connect to a new soul based off the [Soul Blueprint](/blueprints) 
 ```javascript copy
 import { Soul, said } from "soul-engine/soul"
 
-// Create a new Soul instance with a unique identifier
+// Create a new Soul instance with a new unique identifier
 const soul = new Soul({
   organization: "opensouls",
   blueprint: "samantha-provokes",
@@ -24,7 +24,7 @@ soul.on("says", async ({ content }) => {
   console.log("Samantha said", await content())
 })
 
-// Connect the soul to the engine using a new unique identifier
+// Connect the soul to the engine
 soul.connect().then(async () => {
   // Send a greeting to the soul
   soul.dispatch(said("User", "Hi!"))
@@ -40,7 +40,7 @@ To connect a `Soul` to the engine based on a specific unique identifier:
 ```javascript copy {7}
 import { Soul, said } from "soul-engine/soul"
 
-// Specify a soul instance with a unique identifier
+// Specify a soul instance by a unique identifier
 const soul = new Soul({
   organization: "opensouls",
   blueprint: "samantha-provokes",
@@ -52,7 +52,7 @@ soul.on("says", async ({ content }) => {
   console.log("Samantha said", await content())
 })
 
-// Connect the soul to the engine using a new unique identifier
+// Connect the soul to the engine
 soul.connect().then(async () => {
   // Interact with the soul
   soul.dispatch(said("User", "Hi!"))
@@ -78,7 +78,7 @@ On the server side, souls dispatch soul events, which yield streams in the form 
 
 ```javascript
 // Register a listener for "says" interaction requests from the soul
-soul.on("says", ({ stream }) => {
+soul.on("says", async ({ stream }) => {
   // Stream is a function returning an AsyncIterable<string>
   for await (const message of stream()) {
     // Process each message chunk

@@ -1,0 +1,47 @@
+# useRag
+
+The `useRag` hook makes integrating RAG into your soul incredibly simple. The hook returns a `withRagContext` function that transforms the working memory into a shape that pulls relevant context from a rag bucket.
+
+```typescript filename="speaksWithRag.ts" {6,8}
+import { useActions, useRag } from "soul-engine"
+
+const speaksWithRag: MentalProcess = async ({ step: initialStep }) => {
+  const { speak, log  } = useActions()
+  // specify the bucket to pull RAG data from
+  const { withRagContext } = useRag("your-favorite-rag-bucket")
+  // pull in the RAG context to the working memory
+  const step = await withRagContext(initialStep)
+  // generate some new speech having the RAG context
+  const { stream, nextStep } = await step.next(
+    externalDialog(standardMessage),
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
+
+  return nextStep
+}
+```
+
+Data for RAG is specified in your soul's [Blueprint](/blueprints).
+```
+/rag                    ----> files to be chunked and stored for rag context
+    rag.json            ----> specifies the organization-wide bucket for the rag storage
+    [context1].md
+     ...
+```
+where the `rag.json` file specifies the bucket
+```json
+{
+  "bucket": "your-favorite-rag-bucket"
+}
+```
+Unlike the mental processes, which are automatically synced with the Soul Engine when running in dev mode, the files for RAG need to be manually updated via:
+```bash
+npx soul-engine rag push ./rag
+```
+
+import { Callout } from 'nextra/components'
+ 
+<Callout type="warning" emoji="🚧">
+Currently, we only support chunking of `*.md` files, but plan to support additional types. Let us know if your use case requires more file types.
+</Callout>
