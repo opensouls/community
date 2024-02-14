@@ -1,0 +1,26 @@
+{
+  "name": "julio",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "description": "Super Verified Julio - https://www.super-julio.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/common-tags": "^1.8.4",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@t3-oss/env-core": "^0.9.2",
+    "common-tags": "^1.8.2",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1",
+    "socialagi": "^0.1.7",
+    "soul-engine": "^0.0.41"
+  }
+}
