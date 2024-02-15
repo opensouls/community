@@ -1,6 +1,7 @@
-import { CortexStep, decision, externalDialog, internalMonologue, mentalQuery } from "socialagi";
+import { CortexStep, externalDialog, internalMonologue, mentalQuery } from "socialagi";
 import {
   MentalProcess,
+  VectorRecordWithSimilarity,
   useActions,
   usePerceptions,
   useProcessManager,
@@ -8,6 +9,7 @@ import {
   useSoulMemory,
   useSoulStore,
 } from "soul-engine";
+import { Perception } from "soul-engine/soul";
 import { DiscordEventData, SoulActionConfig } from "../discord/soulGateway.js";
 import { emojiReaction } from "./lib/emojiReact.js";
 import { prompt } from "./lib/prompt.js";
@@ -16,6 +18,7 @@ import {
   newMemory as createNewMemory,
   getDiscordActionFromPerception,
   getLastMemory,
+  getLastMessageFromUser,
   getMetadataFromPerception,
   getUserDataFromDiscordEvent,
   random,
@@ -23,25 +26,18 @@ import {
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
-  const { log } = useActions();
-  const { invokingPerception } = usePerceptions();
+  const { invokingPerception, pendingPerceptions } = usePerceptions();
+  const { userName, discordEvent } = getMetadataFromPerception(invokingPerception);
 
-  log("Initial process started");
-
-  if (shouldSkipPerception()) {
+  if (shouldSkipPerception(pendingPerceptions.current, userName)) {
     return initialStep;
   }
 
-  const { userName, discordEvent } = getMetadataFromPerception(invokingPerception);
+  await initialize();
 
-  let step = await initialize(initialStep, discordEvent);
+  let step = await rememberUser(initialStep, discordEvent);
 
-  const action = getDiscordActionFromPerception(invokingPerception);
-  const isJoinActionFromDiscord = action === "joined";
-  const isSimulatedJoinActionFromDebug = invokingPerception?.content === "JOINED";
-  const shouldWelcomeUser = isJoinActionFromDiscord || isSimulatedJoinActionFromDebug;
-
-  if (shouldWelcomeUser) {
+  if (shouldWelcomeUser(invokingPerception)) {
     step = await thinkOfWelcomeMessage(step, userName);
   } else {
     step = await thinkOfReplyMessage(step, userName, discordEvent);
@@ -50,21 +46,19 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   return await saySomething(step, discordEvent);
 };
 
-function shouldSkipPerception() {
+function shouldSkipPerception(pendingPerceptions: Perception[], userName: string) {
   const { log } = useActions();
-  const { invokingPerception, pendingPerceptions } = usePerceptions();
 
-  log("Pending perceptions count:", pendingPerceptions.current.length);
+  log("Pending perceptions count:", pendingPerceptions.length);
 
   const maximumQueuedPerceptions = 10;
-  const tooManyPendingPerceptions = pendingPerceptions.current.length > maximumQueuedPerceptions;
+  const tooManyPendingPerceptions = pendingPerceptions.length > maximumQueuedPerceptions;
   if (tooManyPendingPerceptions) {
     log("Skipping perception due to too many pending perceptions");
     return true;
   }
 
-  const { userName } = getMetadataFromPerception(invokingPerception);
-  const isMessageBurstBySamePerson = pendingPerceptions.current.some((perception) => {
+  const isMessageBurstBySamePerson = pendingPerceptions.some((perception) => {
     return getMetadataFromPerception(perception)?.userName === userName;
   });
   if (isMessageBurstBySamePerson) {
@@ -75,17 +69,12 @@ function shouldSkipPerception() {
   return false;
 }
 
-async function initialize(
-  initialStep: CortexStep<any>,
-  discordEvent: DiscordEventData | undefined
-) {
+async function initialize() {
   const { invocationCount } = useProcessManager();
 
   if (invocationCount === 0) {
     await initializeSoulStore();
   }
-
-  return await rememberUser(initialStep, discordEvent);
 }
 
 async function initializeSoulStore() {
@@ -95,20 +84,20 @@ async function initializeSoulStore() {
 
   log("Initializing soul store with questions and answers");
 
-  for (const { question, answer } of questionsAndAnswers) {
-    set(
-      question,
-      prompt`
-        ## ${question}
+  let count = 0;
+  for (const { questions, answer } of questionsAndAnswers) {
+    for (const question of questions) {
+      set(question, question, {
+        answer,
+      });
 
-        ${answer}
-      `
-    );
+      count++;
+    }
   }
 
   await wait(1000);
 
-  log(`${questionsAndAnswers.length} question-answer pairs embedded in soul store`);
+  log(`${count} question-answer pairs embedded in soul store`);
 }
 
 async function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventData | undefined) {
@@ -133,6 +122,14 @@ async function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventDat
   return step;
 }
 
+function shouldWelcomeUser(perception: Perception | undefined | null) {
+  const action = getDiscordActionFromPerception(perception);
+  const isJoinActionFromDiscord = action === "joined";
+  const isSimulatedJoinActionFromDebug = perception?.content === "JOINED";
+  const shouldWelcomeUser = isJoinActionFromDiscord || isSimulatedJoinActionFromDebug;
+  return shouldWelcomeUser;
+}
+
 async function thinkOfWelcomeMessage(step: CortexStep<any>, userName: string) {
   const { log } = useActions();
 
@@ -146,9 +143,10 @@ async function thinkOfWelcomeMessage(step: CortexStep<any>, userName: string) {
       prompt(`
         Julio thought: "${thought} oh and I CANNOT FORGET to mention these SUPER IMPORTANT things:
         - there are 3 levels in the server: welcome area, satoshi street, and collector's corner
-        - ${userName} needs to know that the name of the place we are now is "the welcome area" (level 1)
-        - ${userName} should check out level 2: satoshi street
-        - if ${userName} is a holder, they should go to #🔳-holder-verify so they can join level 3: the collector's corner"
+        - ${userName} needs to know that the name of the place we are now is "the welcome area"
+        - ${userName} should check out satoshi street
+        - if ${userName} is a holder, they should go to #🔳-holder-verify so they can join the collector's corner
+        - no other channel or area should be mentioned now!!!"
       `)
     )
   );
@@ -180,23 +178,26 @@ async function thinkOfReplyMessage(
     },
   });
 
-  const ragTopics =
-    "Julio, Super Julio World, the Super Julio World Discord Server, or Bitcoin Ordinals";
+  const ragTopics = "Julio, Super Julio World, Julio's Discord Server, or Bitcoin Ordinals";
   const needsRagContext = await step.compute(
-    decision(`${userName} has asked a question about ${ragTopics}`, ["true", "false"]),
+    mentalQuery(`${userName} has asked a question about ${ragTopics}`),
     { model: "quality" }
   );
 
-  if (needsRagContext === "true") {
-    step = await thinkOfReplyWithRag(step, userName);
+  if (needsRagContext) {
+    step = await thinkOfReplyWithAdditionalContext(step, userName);
   } else {
-    step = await thinkOfReplyWithoutRag(step, userName);
+    step = await thinkOfSimpleReply(step, userName);
   }
 
   return step;
 }
 
-async function thinkOfReplyWithRag(step: CortexStep<any>, userName: string) {
+async function thinkOfReplyWithAdditionalContext(step: CortexStep<any>, userName: string) {
+  const { log } = useActions();
+
+  log("Additional context is needed to answer the question");
+
   step = await withSoulStoreOrRag(step);
 
   step = await step.next(
@@ -217,15 +218,28 @@ async function withSoulStoreOrRag(step: CortexStep<any>) {
   const { withRagContext } = useRag("super-julio");
 
   let highSimilarityAnswer;
-  const lastMemory = getLastMemory(step);
-  if (lastMemory) {
-    log("Trying to find a question-answer pair in the soul store");
-    const answer = await search(lastMemory);
-    highSimilarityAnswer =
-      answer
-        .find((a) => a.similarity >= 0.8)
-        ?.content?.toString()
-        .trim() || null;
+  const lastMessageFromUser = getLastMessageFromUser(step);
+  if (lastMessageFromUser) {
+    log(`Searching question-answer pairs in the soul store for "${lastMessageFromUser}"`);
+    const answers = (await search(lastMessageFromUser)).slice().map(
+      // less confusing if we call it distance
+      (answer) => ({ ...answer, distance: answer.similarity })
+    );
+
+    log(
+      "Search results:",
+      answers
+        .sort((a, b) => a.distance - b.distance)
+        .map((a) => a.distance + " " + a.content?.toString().trim())
+        .slice(0, 3)
+    );
+
+    const bestAnswer = (answers
+      .filter((a) => a.distance <= 0.3)
+      .sort((a, b) => a.distance - b.distance)
+      .shift() ?? null) as VectorRecordWithSimilarity | null;
+
+    highSimilarityAnswer = bestAnswer?.metadata?.answer?.toString().trim();
   }
 
   if (highSimilarityAnswer) {
@@ -244,7 +258,11 @@ async function withSoulStoreOrRag(step: CortexStep<any>) {
   return step;
 }
 
-async function thinkOfReplyWithoutRag(step: CortexStep<any>, userName: string) {
+async function thinkOfSimpleReply(step: CortexStep<any>, userName: string) {
+  const { log } = useActions();
+
+  log("Question can be answered with a simple reply");
+
   const julioEmotions = useSoulMemory("emotionalState", defaultEmotion);
 
   step = await step.next(
