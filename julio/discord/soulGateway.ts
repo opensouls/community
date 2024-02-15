@@ -33,12 +33,16 @@ export class SoulGateway {
     this.onSoulSays = this.onSoulSays.bind(this);
   }
 
-  start(_readyClient: Client<true>) {
+  start(readyClient: Client<true>) {
     this.soul.on("newSoulEvent", this.onSoulEvent);
     this.soul.on("says", this.onSoulSays);
     this.soul.on("reacts", this.onSoulReact.bind(this));
 
     this.soul.connect();
+
+    this.soul.setEnvironment({
+      botUserId: readyClient.user.id,
+    });
 
     this.client.on(Events.MessageCreate, this.handleMessage);
   }

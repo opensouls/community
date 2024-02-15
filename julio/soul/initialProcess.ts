@@ -23,7 +23,6 @@ export type ActionConfig =
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   const { log, dispatch } = useActions();
-  const { withRagContext } = useRag("super-julio");
   const { invokingPerception, pendingPerceptions } = usePerceptions();
 
   const action = invokingPerception?.action ?? ("chatted" as DiscordAction);
@@ -34,9 +33,9 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     return initialStep;
   }
 
-  const { botUserId, userName, userDisplayName, discordEvent } =
-    getMetadataFromPerception(invokingPerception);
+  const { userName, userDisplayName, discordEvent } = getMetadataFromPerception(invokingPerception);
 
+  log("Pending perceptions count:", pendingPerceptions.current.length);
   const isMessageBurstBySamePerson = pendingPerceptions.current.some((perception) => {
     return getMetadataFromPerception(perception)?.userName === userName;
   });
@@ -63,6 +62,8 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   } else {
     log(`Julio has no memories involving ${userName} `);
   }
+
+  const { withRagContext } = useRag("super-julio");
 
   if (action === "joined" || invokingPerception?.content === "JOINED") {
     log("New member joined the server");
