@@ -7,7 +7,7 @@ import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   const { log, dispatch } = useActions();
-  const { withRagContext } = useRag("julio");
+  const { withRagContext } = useRag("super-julio");
   const { invokingPerception, pendingPerceptions } = usePerceptions();
 
   const maximumQueuedPerceptions = 10;
