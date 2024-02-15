@@ -1,0 +1,15 @@
+{
+  "apps": [
+    {
+      "name": "julio-discord",
+      "script": "./index.ts",
+      "interpreter": "bun",
+      "instances": 1,
+      "autorestart": true,
+      "watch": false,
+      "restart_delay": 3000,
+      "min_uptime": 10000,
+      "max_restarts": 3
+    }
+  ]
+}

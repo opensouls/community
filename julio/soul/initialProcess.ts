@@ -280,7 +280,7 @@ async function saySomething(step: CortexStep<any>, discordEvent?: DiscordEventDa
   for (let i = 1; i <= parts; i++) {
     const maxWords = avgWordsInMessage + Math.floor(random() * 40) - 20;
 
-    log(`Message ${i}/${parts} with ${maxWords} words`);
+    log(`Message ${i}/${parts} with ${maxWords} words max`);
     const message = `Julio speaks part ${i} of ${parts} of what he just thought, using no more than ${maxWords} words.`;
     const { stream, nextStep } = await step.next(externalDialog(message), {
       stream: true,
