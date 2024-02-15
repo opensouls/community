@@ -1,9 +1,13 @@
 import { ChatMessageRoleEnum, CortexStep } from "socialagi";
 import { Perception } from "soul-engine/soul";
-import { DiscordEventData } from "../../discord/soulGateway.js";
+import { DiscordAction, DiscordEventData } from "../../discord/soulGateway.js";
 
 export function getBotUserIdFromPerception(perception: Perception | null | undefined) {
   return perception?._metadata?.botUserId as string | undefined;
+}
+
+export function getDiscordActionFromPerception(perception: Perception | null | undefined) {
+  return (perception?.action ?? "chatted") as DiscordAction;
 }
 
 export function getDiscordEventFromPerception(

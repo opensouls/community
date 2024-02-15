@@ -8,12 +8,13 @@ import {
   useSoulMemory,
   useSoulStore,
 } from "soul-engine";
-import { DiscordAction, DiscordEventData, SoulActionConfig } from "../discord/soulGateway.js";
+import { DiscordEventData, SoulActionConfig } from "../discord/soulGateway.js";
 import { emojiReaction } from "./lib/emojiReact.js";
 import { prompt } from "./lib/prompt.js";
 import questionsAndAnswers from "./lib/questionsAndAnswers.js";
 import {
   newMemory as createNewMemory,
+  getDiscordActionFromPerception,
   getLastMemory,
   getMetadataFromPerception,
   getUserDataFromDiscordEvent,
@@ -31,12 +32,16 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     return initialStep;
   }
 
-  const action = (invokingPerception?.action ?? "chatted") as DiscordAction;
   const { userName, discordEvent } = getMetadataFromPerception(invokingPerception);
 
   let step = await initialize(initialStep, discordEvent);
 
-  if (action === "joined" || invokingPerception?.content === "JOINED") {
+  const action = getDiscordActionFromPerception(invokingPerception);
+  const isJoinActionFromDiscord = action === "joined";
+  const isSimulatedJoinActionFromDebug = invokingPerception?.content === "JOINED";
+  const shouldWelcomeUser = isJoinActionFromDiscord || isSimulatedJoinActionFromDebug;
+
+  if (shouldWelcomeUser) {
     step = await thinkOfWelcomeMessage(step, userName);
   } else {
     step = await thinkOfReplyMessage(step, userName, discordEvent);
@@ -167,7 +172,7 @@ async function thinkOfReplyMessage(
   };
 
   dispatch({
-    action: "reacts",
+    action: actionConfig.type,
     content: emoji,
     _metadata: {
       discordEvent,
@@ -283,7 +288,7 @@ async function saySomething(step: CortexStep<any>, discordEvent?: DiscordEventDa
     };
 
     dispatch({
-      action: "says",
+      action: actionConfig.type,
       content: stream,
       _metadata: {
         discordEvent,
