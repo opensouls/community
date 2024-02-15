@@ -1,3 +1,4 @@
+import { ChatMessageRoleEnum, CortexStep } from "socialagi";
 import { Perception } from "soul-engine/soul";
 import { DiscordEventData } from "../../discord/soulGateway.js";
 
@@ -46,4 +47,17 @@ export function random() {
   let seed = Date.now();
   seed = (a * seed + c) % m;
   return seed / m;
+}
+
+export function newMemory(content: string) {
+  return [
+    {
+      role: ChatMessageRoleEnum.Assistant,
+      content,
+    },
+  ];
+}
+
+export function getLastMemory(step: CortexStep) {
+  return step.memories.slice(-1)[0]?.content.toString().trim() || null;
 }
