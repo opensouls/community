@@ -1,8 +1,8 @@
 import { ChatMessageRoleEnum, decision, externalDialog, internalMonologue } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useRag, useSoulMemory } from "soul-engine";
-import { Perception } from "soul-engine/soul";
-import { DiscordEventData } from "../discord/soulGateway.js";
+import { DiscordAction } from "../discord/soulGateway.js";
 import { emojiReaction } from "./lib/emojiReact.js";
+import { getMetadataFromPerception } from "./lib/utils.js";
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
@@ -10,20 +10,19 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   const { withRagContext } = useRag("super-julio");
   const { invokingPerception, pendingPerceptions } = usePerceptions();
 
+  const action = invokingPerception?.action ?? ("chatted" as DiscordAction);
+
   const maximumQueuedPerceptions = 10;
   const shouldIgnorePerception = pendingPerceptions.current.length > maximumQueuedPerceptions;
   if (shouldIgnorePerception) {
     return initialStep;
   }
 
-  const botUserId = getBotUserIdFromPerception(invokingPerception) || "anonymous-123";
-  const discordEvent = getDiscordEventFromPerception(invokingPerception);
-  const userName = discordEvent?.atMentionUsername || "Anonymous";
-  const displayName = discordEvent?.displayName || "Anonymous";
-  const userModel = useSoulMemory(userName, `- Display name: "${displayName}"`);
+  const { botUserId, userName, userDisplayName, discordEvent } =
+    getMetadataFromPerception(invokingPerception);
 
   const isMessageBurstBySamePerson = pendingPerceptions.current.some((perception) => {
-    return getDiscordEventFromPerception(perception)?.atMentionUsername === userName;
+    return getMetadataFromPerception(perception)?.userName === userName;
   });
   if (isMessageBurstBySamePerson) {
     log(`Skipping perception from ${userName} due to message burst`);
@@ -38,6 +37,7 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   ]);
 
   log("Remembering user");
+  const userModel = useSoulMemory(userName, `- Display name: "${userDisplayName}"`);
   step = userModel.current
     ? step.withMemory([
         {
@@ -53,7 +53,7 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     log(`Julio has no memories involving ${userName} `);
   }
 
-  if (discordEvent && discordEvent.type === "guildMemberAdd") {
+  if (action === "joined") {
     log("New member joined the server");
 
     step = await step.next(
@@ -76,76 +76,65 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
         discordEvent,
       },
     });
-    return nextStep;
-  }
 
-  log("Computing emoji");
-  const emoji = await step.compute(emojiReaction());
-  dispatch({
-    action: "reacts",
-    content: emoji,
-    _metadata: {
-      discordEvent,
-    },
-  });
-
-  const julioEmotions = useSoulMemory("emotionalState", defaultEmotion);
-
-  const ragTopics =
-    "Julio, Super Julio World, the Super Julio World Discord Server, or Bitcoin Ordinals";
-  const needsRagContext = await step.compute(
-    decision(`${userName} has asked a question about ${ragTopics}`, ["true", "false"]),
-    { model: "quality" }
-  );
-
-  if (needsRagContext === "true") {
-    log("Loading RAG context");
-    step = await withRagContext(step);
-
-    const message = `Julio responds directly to ${userName}'s question based on what was just remembered as a relevant memory.`;
-    const { stream, nextStep } = await step.next(externalDialog(message), {
-      stream: true,
-      model: "quality",
-    });
+    step = await nextStep;
+  } else {
+    log("Computing emoji");
+    const emoji = await step.compute(emojiReaction());
     dispatch({
-      action: "says",
-      content: stream,
+      action: "reacts",
+      content: emoji,
       _metadata: {
         discordEvent,
       },
     });
 
-    return nextStep;
+    const julioEmotions = useSoulMemory("emotionalState", defaultEmotion);
+
+    const ragTopics =
+      "Julio, Super Julio World, the Super Julio World Discord Server, or Bitcoin Ordinals";
+    const needsRagContext = await step.compute(
+      decision(`${userName} has asked a question about ${ragTopics}`, ["true", "false"]),
+      { model: "quality" }
+    );
+
+    if (needsRagContext === "true") {
+      log("Loading RAG context");
+      step = await withRagContext(step);
+
+      const message = `Julio responds directly to ${userName}'s question based on what was just remembered as a relevant memory.`;
+      const { stream, nextStep } = await step.next(externalDialog(message), {
+        stream: true,
+        model: "quality",
+      });
+      dispatch({
+        action: "says",
+        content: stream,
+        _metadata: {
+          discordEvent,
+        },
+      });
+
+      step = await nextStep;
+    } else {
+      const message = `Julio feels ${julioEmotions.current.emotion} and responds to ${userName},`;
+      const { stream, nextStep } = await step.next(externalDialog(message), {
+        stream: true,
+        model: "quality",
+      });
+      dispatch({
+        action: "says",
+        content: stream,
+        _metadata: {
+          discordEvent,
+        },
+      });
+
+      step = await nextStep;
+    }
   }
 
-  const message = `Julio feels ${julioEmotions.current.emotion} and responds to ${userName},`;
-  const { stream, nextStep } = await step.next(externalDialog(message), {
-    stream: true,
-    model: "quality",
-  });
-  dispatch({
-    action: "says",
-    content: stream,
-    _metadata: {
-      discordEvent,
-    },
-  });
-
-  return nextStep;
+  return step;
 };
-
-function getBotUserIdFromPerception(perception: Perception | null | undefined) {
-  return perception?._metadata?.botUserId as string | undefined;
-}
-
-function getDiscordEventFromPerception(
-  perception: Perception | null | undefined
-): DiscordEventData | undefined {
-  if (!perception) {
-    return undefined;
-  }
-
-  return perception._metadata?.discordEvent as DiscordEventData;
-}
 
 export default initialProcess;

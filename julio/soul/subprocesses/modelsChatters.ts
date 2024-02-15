@@ -63,7 +63,7 @@ const modelsChatters: MentalProcess = async ({ step: initialStep }) => {
   for (const message of unprocessedMessages) {
     const discordEvent = getDiscordEventFromMessage(message);
     const userName = discordEvent?.atMentionUsername || "Anonymous";
-    const displayName = discordEvent?.displayName || "Anonymous";
+    const displayName = discordEvent?.userDisplayName || "Anonymous";
     const userModel = useSoulMemory(userName, `- Display name: "${displayName}"`);
 
     let step = initialStep;

@@ -1,28 +1,21 @@
-import { Client, Events, GuildMember, Message, ReplyOptions } from "discord.js";
+import { Client, Events, Message, MessageType, ReplyOptions } from "discord.js";
 import { ActionEvent, Soul, SoulEvent } from "soul-engine/soul";
 import {
   getDiscordEventFromActionEvent as getDiscordEventFromSoulActionMetadata,
-  makeGuildMemberAddDiscordEvent,
   makeMessageCreateDiscordEvent,
 } from "./eventUtils.js";
 
-export type DiscordEventData =
-  | {
-      type: "messageCreate";
-      messageId: string;
-      channelId: string;
-      guildId: string;
-      userId: string;
-      displayName: string;
-      atMentionUsername: string;
-    }
-  | {
-      type: "guildMemberAdd";
-      guildId: string;
-      userId: string;
-      displayName: string;
-      atMentionUsername: string;
-    };
+export type DiscordEventData = {
+  type: "messageCreate";
+  messageId: string;
+  channelId: string;
+  guildId: string;
+  userId: string;
+  userDisplayName: string;
+  atMentionUsername: string;
+};
+
+export type DiscordAction = "chatted" | "joined";
 
 export class SoulGateway {
   private soul;
@@ -38,7 +31,6 @@ export class SoulGateway {
       debug: process.env.SOUL_DEBUG === "true",
     });
 
-    this.handleGuildMemberAdd = this.handleGuildMemberAdd.bind(this);
     this.handleMessage = this.handleMessage.bind(this);
     this.onSoulEvent = this.onSoulEvent.bind(this);
     this.onSoulSays = this.onSoulSays.bind(this);
@@ -51,27 +43,26 @@ export class SoulGateway {
 
     this.soul.connect();
 
-    this.client.on(Events.GuildMemberAdd, this.handleGuildMemberAdd);
     this.client.on(Events.MessageCreate, this.handleMessage);
   }
 
   stop() {
     this.client.off(Events.MessageCreate, this.handleMessage);
-    this.client.off(Events.GuildMemberAdd, this.handleGuildMemberAdd);
 
     return this.soul.disconnect();
   }
 
-  onSoulEvent(evt: SoulEvent) {
-    // console.log("soul event!", evt);
+  onSoulEvent(event: SoulEvent) {
+    console.log("soul event!", event.action, event.content);
   }
 
-  async onSoulSays(evt: ActionEvent) {
-    console.log("chats!", evt);
-    const { content } = evt;
+  async onSoulSays(event: ActionEvent) {
+    const { content } = event;
 
-    const discordEvent = getDiscordEventFromSoulActionMetadata(evt);
+    const discordEvent = getDiscordEventFromSoulActionMetadata(event);
     if (!discordEvent) return;
+
+    console.log("soul said something");
 
     let reply: ReplyOptions | undefined = undefined;
     if (discordEvent.type === "messageCreate") {
@@ -90,12 +81,14 @@ export class SoulGateway {
     }
   }
 
-  async onSoulReact(evt: ActionEvent) {
+  async onSoulReact(event: ActionEvent) {
     try {
-      const { content } = evt;
+      const { content } = event;
 
-      const discordEvent = getDiscordEventFromSoulActionMetadata(evt);
+      const discordEvent = getDiscordEventFromSoulActionMetadata(event);
       if (!discordEvent) return;
+
+      console.log("soul reacted with emoji");
 
       if (discordEvent.type === "messageCreate") {
         const { channelId, messageId } = discordEvent;
@@ -112,21 +105,6 @@ export class SoulGateway {
     }
   }
 
-  handleGuildMemberAdd(member: GuildMember) {
-    const discordEvent = makeGuildMemberAddDiscordEvent(member);
-    const userName = discordEvent.atMentionUsername;
-
-    this.soul.dispatch({
-      action: "joined",
-      content: `${userName} joined the server`,
-      name: userName,
-      _metadata: {
-        discordEvent,
-        botUserId: this.client.user?.id,
-      },
-    });
-  }
-
   handleMessage(discordMessage: Message) {
     const messageSenderIsBot = !!discordMessage.author.bot;
     const messageSentInCorrectChannel = discordMessage.channelId === process.env.DISCORD_CHANNEL_ID;
@@ -137,6 +115,20 @@ export class SoulGateway {
 
     const discordEvent = makeMessageCreateDiscordEvent(discordMessage);
     const userName = discordEvent.atMentionUsername;
+
+    const userJoinedSystemMessage = discordMessage.type === MessageType.UserJoin;
+    if (userJoinedSystemMessage) {
+      this.soul.dispatch({
+        action: "joined",
+        content: `${userName} joined the server`,
+        name: userName,
+        _metadata: {
+          discordEvent,
+          botUserId: this.client.user?.id,
+        },
+      });
+      return;
+    }
 
     this.soul.dispatch({
       action: "chatted",
