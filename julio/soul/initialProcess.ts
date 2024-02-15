@@ -32,7 +32,10 @@ export type ActionConfig =
     };
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
+  const { log } = useActions();
   const { invokingPerception } = usePerceptions();
+
+  log("Initial process started");
 
   if (shouldSkipPerception()) {
     return initialStep;
@@ -239,7 +242,7 @@ async function withSoulStoreOrRag(step: CortexStep<any>) {
       `)
     );
   } else {
-    log("Loading RAG context");
+    log("No answer found, using RAG context");
     step = await withRagContext(step);
   }
 

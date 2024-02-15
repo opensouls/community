@@ -14,11 +14,11 @@ const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {
     engineLog("[emotionalSystem]", ...args);
   };
 
-  log("loading soul memory");
+  log("Loading soul memory");
   const julioEmotions = useSoulMemory("emotionalState", defaultEmotion);
   const allEmotions = humanEmotions.join(", ");
 
-  log("emotional step", julioEmotions.current);
+  log("Emotional step", julioEmotions.current);
   const emotionalStep = await initialStep.next(
     internalMonologue(
       prompt`
@@ -31,7 +31,7 @@ const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {
   );
   log("Julio feels", emotionalStep.value);
 
-  log("computing emotion.");
+  log("Computing emotion");
   const extractedEmotion = await emotionalStep.compute(
     decision("Extract the emotion that Julio just said they are feeling.", humanEmotions)
   );
