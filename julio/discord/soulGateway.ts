@@ -1,9 +1,6 @@
 import { Client, Events, Message, MessageType, ReplyOptions } from "discord.js";
 import { ActionEvent, Soul, SoulEvent } from "soul-engine/soul";
-import {
-  getDiscordEventFromActionEvent as getDiscordEventFromSoulActionMetadata,
-  makeMessageCreateDiscordEvent,
-} from "./eventUtils.js";
+import { getMetadataFromActionEvent, makeMessageCreateDiscordEvent } from "./eventUtils.js";
 
 export type DiscordEventData = {
   type: "messageCreate";
@@ -53,19 +50,21 @@ export class SoulGateway {
   }
 
   onSoulEvent(event: SoulEvent) {
-    console.log("soul event!", event.action, event.content);
+    if (event.action) {
+      console.log("soul event!", event.action, event.content);
+    }
   }
 
   async onSoulSays(event: ActionEvent) {
     const { content } = event;
 
-    const discordEvent = getDiscordEventFromSoulActionMetadata(event);
+    const { discordEvent, actionConfig } = getMetadataFromActionEvent(event);
     if (!discordEvent) return;
 
     console.log("soul said something");
 
     let reply: ReplyOptions | undefined = undefined;
-    if (discordEvent.type === "messageCreate") {
+    if (discordEvent.type === "messageCreate" && actionConfig?.sendAs === "reply") {
       reply = {
         messageReference: discordEvent.messageId,
       };
@@ -85,7 +84,7 @@ export class SoulGateway {
     try {
       const { content } = event;
 
-      const discordEvent = getDiscordEventFromSoulActionMetadata(event);
+      const { discordEvent } = getMetadataFromActionEvent(event);
       if (!discordEvent) return;
 
       console.log("soul reacted with emoji");

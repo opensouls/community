@@ -1,9 +1,25 @@
-import { ChatMessageRoleEnum, decision, externalDialog, internalMonologue } from "socialagi";
+import {
+  ChatMessageRoleEnum,
+  decision,
+  externalDialog,
+  internalMonologue,
+  mentalQuery,
+} from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useRag, useSoulMemory } from "soul-engine";
 import { DiscordAction } from "../discord/soulGateway.js";
 import { emojiReaction } from "./lib/emojiReact.js";
-import { getMetadataFromPerception } from "./lib/utils.js";
+import { getMetadataFromPerception, random } from "./lib/utils.js";
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
+
+export type ActionConfig =
+  | {
+      type: "says";
+      sendAs: "message" | "reply";
+    }
+  | {
+      type: "reacts";
+      sendAs: "emoji";
+    };
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   const { log, dispatch } = useActions();
@@ -29,12 +45,7 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     return initialStep;
   }
 
-  let step = initialStep.withMemory([
-    {
-      role: ChatMessageRoleEnum.Assistant,
-      content: `Julio's Discord user ID is ${botUserId}`,
-    },
-  ]);
+  let step = initialStep;
 
   log("Remembering user");
   const userModel = useSoulMemory(userName, `- Display name: "${userDisplayName}"`);
@@ -53,39 +64,32 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     log(`Julio has no memories involving ${userName} `);
   }
 
-  if (action === "joined") {
+  if (action === "joined" || invokingPerception?.content === "JOINED") {
     log("New member joined the server");
-
-    step = await step.next(
-      internalMonologue(
-        "What should Julio explain about the Discord server so a new member knows their way around?"
-      )
-    );
 
     log("Loading RAG context");
     step = await withRagContext(step);
 
-    const message = `Julio sends ${userName} a welcome message containing initial directions about the Discord server, and invites them to ask any questions about the server or about Super Julio World. Important: do NOT use the display name in the message, use the at-mention username.`;
-    const { stream, nextStep } = await step.next(externalDialog(message), {
-      stream: true,
-    });
-    dispatch({
-      action: "says",
-      content: stream,
-      _metadata: {
-        discordEvent,
-      },
-    });
-
-    step = await nextStep;
+    step = await step.next(
+      internalMonologue(
+        `Julio thinks of a welcome message for ${userName}. He should mention the 3 levels of the Discord Server: the Welcome Area, the Satoshi Street, and the Collectors' Corner.`
+      )
+    );
   } else {
     log("Computing emoji");
     const emoji = await step.compute(emojiReaction());
+
+    const actionConfig: ActionConfig = {
+      type: "reacts",
+      sendAs: "emoji",
+    };
+
     dispatch({
       action: "reacts",
       content: emoji,
       _metadata: {
         discordEvent,
+        actionConfig,
       },
     });
 
@@ -102,35 +106,69 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
       log("Loading RAG context");
       step = await withRagContext(step);
 
-      const message = `Julio responds directly to ${userName}'s question based on what was just remembered as a relevant memory.`;
-      const { stream, nextStep } = await step.next(externalDialog(message), {
-        stream: true,
-        model: "quality",
-      });
-      dispatch({
-        action: "says",
-        content: stream,
-        _metadata: {
-          discordEvent,
-        },
-      });
-
-      step = await nextStep;
+      step = await step.next(
+        internalMonologue(
+          `Julio thinks of an answer to ${userName}'s question based on what was just remembered as a relevant memory.`
+        ),
+        {
+          model: "quality",
+        }
+      );
     } else {
-      const message = `Julio feels ${julioEmotions.current.emotion} and responds to ${userName},`;
-      const { stream, nextStep } = await step.next(externalDialog(message), {
-        stream: true,
-        model: "quality",
-      });
-      dispatch({
-        action: "says",
-        content: stream,
-        _metadata: {
-          discordEvent,
-        },
-      });
+      step = await step.next(
+        internalMonologue(
+          `Feeling ${julioEmotions.current.emotion}, Julio thinks of a response to ${userName}.`
+        ),
+        {
+          model: "quality",
+        }
+      );
+    }
+  }
 
-      step = await nextStep;
+  const maxMessages = 3;
+  const avgWordsInMessage = 40;
+
+  const lastThought = step.memories.slice(-1)[0];
+  const lastThoughtWords = lastThought?.content.toString().split(" ").length;
+  const lastThoughtLength = Math.min(lastThoughtWords ?? avgWordsInMessage);
+  const parts = Math.min(Math.ceil(lastThoughtLength / avgWordsInMessage), maxMessages);
+
+  let wordsLeft = lastThoughtLength;
+  for (let i = 1; i <= parts; i++) {
+    const maxWords = avgWordsInMessage + Math.floor(random() * 40) - 20;
+    wordsLeft -= maxWords;
+
+    log(`Message ${i}/${parts} with ${maxWords} words`);
+    const message = `Julio speaks part ${i} of ${parts} of what he just thought, using no more than ${maxWords} words.`;
+    const { stream, nextStep } = await step.next(externalDialog(message), {
+      stream: true,
+      model: "quality",
+    });
+
+    const actionConfig: ActionConfig = {
+      type: "says",
+      sendAs: i === 1 ? "reply" : "message",
+    };
+
+    dispatch({
+      action: "says",
+      content: stream,
+      _metadata: {
+        discordEvent,
+        actionConfig,
+      },
+    });
+
+    step = await nextStep;
+
+    const hasFinished = await step.compute(mentalQuery("Julio said everything he just thought."), {
+      model: "quality",
+    });
+
+    if (hasFinished) {
+      log("Julio already finished his train of thought.");
+      break;
     }
   }
 

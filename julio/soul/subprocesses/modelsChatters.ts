@@ -74,7 +74,7 @@ const modelsChatters: MentalProcess = async ({ step: initialStep }) => {
       )
     );
 
-    log("Update model?", userName, modelQuery);
+    log(`Update model for ${userName}?`, modelQuery);
     if (modelQuery) {
       step = await step.next(
         internalMonologue(

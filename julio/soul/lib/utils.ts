@@ -28,3 +28,13 @@ export function getMetadataFromPerception(perception: Perception | null | undefi
     discordEvent,
   };
 }
+
+export function random() {
+  const a = 1664525;
+  const c = 1013904223;
+  const m = 2 ** 32;
+
+  let seed = Date.now();
+  seed = (a * seed + c) % m;
+  return seed / m;
+}
