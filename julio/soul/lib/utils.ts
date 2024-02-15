@@ -18,14 +18,23 @@ export function getDiscordEventFromPerception(
 export function getMetadataFromPerception(perception: Perception | null | undefined) {
   const botUserId = getBotUserIdFromPerception(perception) || "anonymous-123";
   const discordEvent = getDiscordEventFromPerception(perception);
-  const userName = discordEvent?.atMentionUsername || "Anonymous";
-  const userDisplayName = discordEvent?.userDisplayName || "Anonymous";
+  const { userName, userDisplayName } = getUserDataFromDiscordEvent(discordEvent);
 
   return {
     botUserId,
     userName,
     userDisplayName,
     discordEvent,
+  };
+}
+
+export function getUserDataFromDiscordEvent(discordEvent: DiscordEventData | undefined) {
+  const userName = discordEvent?.atMentionUsername || "Anonymous";
+  const userDisplayName = discordEvent?.userDisplayName || "Anonymous";
+
+  return {
+    userName,
+    userDisplayName,
   };
 }
 

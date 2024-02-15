@@ -36,7 +36,7 @@ Get ready for a future book that's like a ticket to an intergalactic adventure. 
 
 ## Level 3: Collectors' Corner
 
-RESTRICTED AREA - Access granted to verified collectors only.
+RESTRICTED LEVEL: Only for people who purchase an ordinal on secondary and get verified by Matrica.
 
 This is where the treasure hunters gather. It's filled with unique and magical collections, each telling a part of Julio's story:
 

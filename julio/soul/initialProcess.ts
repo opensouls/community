@@ -1,14 +1,15 @@
 import {
   ChatMessageRoleEnum,
+  CortexStep,
   decision,
   externalDialog,
   internalMonologue,
   mentalQuery,
 } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useRag, useSoulMemory } from "soul-engine";
-import { DiscordAction } from "../discord/soulGateway.js";
+import { DiscordAction, DiscordEventData } from "../discord/soulGateway.js";
 import { emojiReaction } from "./lib/emojiReact.js";
-import { getMetadataFromPerception, random } from "./lib/utils.js";
+import { getMetadataFromPerception, getUserDataFromDiscordEvent, random } from "./lib/utils.js";
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
 export type ActionConfig =
@@ -22,7 +23,7 @@ export type ActionConfig =
     };
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
-  const { log, dispatch } = useActions();
+  const { log } = useActions();
   const { invokingPerception, pendingPerceptions } = usePerceptions();
 
   const action = invokingPerception?.action ?? ("chatted" as DiscordAction);
@@ -33,7 +34,7 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     return initialStep;
   }
 
-  const { userName, userDisplayName, discordEvent } = getMetadataFromPerception(invokingPerception);
+  const { userName, discordEvent } = getMetadataFromPerception(invokingPerception);
 
   log("Pending perceptions count:", pendingPerceptions.current.length);
   const isMessageBurstBySamePerson = pendingPerceptions.current.some((perception) => {
@@ -44,7 +45,21 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     return initialStep;
   }
 
-  let step = initialStep;
+  let step = await rememberUser(initialStep, discordEvent);
+
+  if (action === "joined" || invokingPerception?.content === "JOINED") {
+    step = await thinkOfWelcomeMessage(step, userName);
+  } else {
+    step = await thinkOfReplyMessage(step, userName, discordEvent);
+  }
+
+  return await saySomething(step, discordEvent);
+};
+
+async function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventData | undefined) {
+  const { log } = useActions();
+
+  const { userName, userDisplayName } = getUserDataFromDiscordEvent(discordEvent);
 
   log("Remembering user");
   const userModel = useSoulMemory(userName, `- Display name: "${userDisplayName}"`);
@@ -63,69 +78,99 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     log(`Julio has no memories involving ${userName} `);
   }
 
+  return step;
+}
+
+async function thinkOfWelcomeMessage(step: CortexStep<any>, userName: string) {
+  const { log } = useActions();
   const { withRagContext } = useRag("super-julio");
 
-  if (action === "joined" || invokingPerception?.content === "JOINED") {
-    log("New member joined the server");
+  log("New member joined the server");
 
-    log("Loading RAG context");
-    step = await withRagContext(step);
+  log("Loading RAG context");
+  step = await withRagContext(step);
 
-    step = await step.next(
-      internalMonologue(
-        `Julio thinks of a welcome message for ${userName}. He should mention the 3 levels of the Discord Server: the Welcome Area, the Satoshi Street, and the Collectors' Corner.`
-      )
-    );
+  step = await step.next(
+    internalMonologue(
+      `Julio thinks of a welcome message for ${userName}. It's VERY IMPORTANT to mention the 3 levels of the Discord Server: the Welcome Area, the Satoshi Street, and the Collectors' Corner.`
+    )
+  );
+
+  return step;
+}
+
+async function thinkOfReplyMessage(
+  step: CortexStep<any>,
+  userName: string,
+  discordEvent: DiscordEventData | undefined
+) {
+  const { log, dispatch } = useActions();
+
+  log("Computing emoji");
+  const emoji = await step.compute(emojiReaction());
+
+  const actionConfig: ActionConfig = {
+    type: "reacts",
+    sendAs: "emoji",
+  };
+
+  dispatch({
+    action: "reacts",
+    content: emoji,
+    _metadata: {
+      discordEvent,
+      actionConfig,
+    },
+  });
+
+  const ragTopics =
+    "Julio, Super Julio World, the Super Julio World Discord Server, or Bitcoin Ordinals";
+  const needsRagContext = await step.compute(
+    decision(`${userName} has asked a question about ${ragTopics}`, ["true", "false"]),
+    { model: "quality" }
+  );
+
+  if (needsRagContext === "true") {
+    await thinkOfReplyWithRag(step, userName);
   } else {
-    log("Computing emoji");
-    const emoji = await step.compute(emojiReaction());
-
-    const actionConfig: ActionConfig = {
-      type: "reacts",
-      sendAs: "emoji",
-    };
-
-    dispatch({
-      action: "reacts",
-      content: emoji,
-      _metadata: {
-        discordEvent,
-        actionConfig,
-      },
-    });
-
-    const julioEmotions = useSoulMemory("emotionalState", defaultEmotion);
-
-    const ragTopics =
-      "Julio, Super Julio World, the Super Julio World Discord Server, or Bitcoin Ordinals";
-    const needsRagContext = await step.compute(
-      decision(`${userName} has asked a question about ${ragTopics}`, ["true", "false"]),
-      { model: "quality" }
-    );
-
-    if (needsRagContext === "true") {
-      log("Loading RAG context");
-      step = await withRagContext(step);
-
-      step = await step.next(
-        internalMonologue(
-          `Julio thinks of an answer to ${userName}'s question based on what was just remembered as a relevant memory.`
-        ),
-        {
-          model: "quality",
-        }
-      );
-    } else {
-      step = await step.next(
-        internalMonologue(
-          `Feeling ${julioEmotions.current.emotion}, Julio thinks of a response to ${userName}.`
-        ),
-        {
-          model: "quality",
-        }
-      );
-    }
+    await thinkOfReplyWithoutRag(step, userName);
   }
+
+  return step;
+}
+
+async function thinkOfReplyWithRag(step: CortexStep<any>, userName: string) {
+  const { log } = useActions();
+  const { withRagContext } = useRag("super-julio");
+
+  log("Loading RAG context");
+  step = await withRagContext(step);
+
+  step = await step.next(
+    internalMonologue(
+      `Julio thinks of an answer to ${userName}'s question based on what was just remembered as a relevant memory.`
+    ),
+    {
+      model: "quality",
+    }
+  );
+}
+
+async function thinkOfReplyWithoutRag(step: CortexStep<any>, userName: string) {
+  const julioEmotions = useSoulMemory("emotionalState", defaultEmotion);
+
+  step = await step.next(
+    internalMonologue(
+      `Feeling ${julioEmotions.current.emotion}, Julio thinks of a response to ${userName}.`
+    ),
+    {
+      model: "quality",
+    }
+  );
+}
+
+async function saySomething(step: CortexStep<any>, discordEvent?: DiscordEventData) {
+  const { log, dispatch } = useActions();
 
   const maxMessages = 3;
   const avgWordsInMessage = 40;
@@ -135,10 +180,8 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   const lastThoughtLength = Math.min(lastThoughtWords ?? avgWordsInMessage);
   const parts = Math.min(Math.ceil(lastThoughtLength / avgWordsInMessage), maxMessages);
 
-  let wordsLeft = lastThoughtLength;
   for (let i = 1; i <= parts; i++) {
     const maxWords = avgWordsInMessage + Math.floor(random() * 40) - 20;
-    wordsLeft -= maxWords;
 
     log(`Message ${i}/${parts} with ${maxWords} words`);
     const message = `Julio speaks part ${i} of ${parts} of what he just thought, using no more than ${maxWords} words.`;
@@ -163,17 +206,22 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
 
     step = await nextStep;
 
-    const hasFinished = await step.compute(mentalQuery("Julio said everything he just thought."), {
-      model: "quality",
-    });
+    if (i < parts) {
+      const hasFinished = await step.compute(
+        mentalQuery("Julio said everything he just thought."),
+        {
+          model: "quality",
+        }
+      );
 
-    if (hasFinished) {
-      log("Julio already finished his train of thought.");
-      break;
+      if (hasFinished) {
+        log("Julio already finished his train of thought.");
+        break;
+      }
     }
   }
 
   return step;
-};
+}
 
 export default initialProcess;
