@@ -8,7 +8,7 @@ import {
   useSoulMemory,
   useSoulStore,
 } from "soul-engine";
-import { DiscordAction, DiscordEventData } from "../discord/soulGateway.js";
+import { DiscordAction, DiscordEventData, SoulActionConfig } from "../discord/soulGateway.js";
 import { emojiReaction } from "./lib/emojiReact.js";
 import { prompt } from "./lib/prompt.js";
 import questionsAndAnswers from "./lib/questionsAndAnswers.js";
@@ -20,16 +20,6 @@ import {
   random,
 } from "./lib/utils.js";
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
-
-export type ActionConfig =
-  | {
-      type: "says";
-      sendAs: "message" | "reply";
-    }
-  | {
-      type: "reacts";
-      sendAs: "emoji";
-    };
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   const { log } = useActions();
@@ -171,7 +161,7 @@ async function thinkOfReplyMessage(
   log("Computing emoji");
   const emoji = await step.compute(emojiReaction());
 
-  const actionConfig: ActionConfig = {
+  const actionConfig: SoulActionConfig = {
     type: "reacts",
     sendAs: "emoji",
   };
@@ -287,7 +277,7 @@ async function saySomething(step: CortexStep<any>, discordEvent?: DiscordEventDa
       model: "quality",
     });
 
-    const actionConfig: ActionConfig = {
+    const actionConfig: SoulActionConfig = {
       type: "says",
       sendAs: i === 1 ? "reply" : "message",
     };

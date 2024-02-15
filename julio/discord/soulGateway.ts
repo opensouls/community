@@ -14,6 +14,16 @@ export type DiscordEventData = {
 
 export type DiscordAction = "chatted" | "joined";
 
+export type SoulActionConfig =
+  | {
+      type: "says";
+      sendAs: "message" | "reply";
+    }
+  | {
+      type: "reacts";
+      sendAs: "emoji";
+    };
+
 export class SoulGateway {
   private soul;
   private client;

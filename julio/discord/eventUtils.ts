@@ -1,12 +1,11 @@
 import { Message } from "discord.js";
 import { ActionEvent } from "soul-engine/soul";
-import { ActionConfig } from "../soul/initialProcess.js";
-import { DiscordEventData } from "./soulGateway.js";
+import { DiscordEventData, SoulActionConfig } from "./soulGateway.js";
 
 export function getMetadataFromActionEvent(evt: ActionEvent) {
   return {
     discordEvent: evt._metadata?.discordEvent as DiscordEventData,
-    actionConfig: evt._metadata?.actionConfig as ActionConfig,
+    actionConfig: evt._metadata?.actionConfig as SoulActionConfig,
   };
 }
 
