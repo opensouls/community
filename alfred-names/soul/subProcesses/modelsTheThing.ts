@@ -45,7 +45,7 @@ const modelsTheThing: MentalProcess = async ({ step: initialStep }) => {
     ${thingModel.current}
   `
   }])
-  const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new and they need to update the mental model of the user.`));
+  const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new and they need to update the mental model of the thing.`));
   log("Update model?", modelQuery)
   if (modelQuery) {
     step = await step.next(internalMonologue("What have I learned specifically about the user from the last few messages?", "noted"))
@@ -53,6 +53,7 @@ const modelsTheThing: MentalProcess = async ({ step: initialStep }) => {
     step = await step.next(thingNotes(), { model: "quality" })
     thingModel.current = step.value
 
+    // possibly generate a name
     step = await step.next(internalMonologue("Generate a 1 potentially fitting name and explain why", "brainstorms"), { model: "quality" })
     const name = step.value
     log("Considering the name", name)
