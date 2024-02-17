@@ -1,12 +1,12 @@
 
 import { html } from "common-tags";
 import { externalDialog, decision } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory, usePerceptions } from "soul-engine";
+import { MentalProcess, useActions, useProcessMemory, usePerceptions, useProcessManager } from "soul-engine";
 
 const multiTexts: MentalProcess = async ({ step: initialStep }) => {
   const { speak, scheduleEvent, log } = useActions()
   const fragmentNo = useProcessMemory(0)
-
+  const { wait } = useProcessManager()
   const { pendingPerceptions } = usePerceptions()
 
   let step = await initialStep.next(
@@ -18,24 +18,27 @@ const multiTexts: MentalProcess = async ({ step: initialStep }) => {
   }
   speak(step.value);
 
-  let count = await step.compute(
+  let count = parseInt(await step.compute(
     decision(html`
-      How many sentence fragments will Texty want to text next.
+      How many additional sentence fragments will Texty want to text next.
       Make sure to mix up the number of fragments so it feels natural.
-      Last batch of texts was ${fragmentNo.current} fragments long.
-      Bias towards lower numbers.
-    `, ['5', '4', '2', '1', '0']),
+      Last batch of texts was ${fragmentNo.current} additional fragments long.
+      Most responses should be 0. Sometimes 1 or maybe 2-5 fragments long.
+    `, ['5', '4', '3', '2', '1', '0']),
     { model: "quality" }
-  ) as number
-  log("count", count, typeof count)
+  ) as string) as number
   fragmentNo.current = count
 
+  if (count === 0) {
+    return step
+  }
 
   while (count > 1) {
+    wait(1000)
     let length = await step.compute(
       decision(html`
         How long should the next fragment be?
-      `, ['very long', 'long', 'medium', 'short', 'very short']),
+      `, ['very long', 'long', 'medium', 'short']),
       { model: "quality" }
     ) as number
     count -= 1
