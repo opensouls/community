@@ -159,5 +159,10 @@ export class SoulGateway {
         botUserId: this.client.user?.id,
       },
     });
+
+    const channel = await this.client.channels.fetch(process.env.DISCORD_CHANNEL_ID!);
+    if (channel && channel.isTextBased()) {
+      await channel.sendTyping();
+    }
   }
 }
