@@ -4,7 +4,6 @@ import { Perception } from "soul-engine/soul";
 import { DiscordEventData, SoulActionConfig } from "../discord/soulGateway.js";
 import { withSoulStoreOrRag } from "./lib/customHooks.js";
 import { emojiReaction } from "./lib/emojiReact.js";
-import { identifyMessageTarget } from "./lib/identifyMessageTarget.js";
 import { initializeSoulStore } from "./lib/initialization.js";
 import { prompt } from "./lib/prompt.js";
 import {
@@ -36,18 +35,23 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
 
   await initializeSoulStore();
 
-  let step = await rememberUser(initialStep, discordEvent);
+  let step = rememberUser(initialStep, discordEvent);
 
   if (shouldWelcomeUser(invokingPerception)) {
     step = await thinkOfWelcomeMessage(step, userName);
   } else {
-    const isTalkingToJulio = await isUserTalkingToJulio(step, userName);
+    const [isTalkingToJulio, nextStep] = await Promise.all([
+      isUserTalkingToJulio(step, userName),
+      thinkOfReplyMessage(step, userName),
+      reactWithEmoji(step, discordEvent),
+    ]);
+
     if (!isTalkingToJulio) {
       log(`Skipping perception from ${userName} because they're talking to someone else`);
       return initialStep;
     }
 
-    step = await thinkOfReplyMessage(step, userName, discordEvent);
+    step = nextStep;
 
     const userSentNewMessagesInMeantime = hasMoreMessagesFromSameUser(pendingPerceptions.current, userName);
     if (userSentNewMessagesInMeantime) {
@@ -79,7 +83,7 @@ function hasMoreMessagesFromSameUser(pendingPerceptions: Perception[], userName:
   return countOfPendingPerceptionsBySamePerson > 0;
 }
 
-async function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventData | undefined) {
+function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventData | undefined) {
   const { log } = useActions();
 
   const { userName, userDisplayName } = getUserDataFromDiscordEvent(discordEvent);
@@ -147,71 +151,54 @@ async function thinkOfWelcomeMessage(step: CortexStep<any>, userName: string) {
 async function isUserTalkingToJulio(step: CortexStep<any>, userName: string) {
   const { log } = useActions();
 
-  const messageTarget = await step.compute(identifyMessageTarget(userName), {
-    model: "quality",
-  });
+  const messageTarget = await step.compute(
+    decision(
+      `Julio is the moderator of this channel. Participants sometimes talk amongst themselves without Julio. In this last message sent by ${userName}, guess which person they are probably speaking with.`,
+      ["julio", "someone else", "not sure"]
+    ),
+    {
+      model: "quality",
+    }
+  );
 
-  log(`Julio thought about who's being addressed: "${messageTarget}"`);
+  log(`Julio decided that ${userName} is talking to: "${messageTarget}"`);
 
-  const talkingToJulio = (
-    await step
-      .withMemory(newMemory(`Julio identified the target of the last message: ${messageTarget}`))
-      .compute(
-        decision(`Did ${userName} want Julio to start talking?`, [
-          "yes, they are likely talking to Julio",
-          "no, they are likely talking to someone else",
-          "maybe",
-        ]),
-        {
-          model: "quality",
-        }
-      )
-  ).toString();
-
-  if (talkingToJulio.startsWith("no")) {
-    log(`${userName} is talking to someone else`);
-    return false;
-  }
-
-  if (talkingToJulio.startsWith("maybe")) {
-    const chimeIn = random() < 0.3;
+  if (messageTarget === "not sure") {
+    const chimeIn = random() < 0.5;
 
     log(`Not sure if ${userName} is talking to Julio, chime in? ${chimeIn ? "yes" : "no"}`);
     return chimeIn;
   }
 
-  log(`${userName} is talking to Julio`);
-  return true;
+  return messageTarget === "julio";
 }
 
-async function thinkOfReplyMessage(
-  step: CortexStep<any>,
-  userName: string,
-  discordEvent: DiscordEventData | undefined
-) {
-  if (random() > 0.5) {
-    await reactWithEmoji(step, discordEvent);
-  }
+async function thinkOfReplyMessage(step: CortexStep<any>, userName: string) {
+  const { log } = useActions();
 
   const ragTopics = "Julio, Super Julio World, Julio's Discord Server, or Bitcoin Ordinals";
-  const needsRagContext = await step.compute(mentalQuery(`${userName} has asked a question about ${ragTopics}`), {
+  const needsRagContextPromise = step.compute(mentalQuery(`${userName} has asked a question about ${ragTopics}`), {
     model: "quality",
   });
 
+  const additionalContextNextStepPromise = thinkOfReplyWithAdditionalContext(step, userName);
+  const simpleReplyNextStepPromise = thinkOfSimpleReply(step, userName);
+
+  const needsRagContext = await needsRagContextPromise;
   if (needsRagContext) {
-    step = await thinkOfReplyWithAdditionalContext(step, userName);
+    log("Question needs additional context to be answered");
+
+    step = await additionalContextNextStepPromise;
   } else {
-    step = await thinkOfSimpleReply(step, userName);
+    log("Question can be answered with a simple reply");
+
+    step = await simpleReplyNextStepPromise;
   }
 
   return step;
 }
 
 async function thinkOfReplyWithAdditionalContext(step: CortexStep<any>, userName: string) {
-  const { log } = useActions();
-
-  log("Additional context is needed to answer the question");
-
   step = await withSoulStoreOrRag(step);
 
   step = await step.next(
@@ -227,10 +214,6 @@ async function thinkOfReplyWithAdditionalContext(step: CortexStep<any>, userName
 }
 
 async function thinkOfSimpleReply(step: CortexStep<any>, userName: string) {
-  const { log } = useActions();
-
-  log("Question can be answered with a simple reply");
-
   const julioEmotions = useSoulMemory("emotionalState", defaultEmotion);
 
   step = await step.next(
@@ -245,6 +228,11 @@ async function thinkOfSimpleReply(step: CortexStep<any>, userName: string) {
 
 async function reactWithEmoji(step: CortexStep<any>, discordEvent: DiscordEventData | undefined) {
   const { log, dispatch } = useActions();
+
+  if (random() < 0.5) {
+    log("Skipping emoji reaction");
+    return;
+  }
 
   log("Thinking of an emoji to react with");
   const emoji = await step.compute(emojiReaction());
