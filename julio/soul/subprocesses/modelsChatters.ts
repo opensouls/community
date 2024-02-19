@@ -84,6 +84,7 @@ const modelsChatters: MentalProcess = async ({ step: initialStep }) => {
       );
 
       log("Learnings:", step.value);
+
       userModel.current = await step.compute(userNotes(userName));
     }
   }
@@ -98,11 +99,6 @@ function getDiscordEventFromMessage(message: Memory<Record<string, unknown>>) {
   const discordEvent = message.metadata?.discordEvent as DiscordEventData | undefined;
   if (discordEvent?.type === "messageCreate") {
     return discordEvent;
-  }
-
-  if (discordEvent?.type === "guildMemberAdd") {
-    const fakeMessageId = `guildMemberAdd-${discordEvent.userId}`;
-    return { ...discordEvent, messageId: fakeMessageId };
   }
 
   return undefined;

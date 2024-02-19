@@ -10,6 +10,7 @@ export type DiscordEventData = {
   userId: string;
   userDisplayName: string;
   atMentionUsername: string;
+  repliedToUserId?: string;
 };
 
 export type DiscordAction = "chatted" | "joined";
@@ -52,6 +53,7 @@ export class SoulGateway {
 
     this.soul.setEnvironment({
       botUserId: readyClient.user.id,
+      holderVerifyChannel: process.env.HOLDER_VERIFY_CHANNEL!,
     });
 
     this.client.on(Events.MessageCreate, this.handleMessage);
@@ -118,7 +120,7 @@ export class SoulGateway {
     }
   }
 
-  handleMessage(discordMessage: Message) {
+  async handleMessage(discordMessage: Message) {
     const messageSenderIsBot = !!discordMessage.author.bot;
     const messageSentInCorrectChannel = discordMessage.channelId === process.env.DISCORD_CHANNEL_ID;
     const shouldIgnoreMessage = messageSenderIsBot || !messageSentInCorrectChannel;
@@ -126,7 +128,7 @@ export class SoulGateway {
       return;
     }
 
-    const discordEvent = makeMessageCreateDiscordEvent(discordMessage);
+    const discordEvent = await makeMessageCreateDiscordEvent(discordMessage);
     const userName = discordEvent.atMentionUsername;
 
     const userJoinedSystemMessage = discordMessage.type === MessageType.UserJoin;
@@ -141,6 +143,11 @@ export class SoulGateway {
         },
       });
       return;
+    }
+
+    let content = discordMessage.content;
+    if (discordEvent.repliedToUserId) {
+      content = `<@${discordEvent.repliedToUserId}> ${content}`;
     }
 
     this.soul.dispatch({

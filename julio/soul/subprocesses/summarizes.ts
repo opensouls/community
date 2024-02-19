@@ -35,7 +35,7 @@ const summarizesConversation: MentalProcess = async ({ step: initialStep }) => {
   let step = initialStep;
   let finalStep = initialStep;
 
-  if (step.memories.length > 9) {
+  if (step.memories.length > 15) {
     log("Updating conversation notes");
     step = await step.next(internalMonologue("What have I learned in this conversation.", "noted"));
 
@@ -56,7 +56,7 @@ const summarizesConversation: MentalProcess = async ({ step: initialStep }) => {
             conversationSummary: true,
           },
         },
-        ...newMemories.slice(-4),
+        ...newMemories.slice(-8),
       ];
     });
   }

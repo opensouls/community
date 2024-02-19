@@ -9,7 +9,13 @@ export function getMetadataFromActionEvent(evt: ActionEvent) {
   };
 }
 
-export function makeMessageCreateDiscordEvent(message: Message): DiscordEventData {
+export async function makeMessageCreateDiscordEvent(message: Message): Promise<DiscordEventData> {
+  let repliedToUserId: string | undefined = undefined;
+  if (message.reference && message.reference.messageId) {
+    const repliedToMessage = await message.channel.messages.fetch(message.reference.messageId);
+    repliedToUserId = repliedToMessage.author.id;
+  }
+
   return {
     type: "messageCreate",
     messageId: message.id,
@@ -18,5 +24,6 @@ export function makeMessageCreateDiscordEvent(message: Message): DiscordEventDat
     userId: message.author.id,
     userDisplayName: message.author.displayName,
     atMentionUsername: `<@${message.author.id}>`,
+    repliedToUserId,
   };
 }
