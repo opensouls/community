@@ -1,8 +1,8 @@
-import { CortexStep, decision, externalDialog, internalMonologue, mentalQuery } from "socialagi";
+import { CortexStep, decision, externalDialog, internalMonologue } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useSoulMemory } from "soul-engine";
 import { Perception } from "soul-engine/soul";
 import { DiscordEventData, SoulActionConfig } from "../discord/soulGateway.js";
-import { withSoulStoreOrRag } from "./lib/customHooks.js";
+import { withSoulStoreContext } from "./lib/customHooks.js";
 import { emojiReaction } from "./lib/emojiReact.js";
 import { initializeSoulStore } from "./lib/initialization.js";
 import { prompt } from "./lib/prompt.js";
@@ -15,7 +15,6 @@ import {
   newMemory,
   random,
 } from "./lib/utils.js";
-import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
 const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   const { log } = useActions();
@@ -32,6 +31,8 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     log(`Skipping perception from ${userName} due to message burst`);
     return initialStep;
   }
+
+  let time = Date.now();
 
   await initializeSoulStore();
 
@@ -61,9 +62,11 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   }
 
   const isGroupConversation = pendingPerceptions.current.some((perception) => {
-    const { userName: pendingPerceptionUserName } = getMetadataFromPerception(perception);
-    return pendingPerceptionUserName !== userName;
+    return getMetadataFromPerception(perception).userName !== userName;
   });
+
+  time = Date.now() - time;
+  log(`Time until beginning of response: ${time}ms`);
 
   return await saySomething(step, discordEvent, isGroupConversation);
 };
@@ -179,55 +182,12 @@ async function isUserTalkingToJulio(step: CortexStep<any>, userName: string) {
 }
 
 async function thinkOfReplyMessage(step: CortexStep<any>, userName: string) {
-  const { log } = useActions();
-
-  const [needsRagContext, simpleReplyNextStep] = await Promise.all([
-    hasUserAskedQuestionAboutRagTopics(step, userName),
-    thinkOfSimpleReply(step, userName),
-  ]);
-
-  if (needsRagContext) {
-    log("Question needs additional context to be answered");
-
-    step = await thinkOfReplyWithAdditionalContext(step, userName);
-  } else {
-    log("Question can be answered with a simple reply");
-
-    step = simpleReplyNextStep;
-  }
-
-  return step;
-}
-
-async function hasUserAskedQuestionAboutRagTopics(step: CortexStep<any>, userName: string) {
-  const ragTopics = "Julio, Super Julio World, Julio's Discord Server, or Bitcoin Ordinals";
-  const result = await step.compute(mentalQuery(`${userName} has asked a question about ${ragTopics}`), {
-    model: "quality",
-  });
-
-  return result;
-}
-
-async function thinkOfReplyWithAdditionalContext(step: CortexStep<any>, userName: string) {
-  step = await withSoulStoreOrRag(step);
+  step = await withSoulStoreContext(step);
 
   step = await step.next(
     internalMonologue(
       `Julio thinks of an answer to ${userName}'s question based on what was just remembered as a relevant memory.`
     ),
-    {
-      model: "quality",
-    }
-  );
-
-  return step;
-}
-
-async function thinkOfSimpleReply(step: CortexStep<any>, userName: string) {
-  const julioEmotions = useSoulMemory("emotionalState", defaultEmotion);
-
-  step = await step.next(
-    internalMonologue(`Feeling ${julioEmotions.current.emotion}, Julio thinks of a response to ${userName}.`),
     {
       model: "quality",
     }
