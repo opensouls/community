@@ -69,7 +69,7 @@ export function getLastMemory(step: CortexStep) {
   return step.memories.slice(-1)[0]?.content.toString().trim() || null;
 }
 
-export function getLastMessageFromUser(step: CortexStep) {
+export function getLastMessageFromUserRole(step: CortexStep) {
   const memory = step.memories
     .slice()
     .reverse()
@@ -77,6 +77,10 @@ export function getLastMessageFromUser(step: CortexStep) {
     ?.content.toString()
     .trim();
 
-  const message = memory?.split(":")[1]?.trim() || null;
-  return message;
+  if (!memory) {
+    return null;
+  }
+
+  const content = memory?.split(":")[1]?.trim() || null;
+  return { memory, content };
 }

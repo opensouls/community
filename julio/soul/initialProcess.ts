@@ -60,7 +60,12 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     }
   }
 
-  return await saySomething(step, userName, discordEvent);
+  const isGroupConversation = pendingPerceptions.current.some((perception) => {
+    const { userName: pendingPerceptionUserName } = getMetadataFromPerception(perception);
+    return pendingPerceptionUserName !== userName;
+  });
+
+  return await saySomething(step, discordEvent, isGroupConversation);
 };
 
 function hasReachedPendingPerceptionsLimit(pendingPerceptions: Perception[]) {
@@ -176,26 +181,31 @@ async function isUserTalkingToJulio(step: CortexStep<any>, userName: string) {
 async function thinkOfReplyMessage(step: CortexStep<any>, userName: string) {
   const { log } = useActions();
 
-  const ragTopics = "Julio, Super Julio World, Julio's Discord Server, or Bitcoin Ordinals";
-  const needsRagContextPromise = step.compute(mentalQuery(`${userName} has asked a question about ${ragTopics}`), {
-    model: "quality",
-  });
+  const [needsRagContext, simpleReplyNextStep] = await Promise.all([
+    hasUserAskedQuestionAboutRagTopics(step, userName),
+    thinkOfSimpleReply(step, userName),
+  ]);
 
-  const additionalContextNextStepPromise = thinkOfReplyWithAdditionalContext(step, userName);
-  const simpleReplyNextStepPromise = thinkOfSimpleReply(step, userName);
-
-  const needsRagContext = await needsRagContextPromise;
   if (needsRagContext) {
     log("Question needs additional context to be answered");
 
-    step = await additionalContextNextStepPromise;
+    step = await thinkOfReplyWithAdditionalContext(step, userName);
   } else {
     log("Question can be answered with a simple reply");
 
-    step = await simpleReplyNextStepPromise;
+    step = simpleReplyNextStep;
   }
 
   return step;
+}
+
+async function hasUserAskedQuestionAboutRagTopics(step: CortexStep<any>, userName: string) {
+  const ragTopics = "Julio, Super Julio World, Julio's Discord Server, or Bitcoin Ordinals";
+  const result = await step.compute(mentalQuery(`${userName} has asked a question about ${ragTopics}`), {
+    model: "quality",
+  });
+
+  return result;
 }
 
 async function thinkOfReplyWithAdditionalContext(step: CortexStep<any>, userName: string) {
@@ -253,8 +263,14 @@ async function reactWithEmoji(step: CortexStep<any>, discordEvent: DiscordEventD
   });
 }
 
-async function saySomething(step: CortexStep<any>, userName: string, discordEvent?: DiscordEventData) {
+async function saySomething(
+  step: CortexStep<any>,
+  discordEvent: DiscordEventData | undefined,
+  isGroupConversation: boolean
+) {
   const { log, dispatch } = useActions();
+
+  const { userName } = getUserDataFromDiscordEvent(discordEvent);
 
   const maxMessages = 3;
   const avgWordsInMessage = 40;
@@ -278,7 +294,7 @@ async function saySomething(step: CortexStep<any>, userName: string, discordEven
 
     const actionConfig: SoulActionConfig = {
       type: "says",
-      sendAs: i === 1 ? "reply" : "message",
+      sendAs: isGroupConversation && i === 1 ? "reply" : "message",
     };
 
     dispatch({
@@ -292,17 +308,6 @@ async function saySomething(step: CortexStep<any>, userName: string, discordEven
 
     step = await nextStep;
     fullMessage += step.memories.slice(-1)[0].content.toString().split(":")[1]?.trim() + "\n";
-
-    if (i < parts) {
-      const hasFinished = await step.compute(mentalQuery("Julio said everything he just thought."), {
-        model: "quality",
-      });
-
-      if (hasFinished) {
-        log("Julio already finished his train of thought.");
-        break;
-      }
-    }
   }
 
   const userLastMessage = useSoulMemory(userName + "-lastMessage", "");

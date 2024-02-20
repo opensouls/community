@@ -1,7 +1,7 @@
 import { CortexStep } from "socialagi";
 import { VectorRecordWithSimilarity, useActions, useRag, useSoulStore } from "soul-engine";
 import { prompt } from "./prompt.js";
-import { getLastMessageFromUser, newMemory } from "./utils.js";
+import { getLastMessageFromUserRole, newMemory } from "./utils.js";
 
 export async function withSoulStoreOrRag(step: CortexStep<any>) {
   const { log } = useActions();
@@ -9,9 +9,9 @@ export async function withSoulStoreOrRag(step: CortexStep<any>) {
   const { withRagContext } = useRag("super-julio");
 
   let highSimilarityAnswer;
-  const lastMessageFromUser = getLastMessageFromUser(step);
-  if (lastMessageFromUser) {
-    const answers = (await search(lastMessageFromUser)).slice().map(
+  const lastMessageFromUser = getLastMessageFromUserRole(step);
+  if (lastMessageFromUser?.content) {
+    const answers = (await search(lastMessageFromUser.content)).slice().map(
       // less confusing if we call it distance
       (answer) => ({ ...answer, distance: answer.similarity })
     );

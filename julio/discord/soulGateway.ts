@@ -1,5 +1,5 @@
 import { Client, Events, Message, MessageType, ReplyOptions } from "discord.js";
-import { ActionEvent, Soul, SoulEvent } from "soul-engine/soul";
+import { ActionEvent, Soul } from "soul-engine/soul";
 import { getMetadataFromActionEvent, makeMessageCreateDiscordEvent } from "./eventUtils.js";
 
 export type DiscordEventData = {
@@ -40,12 +40,10 @@ export class SoulGateway {
     });
 
     this.handleMessage = this.handleMessage.bind(this);
-    this.onSoulEvent = this.onSoulEvent.bind(this);
     this.onSoulSays = this.onSoulSays.bind(this);
   }
 
   start(readyClient: Client<true>) {
-    this.soul.on("newSoulEvent", this.onSoulEvent);
     this.soul.on("says", this.onSoulSays);
     this.soul.on("reacts", this.onSoulReact.bind(this));
 
@@ -63,12 +61,6 @@ export class SoulGateway {
     this.client.off(Events.MessageCreate, this.handleMessage);
 
     return this.soul.disconnect();
-  }
-
-  onSoulEvent(event: SoulEvent) {
-    if (event.action) {
-      console.log("soul event!", event.action, event.content);
-    }
   }
 
   async onSoulSays(event: ActionEvent) {
@@ -152,7 +144,7 @@ export class SoulGateway {
 
     this.soul.dispatch({
       action: "chatted",
-      content: discordMessage.content,
+      content,
       name: userName,
       _metadata: {
         discordEvent,
