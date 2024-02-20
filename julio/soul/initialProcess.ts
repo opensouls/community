@@ -38,8 +38,10 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
 
   let step = rememberUser(initialStep, discordEvent);
 
+  let isWelcome = false;
   if (shouldWelcomeUser(invokingPerception)) {
     step = await thinkOfWelcomeMessage(step, userName);
+    isWelcome = true;
   } else {
     const [isTalkingToJulio, nextStep] = await Promise.all([
       isUserTalkingToJulio(step, userName),
@@ -68,7 +70,8 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   time = Date.now() - time;
   log(`Time until beginning of response: ${time}ms`);
 
-  return await saySomething(step, discordEvent, isGroupConversation);
+  const sendAsUserReply = isGroupConversation || isWelcome;
+  return await saySomething(step, discordEvent, sendAsUserReply);
 };
 
 function hasReachedPendingPerceptionsLimit(pendingPerceptions: Perception[]) {
@@ -144,8 +147,8 @@ async function thinkOfWelcomeMessage(step: CortexStep<any>, userName: string) {
     newMemory(
       prompt(`
         Julio thought: "${thought} oh and I CANNOT FORGET to mention these SUPER IMPORTANT things:
-        - there are 3 levels in the server: welcome area, satoshi street, and collector's corner
-        - ${userName} needs to know that the name of the place we are now is "the welcome area"
+        - i'll tell ${userName} that there are 3 levels in the server: welcome area, satoshi street, and collector's corner
+        - ${userName} should also know that the name of the place we are now is "the welcome area"
         - ${userName} should check out satoshi street
         - if ${userName} is a holder, they should go to channel ${soul.env.holderVerifyChannel} so they can join the collector's corner
         - no other channel or area should be mentioned now!!!"
@@ -226,7 +229,7 @@ async function reactWithEmoji(step: CortexStep<any>, discordEvent: DiscordEventD
 async function saySomething(
   step: CortexStep<any>,
   discordEvent: DiscordEventData | undefined,
-  isGroupConversation: boolean
+  sendAsUserReply: boolean
 ) {
   const { log, dispatch } = useActions();
 
@@ -254,7 +257,7 @@ async function saySomething(
 
     const actionConfig: SoulActionConfig = {
       type: "says",
-      sendAs: isGroupConversation && i === 1 ? "reply" : "message",
+      sendAs: sendAsUserReply && i === 1 ? "reply" : "message",
     };
 
     dispatch({
