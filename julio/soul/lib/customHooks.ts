@@ -3,6 +3,8 @@ import { VectorRecordWithSimilarity, useActions, useSoulStore } from "soul-engin
 import { prompt } from "./prompt.js";
 import { getLastMessageFromUserRole, newMemory } from "./utils.js";
 
+type VectorRecordWithDistance = VectorRecordWithSimilarity & { distance: number };
+
 export async function withSoulStoreContext(step: CortexStep<any>) {
   const { log } = useActions();
   const { search } = useSoulStore();
@@ -18,27 +20,27 @@ export async function withSoulStoreContext(step: CortexStep<any>) {
     (answer) => ({ ...answer, distance: answer.similarity })
   );
 
-  log(
-    `Preemptively searching question-answer pairs in the soul store for "${lastMessageContent}". Results:`,
+  log(`Searching question-answer pairs in the soul store for "${lastMessageContent}"...`);
+
+  const bestAnswers = (
     answers
+      .filter((a) => a.distance < 0.9)
       .sort((a, b) => a.distance - b.distance)
-      .map((a) => a.distance + " " + a.content?.toString().trim())
-      .slice(0, 3)
-  );
+      .slice(0, 3) as VectorRecordWithDistance[]
+  ).map((a) => ({ ...a, content: a.content?.toString().trim() || "" }));
 
-  const bestAnswer = (answers
-    .filter((a) => a.distance <= 0.3)
-    .sort((a, b) => a.distance - b.distance)
-    .shift() ?? null) as VectorRecordWithSimilarity | null;
+  bestAnswers.forEach((answer, index) => {
+    log(`Best answer ${index + 1}: ${answer.distance} ${answer.content}`);
+  });
 
-  const highSimilarityAnswer = bestAnswer?.metadata?.answer?.toString().trim();
+  if (bestAnswers.length > 0) {
+    log(`Adding high similarity content to memory`);
+    const content = bestAnswers.map((a) => a.content).join("\n\n");
 
-  if (highSimilarityAnswer) {
-    log(`Adding high similarity content to memory"`);
     step = step.withMemory(
       newMemory(prompt`
           Julio remembers:
-          ${highSimilarityAnswer}
+          ${content}
         `)
     );
   } else {

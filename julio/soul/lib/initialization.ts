@@ -1,30 +1,35 @@
 import { useActions, useProcessManager, useSoulStore } from "soul-engine";
-import questionsAndAnswers from "./questionsAndAnswers.js";
+import content from "./content/index.js";
 
 export async function initializeSoulStore() {
   const { log } = useActions();
-  const { invocationCount, wait } = useProcessManager();
-  const { set } = useSoulStore();
+  const { invocationCount } = useProcessManager();
 
   if (invocationCount > 0) {
     log("Souls store already initialized");
     return;
   }
 
-  log("Initializing soul store with questions and answers");
+  await reindexContent();
+}
+
+export async function reindexContent() {
+  const { log } = useActions();
+  const { set } = useSoulStore();
+  const { wait } = useProcessManager();
+
+  log("Indexing content in soul store...");
 
   let count = 0;
-  for (const { questions, answer } of questionsAndAnswers) {
-    for (const question of questions) {
-      set(question, question, {
-        answer,
-      });
+  for (const [groupKey, groupItems] of Object.entries(content)) {
+    for (const [itemKey, itemContent] of Object.entries(groupItems)) {
+      set(`${groupKey}-${itemKey}`, itemContent);
 
       count++;
     }
   }
 
-  await wait(1000);
+  await wait(3000);
 
-  log(`${count} question-answer pairs embedded in soul store`);
+  log(`${count} content items embedded in soul store`);
 }

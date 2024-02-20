@@ -107,7 +107,7 @@ function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventData | un
   }
 
   if (userLastMessage.current) {
-    remembered += `\nThe last message Julio sent to ${userName} was: ${userLastMessage.current}`;
+    remembered += `\n\nThe last message Julio sent to ${userName} was:\n- ${userLastMessage.current}`;
   }
 
   remembered = remembered.trim();
@@ -161,15 +161,15 @@ async function isUserTalkingToJulio(step: CortexStep<any>, userName: string) {
 
   const messageTarget = await step.compute(
     decision(
-      `Julio is the moderator of this channel. Participants sometimes talk amongst themselves without Julio. In this last message sent by ${userName}, guess which person they are probably speaking with.`,
-      ["julio", "someone else", "not sure"]
+      `Julio is the moderator of this channel. Participants sometimes talk to Julio, and sometimes between themselves. In this last message sent by ${userName}, guess which person they are probably speaking with.`,
+      ["julio, for sure", "julio, possibly", "someone else", "not sure"]
     ),
     {
       model: "quality",
     }
   );
 
-  log(`Julio decided that ${userName} is talking to: "${messageTarget}"`);
+  log(`Julio decided that ${userName} is talking to: ${messageTarget}`);
 
   if (messageTarget === "not sure") {
     const chimeIn = random() < 0.5;
@@ -178,7 +178,7 @@ async function isUserTalkingToJulio(step: CortexStep<any>, userName: string) {
     return chimeIn;
   }
 
-  return messageTarget === "julio";
+  return messageTarget.toString().startsWith("julio");
 }
 
 async function thinkOfReplyMessage(step: CortexStep<any>, userName: string) {
@@ -199,7 +199,7 @@ async function thinkOfReplyMessage(step: CortexStep<any>, userName: string) {
 async function reactWithEmoji(step: CortexStep<any>, discordEvent: DiscordEventData | undefined) {
   const { log, dispatch } = useActions();
 
-  if (random() < 0.5) {
+  if (random() < 0.333) {
     log("Skipping emoji reaction");
     return;
   }
