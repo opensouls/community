@@ -4,6 +4,10 @@
 
 Schmoozie is a Discord bot that can take part in lively group conversations and only reply when someone is addressing her.
 
+## 💬 Example interaction
+
+![example](example.png)
+
 ## 👾 Running the soul using the Soul Engine web interface
 
 Simply go to the root directory and run:
