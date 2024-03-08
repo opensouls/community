@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "types": ["node"],
+    "resolveJsonModule": true,
+    "moduleResolution": "Node16"
+  },
+  "include": ["src/**/*", "tests/**/*", "scripts/**/*", "soul/**/*", "discord/**/*"],
+  "exclude": ["node_modules", "soul/default.env.ts"],
+  "watchOptions": {
+    "excludeFiles": ["soul/default.env.ts"]
+  }
+}
