@@ -1,4 +1,4 @@
 // @ts-nocheck
 {
-  botUserId: "food-critic";
+  botUserId: "food-critic"
 }
