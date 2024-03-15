@@ -4,6 +4,8 @@
 
 Schmoozie is a Discord bot that can take part in lively group conversations and only reply when someone is addressing her.
 
+![example](soul.png)
+
 ## 💬 Example interaction
 
 ![example](example.png)
