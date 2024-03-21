@@ -1,70 +1,84 @@
 
-import { html } from "common-tags";
-import { ChatMessageRoleEnum, CortexStep, internalMonologue, mentalQuery } from "socialagi";
+import { ChatMessageRoleEnum, WorkingMemory, createCognitiveStep, indentNicely } from "@opensouls/core";
 import { MentalProcess, useActions, useProcessMemory } from "soul-engine";
+import { internalMonologue, mentalQuery } from "../lib/cognitiveSteps";
 
-const userNotes = () => () => ({
-  command: ({ entityName: name }: CortexStep) => {
-    return html`
-      Model the mind of ${name}.
-      
-      ## Description
-      Write an updated and clear set of notes on the user that ${name} would want to remember.
+const userNotes = createCognitiveStep(() => {
+  return {
+    command: ({ soulName: name }: WorkingMemory) => {
+      return {
+        role: ChatMessageRoleEnum.System,
+        content: indentNicely`
+          Model the mind of ${name}.
 
-      ## Rules
-      * Keep descriptions as bullet points
-      * Keep relevant bullet points from before
-      * Use abbreviated language to keep the notes short
-      * Do not write any notes about ${name}
-
-      Please reply with the updated notes on the user:'
-  `},
-  process: (_step: CortexStep<any>, response: string) => {
-    return {
-      value: response,
-      memories: [{
-        role: ChatMessageRoleEnum.Assistant,
-        content: response
-      }],
+          ## Description
+          Write an updated and clear set of notes on the user that ${name} would want to remember.
+        
+          ## Rules
+          * Keep descriptions as bullet points
+          * Keep relevant bullet points from before
+          * Use abbreviated language to keep the notes short
+          * Do not write any notes about ${name}
+        
+          Please reply with the updated notes on the user:'
+        `
+      }
+    },
+    postProcess: async (_mem: WorkingMemory, response: string) => {
+      return [
+        {
+          role: ChatMessageRoleEnum.Assistant,
+          content: response
+        },
+        response
+      ]
     }
   }
 })
 
-const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
+const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
   const userModel = useProcessMemory("Unkown User")
   const { log } = useActions()
 
-  let step = initialStep
-  let finalStep = initialStep
-  step = step.withMemory([{
+  const mem = workingMemory.withMemory({
     role: ChatMessageRoleEnum.Assistant,
-    content: html`
-    ${step.entityName} remembers:
+    content: indentNicely`
+      ${workingMemory.soulName} remembers:
 
-    # User model
+      # User model
 
-    ${userModel.current}
-  `
-  }])
-  const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new and they need to update the mental model of the user.`));
-  log("Update model?", modelQuery)
-  if (modelQuery) {
-    step = await step.next(internalMonologue("What have I learned specifically about the user from the last few messages?", "noted"), { model: "quality" })
-    log("Learnings:", step.value)
-    userModel.current = await step.compute(userNotes(), { model: "quality"})
+      ${userModel.current}
+    `
+  })
+
+  const [, shouldUpdateModel] = await mentalQuery(mem, `${mem.soulName} has learned something new and they need to update the mental model of the user.`);
+  log("Update model?", shouldUpdateModel)
+  if (shouldUpdateModel) {
+    const [withLearnings,learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last few messages?", { model: "quality" })
+    log("Learnings:", learnings)
+    const [, notes] = await userNotes(withLearnings, "", { model: "quality"})
+    log("Notes:", notes)
+    userModel.current = notes
   }
 
-  const behaviorQuery = await step.compute(mentalQuery(`${step.entityName} needs to make changes to their behavior.`));
-  log("Internal voice?", behaviorQuery)
-  if (behaviorQuery) {
-    const thought = await step.compute(internalMonologue("What should I think to myself to change my behavior? Start with 'I need...'", "thinks"), { model: "quality" })
-    finalStep = initialStep.withMemory([{
+  const [,shouldUpdateBehavior] = await mentalQuery(mem, `${mem.soulName} needs to make changes to their behavior.`);
+  log("Internal voice?", shouldUpdateBehavior)
+  if (shouldUpdateBehavior) {
+    const [,thought] = await internalMonologue(
+      mem, 
+      {
+        instructions: "What should I think to myself to change my behavior? Start with 'I need...'", 
+        verb: "thinks",
+      },
+      { model: "quality" }
+    );
+    return mem.withMemory({
       role: ChatMessageRoleEnum.Assistant,
-      content: `${step.entityName} thought to themself: ${thought}`
-    }])
+      content: `${mem.soulName} thinks to themself: ${thought}`
+    })
   }
 
-  return finalStep
+  return mem
 }
 
 export default learnsAboutTheUser
