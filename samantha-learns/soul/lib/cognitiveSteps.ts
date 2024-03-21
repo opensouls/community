@@ -1,6 +1,5 @@
-import "../../src/processors/OpenAIProcessor.js"
-import { EnumLike, z } from "zod";
-import { createCognitiveStep, ChatMessageRoleEnum, WorkingMemory, indentNicely, stripEntityAndVerb, stripEntityAndVerbFromStream  } from "@opensouls/core";
+import { EnumLike } from "zod";
+import { createCognitiveStep, ChatMessageRoleEnum, WorkingMemory, indentNicely, stripEntityAndVerb, stripEntityAndVerbFromStream, z  } from "@opensouls/core";
 
 export const externalDialog = createCognitiveStep((instructions: string | { instructions: string; verb: string }) => {
   let instructionString: string, verb: string;
@@ -17,17 +16,17 @@ export const externalDialog = createCognitiveStep((instructions: string | { inst
         role: ChatMessageRoleEnum.System,
         name: name,
         content: indentNicely`
-            Model the mind of ${name}.
+          Model the mind of ${name}.
     
-            ## Instructions
-            * DO NOT include actions (for example, do NOT add non-verbal items like *John Smiles* or *John Nods*, etc).
-            * DO NOT include internal thoughts (for example, do NOT respond with John thought: "...").
-            * If necessary, use all CAPS to emphasize certain words.
+          ## Instructions
+          * DO NOT include actions (for example, do NOT add non-verbal items like *John Smiles* or *John Nods*, etc).
+          * DO NOT include internal thoughts (for example, do NOT respond with John thought: "...").
+          * If necessary, use all CAPS to emphasize certain words.
     
-            ${instructionString}
+          ${instructionString}
     
-            Please reply with the next utterance from ${name}. Use the format '${name} ${verb}: "..."'
-          `
+          Please reply with the next utterance from ${name}. Use the format '${name} ${verb}: "..."'
+        `
       };
     },
     streamProcessor: stripEntityAndVerbFromStream,
