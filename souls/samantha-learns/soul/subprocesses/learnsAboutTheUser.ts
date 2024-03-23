@@ -1,6 +1,5 @@
 
-import { ChatMessageRoleEnum, WorkingMemory, createCognitiveStep, indentNicely } from "@opensouls/core";
-import { MentalProcess, useActions, useProcessMemory } from "soul-engine";
+import { MentalProcess, useActions, useProcessMemory, ChatMessageRoleEnum, WorkingMemory, createCognitiveStep, indentNicely } from "@opensouls/engine";
 import { internalMonologue, mentalQuery } from "../lib/cognitiveSteps";
 
 const userNotes = createCognitiveStep(() => {

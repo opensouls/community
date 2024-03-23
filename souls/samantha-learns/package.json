@@ -15,7 +15,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@opensouls/core": "^0.0.2",
-    "soul-engine": "^0.0.50"
+    "@opensouls/engine": "^0.0.17"
   }
 }
