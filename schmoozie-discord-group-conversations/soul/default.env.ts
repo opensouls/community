@@ -1,4 +1,4 @@
 // @ts-nocheck
 {
-  botUserId: "schmoozie-123"
+  discordUserId: "schmoozie-123"
 }

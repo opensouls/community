@@ -49,7 +49,7 @@ export class SoulGateway {
     this.soul.connect();
 
     this.soul.setEnvironment({
-      botUserId: readyClient.user.id,
+      discordUserId: readyClient.user.id,
     });
 
     this.client.on(Events.MessageCreate, this.handleMessage);
@@ -105,7 +105,7 @@ export class SoulGateway {
         name: userName,
         _metadata: {
           discordEvent,
-          botUserId: this.client.user?.id,
+          discordUserId: this.client.user?.id,
         },
       });
       return;
@@ -122,7 +122,7 @@ export class SoulGateway {
       name: userName,
       _metadata: {
         discordEvent,
-        botUserId: this.client.user?.id,
+        discordUserId: this.client.user?.id,
       },
     });
 
