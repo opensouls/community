@@ -1,6 +1,6 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, stripEntityAndVerb } from "@opensouls/engine";
 
-export const summarize = createCognitiveStep((extraInstructions: string = "") => {
+const summarize = createCognitiveStep((extraInstructions: string = "") => {
   return {
     command: ({ soulName: name }: WorkingMemory) => {
       return {
@@ -26,3 +26,5 @@ export const summarize = createCognitiveStep((extraInstructions: string = "") =>
     }
   }
 })
+
+export default summarize

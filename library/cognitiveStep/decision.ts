@@ -1,6 +1,6 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, stripEntityAndVerb, stripEntityAndVerbFromStream, z } from "@opensouls/engine";
 
-export const decision = createCognitiveStep(({ description, choices, verb = "decided" }: { description: string, choices: z.EnumLike | string[], verb?: string }) => {
+const decision = createCognitiveStep(({ description, choices, verb = "decided" }: { description: string, choices: z.EnumLike | string[], verb?: string }) => {
   const params = z.object({
     decision: z.string().describe(`The decision made by the entity.`)
   });
@@ -33,3 +33,5 @@ export const decision = createCognitiveStep(({ description, choices, verb = "dec
     }
   }
 })
+
+export default decision

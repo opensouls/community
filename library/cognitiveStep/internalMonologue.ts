@@ -1,6 +1,6 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, stripEntityAndVerb, stripEntityAndVerbFromStream } from "@opensouls/engine";
 
-export const internalMonologue = createCognitiveStep((instructions: string | { instructions: string; verb: string }) => {
+const internalMonologue = createCognitiveStep((instructions: string | { instructions: string; verb: string }) => {
   let instructionString: string, verb: string;
   if (typeof instructions === "string") {
     instructionString = instructions;
@@ -41,3 +41,5 @@ export const internalMonologue = createCognitiveStep((instructions: string | { i
     }
   }
 })
+
+export default internalMonologue

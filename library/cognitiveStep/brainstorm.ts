@@ -1,6 +1,6 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, z } from "@opensouls/engine";
 
-export const brainstorm = createCognitiveStep((description: string) => {
+const brainstorm = createCognitiveStep((description: string) => {
   const params = z.object({
     newIdeas: z.array(z.string()).describe(`The new brainstormed ideas.`)
   });
@@ -31,3 +31,5 @@ export const brainstorm = createCognitiveStep((description: string) => {
     }
   }
 })
+
+export default brainstorm

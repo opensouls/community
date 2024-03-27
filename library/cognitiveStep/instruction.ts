@@ -1,6 +1,6 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum } from "@opensouls/engine";
 
-export const instruction = createCognitiveStep((instructions: string) => {
+const instruction = createCognitiveStep((instructions: string) => {
   return {
     command: ({ soulName }: WorkingMemory) => {
       return {
@@ -11,3 +11,5 @@ export const instruction = createCognitiveStep((instructions: string) => {
     }
   };
 });
+
+export default instruction

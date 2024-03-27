@@ -6,7 +6,7 @@ import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely }
  * The command function generates a system message asking for updated, concise notes following specific rules.
  * The postProcess function handles the response, formatting it for display and further processing.
  */
-export const userNotes = createCognitiveStep(() => {
+const userNotes = createCognitiveStep(() => {
   return {
     command: ({ soulName: name}: WorkingMemory) => {
       return {
@@ -38,3 +38,5 @@ export const userNotes = createCognitiveStep(() => {
     }
   }
 })
+
+export default userNotes

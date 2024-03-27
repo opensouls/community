@@ -1,6 +1,6 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, stripEntityAndVerb, stripEntityAndVerbFromStream } from "@opensouls/engine";
 
-export const externalDialog = createCognitiveStep((instructions: string | { instructions: string; verb: string }) => {
+const externalDialog = createCognitiveStep((instructions: string | { instructions: string; verb: string }) => {
   let instructionString: string, verb: string;
   if (typeof instructions === "string") {
     instructionString = instructions;
@@ -39,3 +39,5 @@ export const externalDialog = createCognitiveStep((instructions: string | { inst
     }
   }
 })
+
+export default externalDialog

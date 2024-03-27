@@ -1,6 +1,6 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, z } from "@opensouls/engine";
 
-export const mentalQuery = createCognitiveStep((statement: string) => {
+const mentalQuery = createCognitiveStep((statement: string) => {
   const params = z.object({
     isStatementTrue: z.boolean().describe(`Is the statement true or false?`),
   });
@@ -28,3 +28,5 @@ export const mentalQuery = createCognitiveStep((statement: string) => {
     }
   };
 });
+
+export default mentalQuery
