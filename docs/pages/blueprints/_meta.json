@@ -3,7 +3,6 @@
   "subprocesses": "Subprocesses",
   "hooks": "Hooks",
   "environment-variables": "Environment Variables",
-  "models": "Models"
+  "models": "Models",
+  "upgrading": "Upgrading"
 }
-
-
