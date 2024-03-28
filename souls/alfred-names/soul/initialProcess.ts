@@ -1,36 +1,52 @@
 
-import { ChatMessageRoleEnum, externalDialog, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess, useActions, useProcessManager } from "soul-engine";
+import { MentalProcess, useActions, useProcessManager, indentNicely } from "@opensouls/engine";
 import asksQuestions from "./mentalProcesses/brainstorms.js";
-import { html } from "common-tags";
+import externalDialog from "./lib/externalDialog";
+import internalMonologue from "./lib/internalMonologue";
 
-const introduction: MentalProcess = async ({ step: initialStep }) => {
+const introduction: MentalProcess = async ({ workingMemory }) => {
   const { speak, log } = useActions()
   const { invocationCount, setNextProcess } = useProcessManager()
 
   if (invocationCount === 0) {
-    const { stream, nextStep } = await initialStep.next(
-      externalDialog("Welcome the user and ask them what they need help naming"), 
+    const [withDialog, stream] = await externalDialog(
+      workingMemory, 
+      "Welcome the user and ask them what they need help naming", 
       { stream: true, model: "quality" }
     );
     speak(stream);
-    return nextStep
+    return withDialog
   } else {
-    const moveOn = await initialStep.next(mentalQuery("The user has said the object or thing that they need help naming."), { model: "quality" })
-    log("Move on?", moveOn.value)
-    if (moveOn.value) {
+    const [memoryAfterQuery, moveOn] = await internalMonologue(
+      workingMemory, 
+      "The user has said the object or thing that they need help naming.", 
+      { model: "quality" }
+    )
+    log("Move on?", moveOn)
+    if (moveOn) {
       setNextProcess(asksQuestions)
-      const nextStep = await initialStep.next(externalDialog("Ask the user an insightful question about what they have named."), { model: "quality" })
-      speak(nextStep.value)
-      return nextStep
+      const [withDialog, stream] = await externalDialog(
+        memoryAfterQuery, 
+        "Ask the user an insightful question about what they have named.", 
+        { model: "quality" }
+      )
+      speak(stream)
+      return withDialog
     }
-    let step = await initialStep.next(internalMonologue(html`
-      Get progressively more frustrated if the user does not want help naming anything
-      There's no reason to talk to the user unless they want to name something
-    `))
-    step = await step.next(externalDialog("Say to the user your only ability is to help them name a thing.", "explains"), { model: "quality" })
-    speak(step.value)
-    return step
+    let [memoryAfterMonologue] = await internalMonologue(
+      workingMemory, 
+      indentNicely`
+        Get progressively more frustrated if the user does not want help naming anything.
+        There's no reason to talk to the user unless they want to name something.
+      `
+    )
+    const [finalMemory, stream] = await externalDialog(
+      memoryAfterMonologue, 
+      "Say to the user your only ability is to help them name a thing.", 
+      { model: "quality" }
+    )
+    speak(stream)
+    return finalMemory
   }
 }
 

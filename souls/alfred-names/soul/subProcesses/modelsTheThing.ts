@@ -1,88 +1,108 @@
 
-import { html } from "common-tags";
-import { ChatMessageRoleEnum, CortexStep, externalDialog, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory } from "soul-engine";
+import { MentalProcess, useActions, useProcessMemory, createCognitiveStep, indentNicely, ChatMessageRoleEnum, WorkingMemory } from "@opensouls/engine";
+import internalMonologue from "../lib/internalMonologue";
+import externalDialog from "../lib/externalDialog";
 
-const thingNotes = () => () => ({
-  command: ({ entityName: name }: CortexStep) => {
-    return html`
-      Model the mind of ${name}.
-      
-      ## Description
-      Write an updated and clear set of notes on the user that thing that the user wants to name.
+const thingNotes = createCognitiveStep(() => {
+  return {
+    command: ({ soulName: name }: WorkingMemory) => {
+      return {
+        role: ChatMessageRoleEnum.System,
+        content: indentNicely`
+          Model the mind of ${name}.
 
-      ## Rules
-      * Keep descriptions as bullet points
-      * Keep relevant bullet points from before
-      * Use abbreviated language to keep the notes short
-      * Do not write any notes about ${name}
+          ## Description
+          Write an updated and clear set of notes on the user that thing that the user wants to name.
 
-      Please reply with the updated notes on the thing the user wants to name:'
-  `},
-  process: (_step: CortexStep<any>, response: string) => {
-    return {
-      value: response,
-      memories: [{
-        role: ChatMessageRoleEnum.Assistant,
-        content: response
-      }],
+          ## Rules
+          * Keep descriptions as bullet points
+          * Keep relevant bullet points from before
+          * Use abbreviated language to keep the notes short
+          * Do not write any notes about ${name}
+
+          Please reply with the updated notes on the thing the user wants to name:'
+        `
+      };
+    },
+    postProcess: async (_mem: WorkingMemory, response: string) => {
+      return [
+        {
+          role: ChatMessageRoleEnum.Assistant,
+          content: response
+        },
+        response
+      ];
     }
   }
-})
+});
 
-const modelsTheThing: MentalProcess = async ({ step: initialStep }) => {
-  const thingModel = useProcessMemory("Unkown Thing")
+const modelsTheThing: MentalProcess = async ({ workingMemory }) => {
+  const thingModel = useProcessMemory("Unknown Thing")
   const { speak, log } = useActions()
 
-  let step = initialStep
-  step = step.withMemory([{
+  let memory = workingMemory
+  memory = memory.withMemory({
     role: ChatMessageRoleEnum.Assistant,
-    content: html`
-    ${step.entityName} remembers:
+    content: indentNicely`
+    ${memory.soulName} remembers:
 
     # Thing model
 
     ${thingModel.current}
   `
-  }])
-  const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new and they need to update the mental model of the thing.`));
+  })
+
+  const [memoryAfterQuery, modelQuery] = await internalMonologue(memory, `${memory.soulName} has learned something new and they need to update the mental model of the thing.`);
   log("Update model?", modelQuery)
   if (modelQuery) {
-    step = await step.next(internalMonologue("What have I learned specifically about the user from the last few messages?", "noted"))
-    log("Learnings:", step.value)
-    step = await step.next(thingNotes(), { model: "quality" })
-    thingModel.current = step.value
+    let learnings, notes, name, rating;
+    [memory, learnings] = await internalMonologue(memoryAfterQuery, { instructions: "What have I learned specifically about the user from the last few messages?", verb: "noted" })
+    log("Learnings:", learnings);
+    [memory, notes] = await thingNotes(memory, undefined, { model: "quality" })
+    thingModel.current = notes;
 
     // possibly generate a name
-    step = await step.next(internalMonologue("Generate a 1 potentially fitting name and explain why", "brainstorms"), { model: "quality" })
-    const name = step.value
-    log("Considering the name", name)
-    step = await step.next(internalMonologue(html`
-      Rate the name on a scale of 1-10, 10 being the best possible name
-    `, "rated"))
-    const rating = step.value
-    const share = await step.compute(mentalQuery("The name is a 8 or higher"))
+    [memory, name] = await internalMonologue(memory, {instructions: "Generate a potentially fitting name and explain why", verb: "brainstorms"}, { model: "quality" })
+    log("Considering the name", name);
+    [memory, rating] = await internalMonologue(
+      memory, 
+      {
+        instructions: indentNicely`
+          Rate the name on a scale of 1-10, 10 being the best possible name
+        `,
+        verb: "rated"
+      }
+    )
+    const [memoryAfterShareQuery, share] = await internalMonologue(memory, "The name is an 8 or higher")
     log("Good enough to share?", share, rating)
     if (share) {
-      const { stream, nextStep } = await initialStep.next(externalDialog(html`
-        ${step.entityName} just thought of the name ${name}
+      const [withDialog, stream] = await externalDialog(memoryAfterShareQuery, indentNicely`
+        ${memory.soulName} just thought of the name ${name}
         Offer this name as a suggestion
         Explain why the suggestion is interesting
-      `, "suggested"), { stream: true, model: "quality" })
+      `, { stream: true, model: "quality" })
       speak(stream)
-      return nextStep
+      return withDialog
     } else {
-      const thought = await step.next(internalMonologue(html`
-        Think about the essence of the name
-      `, "mused"), { model: "quality" })
-      return initialStep.withMemory([{
+      let mused;
+      [memory, mused] = await internalMonologue(
+        memory,
+        { 
+          instructions: indentNicely`
+            Think about the essence of the name
+          `, 
+          verb: "mused"
+        },
+        { model: "quality" }
+      )
+      return memory.withMemory({
         role: ChatMessageRoleEnum.Assistant,
-        content: `${step.entityName} mused: ${thought.value}`
-      }])
+        content: `${memory.soulName} mused: ${mused}`
+      })
     }
   }
 
-  return initialStep
+  return workingMemory
 }
 
 export default modelsTheThing
