@@ -11,10 +11,11 @@ const mentalQuery = createCognitiveStep((statement: string) => {
         role: ChatMessageRoleEnum.System,
         name: name,
         content: indentNicely`
-          ${name} reasons about the veracity of the following statement.
+          Model the mind of ${name} and decide if ${name} would believe the following statement is true or false:
+
           > ${statement}
 
-          Please reply with if ${name} believes the statement is true or false.
+          Please choose true if ${name} believes the statement is true, or false if ${name} believes the statement is false.
         `,
       };
     },
