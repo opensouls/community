@@ -1,84 +1,90 @@
+import { MentalProcess, useActions, useProcessMemory, usePerceptions, useProcessManager, indentNicely } from "@opensouls/engine";
+import externalDialog from "./lib/externalDialog";
+import decision from "./lib/decision"
 
-import { html } from "common-tags";
-import { externalDialog, decision } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory, usePerceptions, useProcessManager } from "soul-engine";
-
-const multiTexts: MentalProcess = async ({ step: initialStep }) => {
+const multiTexts: MentalProcess = async ({ workingMemory }) => {
   const { speak, scheduleEvent, log } = useActions()
   const fragmentNo = useProcessMemory(0)
   const { wait } = useProcessManager()
-  const { pendingPerceptions } = usePerceptions()
+  const { pendingPerceptions } = usePerceptions();
 
-  let step = await initialStep.next(
-    externalDialog("Texty sends a sentence fragment, part of a larger or greater thought to come"),
-    { model: "quality" }
-  );
+  let thought
+  [workingMemory, thought] = await externalDialog(workingMemory, "Texty sends a sentence fragment, part of a larger or greater thought to come", { model: "quality" })
+
   if (pendingPerceptions.current.length > 0) {
-    return initialStep
+    return workingMemory
   }
-  speak(step.value);
+  speak(thought);
 
-  let count = parseInt(await step.compute(
-    decision(html`
-      How many additional sentence fragments will Texty want to text next.
-      Make sure to mix up the number of fragments so it feels natural.
-      Last batch of texts was ${fragmentNo.current} additional fragments long.
-      Most responses should be 0. Sometimes 1 or maybe 2-5 fragments long.
-    `, ['5', '4', '3', '2', '1', '0']),
+  const [,countString] = await decision(
+    workingMemory,
+    {
+      description: "How many additional sentence fragments will Texty want to text next. Make sure to mix up the number of fragments so it feels natural. Last batch of texts was 0 additional fragments long. Most responses should be 0. Sometimes 1 or maybe 2-5 fragments long.",
+      choices: ['5', '4', '3', '2', '1', '0'],
+    },
     { model: "quality" }
-  ) as string) as number
+  )
+
+  let count = parseInt(countString)
+
   fragmentNo.current = count
 
   if (count === 0) {
-    return step
+    return workingMemory
   }
 
   while (count > 1) {
     wait(1000)
-    let length = await step.compute(
-      decision(html`
-        How long should the next fragment be?
-      `, ['very long', 'long', 'medium', 'short']),
+    const [,lengthOfText] = await decision(
+      workingMemory,
+      {
+        description: "How long should the next fragment be?",
+        choices: ['very long', 'long', 'medium', 'short'],
+      },
       { model: "quality" }
-    ) as number
+    )
     count -= 1
-    const preStep = step
-    step = await step.next(
-      externalDialog(html`
+    const preStep = workingMemory;
+    let nextText
+    [workingMemory, nextText] = await externalDialog(
+      workingMemory,
+      indentNicely`
         - Texty sends a sentence fragment, extending the train of thought from their last text
-        - Make sure the fragment is ${length} in length
-        - Their last text was: "${step.value}"
-      `),
+        - Make sure the fragment is ${lengthOfText} in length
+        - Their last text was: "${workingMemory.slice(-1)[0].value}"
+      `,
       { model: "quality" }
     );
     if (pendingPerceptions.current.length > 0) {
       return preStep
     }
-    speak(step.value);
-
+    speak(nextText);
   }
 
-  const text = await step.compute(
-    decision(html`
-      Does Texty need to add another thought to finish their last text fragment?
-    `, ["yes", "no"]),
+  const [,shouldText] = await decision(workingMemory, {
+      description: "Should Texty send another thought to finish their last text fragment?",
+      choices: ["yes", "no"],
+    }, 
     { model: "quality" }
   )
-  if (text === "yes") {
-    const preStep = step
-    step = await step.next(
-      externalDialog(html`
+
+  if (shouldText === "yes") {
+    let speech;
+    const preStep = workingMemory;
+    [workingMemory, speech] = await externalDialog(
+      workingMemory,
+      indentNicely`
         - Texty needs to finish their last sentence fragment in this message
-      `),
+      `,
       { model: "quality" }
     );
     if (pendingPerceptions.current.length > 0) {
       return preStep
     }
-    speak(step.value);
+    speak(speech);
   }
 
-  return step
+  return workingMemory
 }
 
 export default multiTexts
