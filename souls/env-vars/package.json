@@ -12,12 +12,9 @@
   "author": "",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@types/common-tags": "^1.8.4",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "common-tags": "^1.8.2",
-    "socialagi": "~0.1.7",
-    "soul-engine": "~0.0.35"
+    "@opensouls/engine": "^0.1.2"
   }
 }
