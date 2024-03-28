@@ -12,7 +12,7 @@ const summarize = createCognitiveStep((extraInstructions: string = "") => {
           ## Extra Instructions
           ${extraInstructions}
 
-          Please reply with the summary in the voice of ${name}. Use the format: ${name} summarized: "..."
+          Please reply with the summary in the voice of ${name}. Use the format: '${name} summarized: "..."'
         `
       };
     },

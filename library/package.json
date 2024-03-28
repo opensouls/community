@@ -12,12 +12,12 @@
   "files": [
     "dist/src"
   ],
-  "scripts": {
-  },
+  "scripts": {},
   "author": "OpenSouls",
   "license": "MIT",
   "dependencies": {
-    "@opensouls/core": "^0.0.20"
+    "@opensouls/core": "^0.1.4",
+    "@opensouls/engine": "^0.1.4"
   },
   "devDependencies": {
     "typescript": "^5.4.3"

@@ -23,7 +23,7 @@ const userNotes = createCognitiveStep(() => {
           * Use abbreviated language to keep the notes short
           * Do not write any notes about ${name}
 
-          Please reply with the updated notes on the user:'
+          Please reply with the updated notes on the user:
         `,
       }
     },
