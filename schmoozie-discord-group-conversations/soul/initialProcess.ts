@@ -23,20 +23,8 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
 
   let step = rememberUser(initialStep, discordEvent);
 
-  const interlocutor = await step.compute(
-    decision(
-      `Schmoozie is the moderator of this channel. Participants sometimes talk to Schmoozie, and sometimes between themselves. In this last message sent by ${userName}, guess which person they are probably speaking with.`,
-      ["schmoozie, for sure", "schmoozie, possibly", "someone else", "not sure"]
-    ),
-    {
-      model: "quality",
-    }
-  );
-
-  log(`Schmoozie thinks ${userName} is talking to: ${interlocutor}`);
-
-  const isUserTalkingToSchmoozie = interlocutor.toString().startsWith("schmoozie");
-  if (!isUserTalkingToSchmoozie) {
+  const shouldReply = await isUserTalkingToSchmoozie(invokingPerception, step, userName);
+  if (!shouldReply) {
     log(`Ignoring message from ${userName} because they're not talking to Schmoozie`);
     return initialStep;
   }
@@ -71,6 +59,36 @@ function hasMoreMessagesFromSameUser(pendingPerceptions: Perception[], userName:
 
   return countOfPendingPerceptionsBySamePerson > 0;
 }
+
+
+async function isUserTalkingToSchmoozie(
+  perception: Perception | undefined | null,
+  step: CortexStep<any>,
+  userName: string
+) {
+  const { log } = useActions();
+
+  const discordUserId = soul.env.discordUserId?.toString();
+  if (discordUserId && perception && perception.content.includes(`<@${discordUserId}>`)) {
+    log(`User at-mentioned Schmoozie, will reply`);
+    return true;
+  }
+
+  const interlocutor = await step.compute(
+    decision(
+      `Schmoozie is the moderator of this channel. Participants sometimes talk to Schmoozie, and sometimes between themselves. In this last message sent by ${userName}, guess which person they are probably speaking with.`,
+      ["schmoozie, for sure", "schmoozie, possibly", "someone else", "not sure"]
+    ),
+    {
+      model: "quality",
+    }
+  );
+
+  log(`Schmoozie decided that ${userName} is talking to: ${interlocutor}`);
+
+  return interlocutor.toString().startsWith("schmoozie");
+}
+
 
 function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventData | undefined) {
   const { log } = useActions();
