@@ -1,31 +1,25 @@
-import { externalDialog, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess, useActions, useSoulStore } from "soul-engine";
+import { MentalProcess, useActions, useSoulStore } from "@opensouls/engine";
 import pokesSpeaker from "../initialProcess.js";
+import mentalQuery from "../lib/mentalQuery.js";
+import internalMonologue from "../lib/internalMonologue.js";
+import externalDialog from "../lib/externalDialog.js";
 
 const asksToSpeaker: MentalProcess = async ({
-  step: initialStep
+  workingMemory
 }) => {
   const { speak, scheduleEvent, log } = useActions();
   const { set } = useSoulStore();
 
-  const pokeQuery = await initialStep.compute(
-    mentalQuery(`The user tells Samantha not to poke them`)
-  );
+  const [, pokeQuery] = await mentalQuery(workingMemory, `The user tells Samantha not to poke them`)
+
   log("don't poke? ", pokeQuery);
   if (pokeQuery) {
     set("ignoringPokes", true)
-    initialStep = await initialStep.next(
-      internalMonologue("What can I say to make the user accepts to be poked?"),
-      { model: "quality" }
-    );
-    log("persuade:", initialStep.value);
+    const [internalThought, persuasion] = await internalMonologue(workingMemory, "What can I say to make the user accept to be poked?", { model: "quality" });
+    log("persuade:", persuasion);
 
-    const { stream, nextStep } = await initialStep.next(
-      externalDialog("Samantha asks the user politely if she can poke them."),
-      { stream: true }
-    );
+    const [nextStep, stream] = await externalDialog(internalThought, "Samantha asks the user politely if she can poke them.", { stream: true });
     speak(stream);
-
     return nextStep;
   } else {
     set("ignoringPokes", false)
@@ -39,12 +33,7 @@ const asksToSpeaker: MentalProcess = async ({
       },
     });
 
-    const { stream, nextStep } = await initialStep.next(
-      externalDialog(
-        "Samantha teases the user about they accepted to be poked again"
-      ),
-      { stream: true }
-    );
+    const [nextStep, stream] = await externalDialog(workingMemory, "Samantha teases the user about they accepted to be poked again", { stream: true });
     speak(stream);
 
     return nextStep;
