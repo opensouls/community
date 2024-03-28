@@ -11,7 +11,7 @@ This page guides you through the process of working with souls in your applicati
 To create and connect to a new soul based off the [Soul Blueprint](/blueprints) `opensouls/samantha-provokes`:
 
 ```javascript copy
-import { Soul, said } from "soul-engine/soul"
+import { Soul, said } from "@opensouls/soul"
 
 // Create a new Soul instance with a new unique identifier
 const soul = new Soul({
@@ -38,13 +38,13 @@ soul.connect().then(async () => {
 To connect a `Soul` to the engine based on a specific unique identifier:
 
 ```javascript copy {7}
-import { Soul, said } from "soul-engine/soul"
+import { Soul, said } from "@opensouls/soul"
 
 // Specify a soul instance by a unique identifier
 const soul = new Soul({
   organization: "opensouls",
   blueprint: "samantha-provokes",
-  id: "my-favorite-id",
+  soulId: "my-favorite-id",
 })
 
 // Set up a listener for when the soul speaks
@@ -93,11 +93,31 @@ soul.on("says", async ({ stream }) => {
 
 ### Setting Environment Variables Per Soul
 
-A soul's `Blueprint` may support optional templating via environment variables. Then, you can set environment variables for each soul to customize their behavior or state.
+A soul's `Blueprint` may support optional templating via environment variables. You can set the environment for each soul to customize their behavior or state during runtime.
 
 ```javascript
 // Set an environment for the soul
 await soul.setEnvironment({
-  EMOTIONS: "Angry and upset",
+  entityName: "Bob",
+  emotions: ["angry", "upset"],
 })
 ```
+
+You can also set the environment at instantiation.
+
+
+```javascript
+const soul = new Soul({
+  organization: "opensouls",
+  blueprint: "samantha-provokes",
+  soulId: "my-favorite-id",
+  environment: {
+    entityName: "Bob",
+    emotions: ["angry", "upset"],
+  },
+})
+```
+
+<Callout type="info" emoji="ℹ️">
+  See the [Blueprints section](/blueprints/environment-variables) on how to use environment variables in your blueprints.
+</Callout>
