@@ -1,7 +1,6 @@
 
 import { MentalProcess, useActions } from "@opensouls/engine";
-import { externalDialog } from "./lib/cognitiveSteps";
-
+import externalDialog from "./lib/externalDialog.js";
 
 const provokesSpeaker: MentalProcess = async ({ workingMemory }) => {
   const { speak  } = useActions()

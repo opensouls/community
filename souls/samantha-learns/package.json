@@ -1,5 +1,5 @@
 {
-  "name": "samantha-learns2",
+  "name": "samantha-learns",
   "version": "0.0.1",
   "type": "module",
   "private": true,
@@ -15,6 +15,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@opensouls/engine": "^0.0.17"
+    "@opensouls/engine": "^0.1.4"
   }
 }

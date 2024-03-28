@@ -1,6 +1,7 @@
 
 import { MentalProcess, useActions, useProcessMemory, ChatMessageRoleEnum, WorkingMemory, createCognitiveStep, indentNicely } from "@opensouls/engine";
-import { internalMonologue, mentalQuery } from "../lib/cognitiveSteps";
+import mentalQuery from "../lib/mentalQuery.js";
+import internalMonologue from "../lib/internalMonologue.js";
 
 const userNotes = createCognitiveStep(() => {
   return {
@@ -55,7 +56,7 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
   if (shouldUpdateModel) {
     const [withLearnings,learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last few messages?", { model: "quality" })
     log("Learnings:", learnings)
-    const [, notes] = await userNotes(withLearnings, "", { model: "quality"})
+    const [, notes] = await userNotes(withLearnings, undefined, { model: "quality"})
     log("Notes:", notes)
     userModel.current = notes
   }
