@@ -10,7 +10,7 @@ Right now, these map onto particular freezes of OpenAI models, but over time wil
 By default, `"fast"` is chosen, but the choice can be explicit via:
 
 ```javascript
-step = await step.next(..., { model: "quality" })
+cosnt [nextMemory] = await externalDialog(workingMemory, "say hi", { model: "quality" })
 ```
 
 Generally we recommend using `"fast"` for many internal thought processes and `"quality"` for the generation that a user or player interacts with.

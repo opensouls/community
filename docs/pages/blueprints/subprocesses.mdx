@@ -1,6 +1,6 @@
 # Subprocesses
 
-A set of `MentalProcess` functions can be launched to run continuously in the background following each run of the main-thread `MentalProcess` by placing them in the `subprocesses` directory of the sou. The behavior of `subprocesses` is the following:
+A set of `MentalProcess` functions can be launched to run continuously in the background following each run of the main-thread `MentalProcess` by placing them in the `subprocesses` directory of the soul. The behavior of `subprocesses` is the following:
 - They operate on the `WorkingMemory`, identical to the main-threaded process
 - Each subprocess runs in order of the `subprocesses` directory (alphabetical).
 - Any new incoming `Perception` terminates execution of the entire `subprocesses` execution.
@@ -44,14 +44,13 @@ const userNotes = createCognitiveStep(() => {
   }
 })
 
-const learnsAboutTheUser: MentalProcess = async ({ workingMemory: initialStep }) => {
+const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
   const userModel = useProcessMemory("Unkown User")
   const { log } = useActions()
 
-  let step = initialStep
-  let finalStep = initialStep
+  let finalMemory = workingMemory
 
-  step = step.withMemory({
+  workingMemory = workingMemory.withMemory({
     role: ChatMessageRoleEnum.Assistant,
     content: indentNicely`
       ${step.soulName} remembers:
@@ -70,7 +69,7 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory: initialStep })
   log("Update model?", learnedSomethingNew)
   if (learnedSomethingNew) {
     let monologue
-    [step, monologue] = await internalMonologue(step,
+    [workingMemory, monologue] = await internalMonologue(step,
       {
         instructions: "What have I learned specifically about the user from the last few messages?",
         verb: "noted"
@@ -85,7 +84,7 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory: initialStep })
     `${step.soulName} thinks they to make changes to their behavior.`
   )
 
-  return finalStep
+  return finalMemory
 }
 
 export default learnsAboutTheUser

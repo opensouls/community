@@ -58,7 +58,7 @@ interface pendingPerceptions {
 A mental process can be cancelled or exited to model a behavior like being interrupted by an incoming text using the pendingPerceptions array
 
 ```javascript filename="exampleProcess.ts" {5-9}
-const exampleProcess: MentalProcess = async ({ step: initialStep, subroutine: { usePerceptions } }) => {
+const exampleProcess: MentalProcess = async ({ workingMemory }) => {
   let step = initialStep
   // operations on the working memory step ...
 
