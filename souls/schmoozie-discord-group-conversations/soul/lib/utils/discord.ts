@@ -1,9 +1,8 @@
-import { ChatMessageRoleEnum } from "socialagi";
-import { Perception } from "soul-engine/soul";
-import { DiscordEventData } from "../../discord/soulGateway.js";
+import { Perception } from "@opensouls/engine";
+import { DiscordEventData } from "../../../discord/soulGateway.js";
 
-export function getBotUserIdFromPerception(perception: Perception | null | undefined) {
-  return perception?._metadata?.botUserId as string | undefined;
+export function getDiscordUserIdFromPerception(perception: Perception | null | undefined) {
+  return perception?._metadata?.discordUserId as string | undefined;
 }
 
 export function getDiscordEventFromPerception(perception: Perception | null | undefined): DiscordEventData | undefined {
@@ -15,13 +14,13 @@ export function getDiscordEventFromPerception(perception: Perception | null | un
 }
 
 export function getMetadataFromPerception(perception: Perception | null | undefined) {
-  const botUserId = getBotUserIdFromPerception(perception) || "anonymous-123";
+  const discordUserId = getDiscordUserIdFromPerception(perception) || "anonymous-123";
   const discordEvent = getDiscordEventFromPerception(perception);
   const { userName, userDisplayName } = getUserDataFromDiscordEvent(discordEvent);
 
   return {
     content: perception?.content,
-    botUserId,
+    discordUserId,
     userName,
     userDisplayName,
     discordEvent,
@@ -36,13 +35,4 @@ export function getUserDataFromDiscordEvent(discordEvent: DiscordEventData | und
     userName,
     userDisplayName,
   };
-}
-
-export function newMemory(content: string) {
-  return [
-    {
-      role: ChatMessageRoleEnum.Assistant,
-      content,
-    },
-  ];
 }

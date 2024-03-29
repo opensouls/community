@@ -1,5 +1,5 @@
+import { ActionEvent, Soul } from "@opensouls/engine";
 import { Client, Events, Message, MessageType, ReplyOptions } from "discord.js";
-import { ActionEvent, Soul } from "soul-engine/soul";
 import { getMetadataFromActionEvent, makeMessageCreateDiscordEvent } from "./eventUtils.js";
 
 export type DiscordEventData = {
