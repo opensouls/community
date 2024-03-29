@@ -58,7 +58,7 @@ const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
           }
         }
         return m
-      }).slice(0, 3).concat(workingMemory.slice(-8))
+      }).slice(0, 2).concat(workingMemory.slice(-8))
     }
 
     return workingMemory.slice(0, 1).withMemory({
@@ -70,7 +70,7 @@ const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
       metadata: {
         conversationSummary: true
       }
-    }).concat(workingMemory.slice(-4))
+    }).concat(workingMemory.slice(-8))
   }
 
   return workingMemory
