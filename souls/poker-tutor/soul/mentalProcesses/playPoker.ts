@@ -23,7 +23,7 @@ const playPoker: MentalProcess = async ({ workingMemory: memory }) => {
     `
   );
 
-  const hypothesis = await decision(memory, {
+  const [, hypothesis] = await decision(memory, {
     description: indentNicely`
       Decide your response based on the user's interaction and current state of the poker round. Remember to follow the rules and 
       process of the poker game type carefully. If the user decides to bet, raise, or call during their turn, you must increase the 
@@ -46,7 +46,7 @@ const playPoker: MentalProcess = async ({ workingMemory: memory }) => {
 
   await memory.finished;
 
-  const shouldKeepPlaying = await mentalQuery(
+  const [, shouldKeepPlaying] = await mentalQuery(
     memory,
     indentNicely`
       Based on the user's interaction / input, I need to respond with the next logical step that would occur in this poker game, and 
