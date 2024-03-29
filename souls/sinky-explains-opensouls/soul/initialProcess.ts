@@ -1,13 +1,14 @@
-
-import { externalDialog } from "socialagi";
-import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "soul-engine";
+import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "@opensouls/engine";
+import externalDialog from "./lib/externalDialog.js";
 import findsOutAboutTheUser from "./mentalProcesses/findOutAboutTheUser.js";
 import noticesTheTime from "./mentalProcesses/noticesTheTime.js";
 
-const sagtHallo: MentalProcess = async ({ step: initialStep }) => {
-  const { speak, scheduleEvent } = useActions()
-  const { setNextProcess } = useProcessManager()
-  const pendingScheduled = useSoulMemory("pendingScheduled", false)
+const sagtHallo: MentalProcess = async ({ workingMemory: memory }) => {
+  const { speak, scheduleEvent } = useActions();
+  const { setNextProcess } = useProcessManager();
+  const pendingScheduled = useSoulMemory("pendingScheduled", false);
+
+  let stream;
 
   scheduleEvent({
     process: noticesTheTime,
@@ -16,19 +17,19 @@ const sagtHallo: MentalProcess = async ({ step: initialStep }) => {
       name: "Sinky",
       action: "notice",
       content: "the time",
-    }
-  })
-  pendingScheduled.current = true
+    },
+  });
+  pendingScheduled.current = true;
 
-  const { stream, nextStep } = await initialStep.next(
-    externalDialog("Introduce yourself to the user. Welcome them graciously!"),
-    { stream: true }
-  );
+  [memory, stream] = await externalDialog(memory, "Introduce yourself to the user. Welcome them graciously!", {
+    stream: true,
+  });
   speak(stream);
+  await memory.finished;
 
-  setNextProcess(findsOutAboutTheUser)
+  setNextProcess(findsOutAboutTheUser);
 
-  return nextStep
-}
+  return memory;
+};
 
-export default sagtHallo
+export default sagtHallo;

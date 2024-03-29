@@ -1,13 +1,12 @@
-
-import { MentalProcess, useActions, useRag } from "soul-engine";
+import { MentalProcess, useActions, useRag } from "@opensouls/engine";
 
 const updatesSocialAgiKnowledge: MentalProcess = async ({ step }) => {
-  const { withRagContext } = useRag("example-sinky-says-awesome")
-  const { log } = useActions()
+  const { withRagContext } = useRag("example-sinky-says-awesome");
+  const { log } = useActions();
 
-  log("updating the working memory with knowledge from RAG")
+  log("updating the working memory with knowledge from RAG");
 
-  return withRagContext(step)
-}
+  return withRagContext(step);
+};
 
-export default updatesSocialAgiKnowledge
+export default updatesSocialAgiKnowledge;
