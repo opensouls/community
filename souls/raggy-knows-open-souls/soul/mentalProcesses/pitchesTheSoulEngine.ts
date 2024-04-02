@@ -1,46 +1,38 @@
 
-import { ChatMessageRoleEnum, decision, externalDialog } from "socialagi";
-import { MentalProcess, useActions, useRag } from "soul-engine";
+import { ChatMessageRoleEnum, MentalProcess, WorkingMemory, useActions, useRag } from "@opensouls/engine";
+import mentalQuery from "../lib/mentalQuery";
+import externalDialog from "../lib/externalDialog";
 
-const pitchesTheSoulEngine: MentalProcess = async ({ step: initialStep }) => {
+const pitchesTheSoulEngine: MentalProcess = async ({ workingMemory }) => {
   const { speak, log  } = useActions()
   const { withRagContext } = useRag("example-raggy-knows-open-souls")
 
   const standardMessage = "Respond directly to any questions the user might have asked, or describe something interesting about the SOUL ENGINE."
 
-  const needsRag = await initialStep.compute(decision("The interlocutor has asked a question that Raggy can't answer with his current memories.", ["true", "false"]), { model: "quality" })
-  if (needsRag === "true") {
+  const [, needsRag] = await mentalQuery(workingMemory, "The interlocutor has asked a question that Raggy can't answer with his current memories.", { model: "quality" })
+  if (needsRag) {
     log("raggy needs more info, so he'll update his memory")
-    const { stream, nextStep } = await initialStep.next(
-      externalDialog("Raggy needs time to think. Say something like 'gimme a sec' or 'hmmm' that kind of thing. Do NOT respond directly to the conversation, just filler."),
-      { stream: true }
-    );
+    const [, stream, fillerText] = await externalDialog(workingMemory, "Raggy needs time to think. Say something like 'gimme a sec' or 'hmmm' that kind of thing. Do NOT respond directly to the conversation, just filler.", { stream: true });
     speak(stream);
-    const updatedContext = await withRagContext(initialStep)
+    const updatedContext: WorkingMemory = await withRagContext(workingMemory)
     // add in the memory of the "one moment: ",
-    const step = updatedContext.withMemory([{
+    workingMemory = updatedContext.withMemory({
       role: ChatMessageRoleEnum.Assistant,
-      content: `Raggy said: ${(await nextStep).value}`
-    }])
+      content: `Raggy said: ${await fillerText}`
+    })
 
     {
-      const { stream, nextStep } = await step.next(
-        externalDialog(standardMessage),
-        { stream: true, model: "quality" }
-      );
+      const [nextStep, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "quality" });
       speak(stream);
 
-      return nextStep
+      return nextStep;
     }
   }
 
-  const { stream, nextStep } = await initialStep.next(
-    externalDialog(standardMessage),
-    { stream: true, model: "quality" }
-  );
+  const [nextStep, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "quality" });
   speak(stream);
 
-  return await withRagContext(await nextStep)
+  return await withRagContext(nextStep)
 }
 
 export default pitchesTheSoulEngine

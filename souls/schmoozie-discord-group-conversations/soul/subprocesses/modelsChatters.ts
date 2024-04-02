@@ -1,38 +1,54 @@
-import { ChatMessageRoleEnum, CortexStep, Memory, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory, useSoulMemory } from "soul-engine";
+import {
+  ChatMessageRoleEnum,
+  Memory,
+  MentalProcess,
+  createCognitiveStep,
+  useActions,
+  useProcessMemory,
+  useSoulMemory,
+  z,
+} from "@opensouls/engine";
 import { DiscordEventData } from "../../discord/soulGateway.js";
-import { prompt } from "../lib/prompt.js";
+import internalMonologue from "../lib/internalMonologue.js";
+import mentalQuery from "../lib/mentalQuery.js";
 
-const userNotes = (userName: string) => () => ({
-  command: ({ entityName }: CortexStep) => {
-    return prompt`      
-      ## Description
-      Write an updated and clear set of notes on ${userName} that ${entityName} would want to remember.
+const userNotes = createCognitiveStep((userName: string) => {
+  const params = z.object({
+    notes: z.string().describe(`Updated notes on ${userName}.`),
+  });
 
-      ## Rules
-      * Keep descriptions as bullet points
-      * Keep relevant bullet points from before
-      * Use abbreviated language to keep the notes short
-      * Analyze the interlocutor's emotions.
-      * Do not write any notes about ${entityName}
+  return {
+    schema: params,
+    command: ({ soulName: name }: { soulName: string }) => {
+      return {
+        role: ChatMessageRoleEnum.Assistant,
+        name: name,
+        content: `
+          ## Description
+          Write an updated and clear set of notes on ${userName} that ${name} would want to remember.
 
-      Please reply with the updated notes on ${userName}:'
-  `;
-  },
-  process: (_step: CortexStep<any>, response: string) => {
-    return {
-      value: response,
-      memories: [
-        {
-          role: ChatMessageRoleEnum.Assistant,
-          content: response,
-        },
-      ],
-    };
-  },
+          ## Rules
+          * Keep descriptions as bullet points
+          * Keep relevant bullet points from before
+          * Use abbreviated language to keep the notes short
+          * Analyze the interlocutor's emotions.
+          * Do not write any notes about ${name}
+
+          Please reply with the updated notes on ${userName}:
+        `,
+      };
+    },
+    postProcess: async (_memory, response: z.infer<typeof params>) => {
+      const newMemory = {
+        role: ChatMessageRoleEnum.Assistant,
+        content: response.notes,
+      };
+      return [newMemory, response.notes];
+    },
+  };
 });
 
-const modelsChatters: MentalProcess = async ({ step: initialStep }) => {
+const modelsChatters: MentalProcess = async ({ workingMemory }) => {
   const { log: engineLog } = useActions();
   const log = (...args: any[]) => {
     engineLog("[modelsChatters]", ...args);
@@ -40,9 +56,9 @@ const modelsChatters: MentalProcess = async ({ step: initialStep }) => {
 
   const lastProcessed = useProcessMemory("");
 
-  let unprocessedMessages = initialStep.memories.filter((m) => m.role === ChatMessageRoleEnum.User);
+  let unprocessedMessages = workingMemory.memories.filter((m) => m.role === ChatMessageRoleEnum.User);
   if (unprocessedMessages.length === 0) {
-    return initialStep;
+    return workingMemory;
   }
 
   const isRunningInsideDiscord = getDiscordEventFromMessage(unprocessedMessages[0]) !== undefined;
@@ -66,33 +82,38 @@ const modelsChatters: MentalProcess = async ({ step: initialStep }) => {
     const displayName = discordEvent?.userDisplayName || "Anonymous";
     const userModel = useSoulMemory(userName, `- Display name: "${displayName}"`);
 
-    let step = initialStep;
+    let memory = workingMemory;
 
-    const modelQuery = await step.compute(
-      mentalQuery(
-        `${step.entityName} has learned something new and they need to update the mental model of ${userName}.`
-      )
+    const [, modelQuery] = await mentalQuery(
+      memory,
+      `${memory.soulName} has learned something new and they need to update the mental model of ${userName}.`
     );
 
     log(`Update model for ${userName}?`, modelQuery);
     if (modelQuery) {
-      step = await step.next(
-        internalMonologue(
-          `What has ${step.entityName} learned specifically about their chat companion from the last few messages?`,
-          "noted"
-        )
-      );
+      let learned;
+      [memory, learned] = await internalMonologue(memory, {
+        instructions: "What has Julio learned specifically about their chat companion from the last few messages?",
+        verb: "noted",
+      });
 
-      log("Learnings:", step.value);
+      log("Learnings:", learned);
 
-      userModel.current = await step.compute(userNotes(userName));
+      let [, learnings] = await userNotes(memory, userName);
+      learnings = learnings
+        .split("\n")
+        .filter((line) => !line.startsWith("- Display name:"))
+        .join("\n");
+      learnings = `- Display name: "${displayName}"\n${learnings}`;
+
+      userModel.current = learnings;
     }
   }
 
   const lastMessage = unprocessedMessages.slice(-1)[0];
   lastProcessed.current = getDiscordEventFromMessage(lastMessage)?.messageId || "";
 
-  return initialStep;
+  return workingMemory;
 };
 
 function getDiscordEventFromMessage(message: Memory<Record<string, unknown>>) {

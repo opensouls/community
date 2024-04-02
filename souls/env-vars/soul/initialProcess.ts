@@ -1,16 +1,15 @@
 
-import { externalDialog } from "socialagi";
-import { MentalProcess, useActions } from "soul-engine";
+import { MentalProcess, useActions } from "@opensouls/engine";
 
-const provesEnvironmentVariablesWork: MentalProcess = async ({ step: initialStep }) => {
+const provesEnvironmentVariablesWork: MentalProcess = async ({ workingMemory }) => {
   const { speak, log } = useActions()
 
   log("liked things: " + JSON.stringify(soul.env.likedThings))
-  log("entity name: " + initialStep.entityName)
+  log("entity name: " + workingMemory.soulName)
 
   speak($$("I like {{likedThings}}."))
 
-  return initialStep
+  return workingMemory
 }
 
 export default provesEnvironmentVariablesWork

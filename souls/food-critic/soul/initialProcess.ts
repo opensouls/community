@@ -1,10 +1,10 @@
-import { ChatMessageRoleEnum, externalDialog, instruction, internalMonologue } from "socialagi";
-import { MentalProcess, useActions, usePerceptions } from "soul-engine";
-import { Perception } from "soul-engine/soul";
-import { prompt } from "./lib/prompt.js";
-import { getMetadataFromPerception, newMemory } from "./lib/utils.js";
+import { ChatMessageRoleEnum, MentalProcess, Perception, useActions, usePerceptions } from "@opensouls/engine";
+import { getMetadataFromPerception } from "./lib/utils.js";
+import externalDialog from "./lib/externalDialog.js";
+import instruction from "./lib/instruction.js";
+import internalMonologue from "./lib/internalMonologue.js";
 
-const initialProcess: MentalProcess = async ({ step: initialStep }) => {
+const initialProcess: MentalProcess = async ({ workingMemory }) => {
   const { log, dispatch } = useActions();
   const { invokingPerception, pendingPerceptions } = usePerceptions();
   const { userName, discordEvent } = getMetadataFromPerception(invokingPerception);
@@ -14,64 +14,57 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
   const containsImage = receivedImageFromDiscord || messageTextContainsUrl;
   if (!containsImage) {
     log("No image perception found. Skipping perception.");
-    return initialStep;
+    return workingMemory;
   }
 
   const imageUrl = invokingPerception?.content;
   if (!imageUrl) {
     log("No image URL found in perception. Skipping perception.");
-    return initialStep;
+    return workingMemory;
   }
 
   const hasReachedPendingPerceptionsLimit = pendingPerceptions.current.length > 10;
   if (hasReachedPendingPerceptionsLimit) {
     log("Pending perceptions limit reached. Skipping perception.");
-    return initialStep;
+    return workingMemory;
   }
 
   const isMessageBurst = hasMoreMessagesFromSameUser(pendingPerceptions.current, userName);
   if (isMessageBurst) {
     log(`Skipping perception from ${userName} because it's part of a message burst`);
-    return initialStep;
+    return workingMemory;
   }
 
   log(`Processing image perception from ${userName}`);
 
-  // @ts-expect-error wip
-  const visionStep = await initialStep.withUpdatedMemory(() => {
-    return [
+  const visionStep = workingMemory.withMemory({
+    role: ChatMessageRoleEnum.User,
+    content: [
       {
-        role: ChatMessageRoleEnum.User,
-        content: [
-          {
-            type: "image_url",
-            image_url: {
-              url: imageUrl,
-            },
-          },
-        ],
+        type: "image_url",
+        image_url: {
+          url: imageUrl,
+        },
       },
-    ];
+    ],
+  })
+
+  const [, visionResp] = await instruction(visionStep, "describe this image", { model: "vision" })
+
+  log("Image description:", visionResp);
+
+  workingMemory = workingMemory.withMemory({
+    role: ChatMessageRoleEnum.Assistant,
+    content: "FoodCritic saw this: " + visionResp,
   });
 
-  const visionResp = await visionStep.next(instruction(prompt`describe this image`), { model: "vision" });
-
-  log("Image description:", visionResp.value);
-
-  let step = initialStep.withMemory(newMemory("FoodCritic saw this: " + visionResp.value));
-
-  log("thinking about image");
-  step = await step.next(
-    internalMonologue(
-      "FoodCritic thinks about the food he saw in the most positive way possible. If it is not food, he thinks about it as food."
-    ),
-    {
-      model: "quality",
-    }
+  [workingMemory] = await internalMonologue(workingMemory,
+    "FoodCritic thinks about the food he saw in the most positive way possible. If it is not food, he thinks about it as food."
   );
 
-  const { stream, nextStep } = await step.next(
-    externalDialog("FoodCritic compliments the food he saw in a very exacerbated way."),
+  let stream;
+  [workingMemory, stream] = await externalDialog(workingMemory,
+    "FoodCritic compliments the food he saw in a very exacerbated way.",
     {
       stream: true,
       model: "quality",
@@ -86,8 +79,9 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     },
   });
 
-  return await nextStep;
-};
+  return workingMemory;
+}
+
 
 function hasMoreMessagesFromSameUser(pendingPerceptions: Perception[], userName: string) {
   const countOfPendingPerceptionsBySamePerson = pendingPerceptions.filter((perception) => {

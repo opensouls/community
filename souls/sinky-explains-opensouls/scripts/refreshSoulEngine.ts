@@ -7,13 +7,11 @@ const __dirname = new URL('.', import.meta.url).pathname;
 
 const projectRoot = path.join(__dirname, "..")
 
-console.log("refreshing the docs. Warning this only works for soul-engine developers working in the soul-engine repo.")
-
 fs.rmSync(path.join(projectRoot, "rag", "soulengine"), { recursive: true, force: true })
 
 fs.mkdirSync(path.join(projectRoot, "rag", "soulengine"), { recursive: true })
 
-const sourceDir = path.join(projectRoot, "..", "..", "soul-engine-docs", "pages");
+const sourceDir = path.join(projectRoot, "..", "..", "docs", "pages");
 const destDir = path.join(projectRoot, "rag", "soulengine");
 
 const copyMdxFilesOnly = (src: string, dest: string) => {

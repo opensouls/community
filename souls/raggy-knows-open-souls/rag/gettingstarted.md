@@ -1,11 +1,7 @@
 ## Useful links:
 
-The company is called Open Souls and it has SocialAGI which is its OSS offering and has documentation here: https://socialagi.dev
+The company is called Open Souls and it has the Soul Engine.
 
-SOUL ENGINE is a hosted platform for souls, which hosts and runs SocialAGI code for developers and is available here: https://souls.chat, https://npmjs.com/package/soul-engine, and the documentation is available here: https://docs.souls.chat .
+The Soul Engine is a hosted platform for souls, which hosts and runs code for developers to create AI souls and is available here: https://souls.chat, https://npmjs.com/package/@opensouls/engine, and the documentation is available here: https://docs.souls.chat .
 
-The Discord server for both projects is here: https://discord.gg/opensouls
-
-There are only two npm packages that any user would care about:
-* socialagi https://npmjs.com/package/socialagi
-* soul-engine https://npmjs.com/package/soul-engine
+The Discord server for the project is here: https://discord.gg/opensouls

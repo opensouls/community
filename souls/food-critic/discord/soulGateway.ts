@@ -1,5 +1,5 @@
 import { Client, Events, Message, ReplyOptions } from "discord.js";
-import { ActionEvent, Soul } from "soul-engine/soul";
+import { ActionEvent, Soul } from "@opensouls/engine";
 import { getMetadataFromActionEvent, makeMessageCreateDiscordEvent } from "./eventUtils.js";
 
 export type DiscordEventData = {
@@ -37,6 +37,7 @@ export class SoulGateway {
       soulId: process.env.SOUL_ID || undefined,
       token: process.env.SOUL_ENGINE_API_KEY || undefined,
       debug: process.env.SOUL_DEBUG === "true",
+      local: true,
     });
 
     this.handleMessage = this.handleMessage.bind(this);

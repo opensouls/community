@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { ActionEvent } from "soul-engine/soul";
+import { ActionEvent } from "@opensouls/engine";
 import { DiscordEventData, SoulActionConfig } from "./soulGateway.js";
 
 export function getMetadataFromActionEvent(evt: ActionEvent) {

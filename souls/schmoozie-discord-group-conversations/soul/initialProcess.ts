@@ -1,42 +1,45 @@
-import { CortexStep, decision, externalDialog } from "socialagi";
-import { MentalProcess, useActions, usePerceptions, useSoulMemory } from "soul-engine";
-import { Perception } from "soul-engine/soul";
+import { MentalProcess, Perception, WorkingMemory, useActions, usePerceptions, useSoulMemory } from "@opensouls/engine";
 import { DiscordEventData } from "../discord/soulGateway.js";
-import { getMetadataFromPerception, getUserDataFromDiscordEvent, newMemory } from "./lib/utils.js";
+import decision from "./lib/decision.js";
+import externalDialog from "./lib/externalDialog.js";
+import { getMetadataFromPerception, getUserDataFromDiscordEvent } from "./lib/utils/discord.js";
+import { newMemory } from "./lib/utils/memory.js";
 
-const initialProcess: MentalProcess = async ({ step: initialStep }) => {
+const initialProcess: MentalProcess = async ({ workingMemory: memory }) => {
   const { log, dispatch } = useActions();
   const { invokingPerception, pendingPerceptions } = usePerceptions();
   const { userName, discordEvent } = getMetadataFromPerception(invokingPerception);
 
+  let stream;
+
   const hasReachedPendingPerceptionsLimit = pendingPerceptions.current.length > 10;
   if (hasReachedPendingPerceptionsLimit) {
     log("Pending perceptions limit reached. Skipping perception.");
-    return initialStep;
+    return memory;
   }
 
   const isMessageBurst = hasMoreMessagesFromSameUser(pendingPerceptions.current, userName);
   if (isMessageBurst) {
     log(`Skipping perception from ${userName} because it's part of a message burst`);
-    return initialStep;
+    return memory;
   }
 
-  let step = rememberUser(initialStep, discordEvent);
+  let step = rememberUser(memory, discordEvent);
 
   const shouldReply = await isUserTalkingToSchmoozie(invokingPerception, step, userName);
   if (!shouldReply) {
     log(`Ignoring message from ${userName} because they're not talking to Schmoozie`);
-    return initialStep;
+    return memory;
   }
 
   const userSentNewMessagesInMeantime = hasMoreMessagesFromSameUser(pendingPerceptions.current, userName);
   if (userSentNewMessagesInMeantime) {
     log(`Aborting response to ${userName} because they've sent more messages in the meantime`);
-    return initialStep;
+    return memory;
   }
 
   log(`Answering message from ${userName}`);
-  const { stream, nextStep } = await step.next(externalDialog(`Schmoozie answers ${userName}'s message`), {
+  [memory, stream] = await externalDialog(memory, `Schmoozie answers ${userName}'s message`, {
     stream: true,
     model: "quality",
   });
@@ -49,7 +52,9 @@ const initialProcess: MentalProcess = async ({ step: initialStep }) => {
     },
   });
 
-  return await nextStep;
+  await memory.finished;
+
+  return memory;
 };
 
 function hasMoreMessagesFromSameUser(pendingPerceptions: Perception[], userName: string) {
@@ -60,10 +65,9 @@ function hasMoreMessagesFromSameUser(pendingPerceptions: Perception[], userName:
   return countOfPendingPerceptionsBySamePerson > 0;
 }
 
-
 async function isUserTalkingToSchmoozie(
   perception: Perception | undefined | null,
-  step: CortexStep<any>,
+  memory: WorkingMemory,
   userName: string
 ) {
   const { log } = useActions();
@@ -74,11 +78,12 @@ async function isUserTalkingToSchmoozie(
     return true;
   }
 
-  const interlocutor = await step.compute(
-    decision(
-      `Schmoozie is the moderator of this channel. Participants sometimes talk to Schmoozie, and sometimes between themselves. In this last message sent by ${userName}, guess which person they are probably speaking with.`,
-      ["schmoozie, for sure", "schmoozie, possibly", "someone else", "not sure"]
-    ),
+  const [, interlocutor] = await decision(
+    memory,
+    {
+      description: `Schmoozie is the moderator of this channel. Participants sometimes talk to Schmoozie, and sometimes between themselves. In this last message sent by ${userName}, guess which person they are probably speaking with.`,
+      choices: ["schmoozie, for sure", "schmoozie, possibly", "someone else", "not sure"],
+    },
     {
       model: "quality",
     }
@@ -89,8 +94,7 @@ async function isUserTalkingToSchmoozie(
   return interlocutor.toString().startsWith("schmoozie");
 }
 
-
-function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventData | undefined) {
+function rememberUser(memory: WorkingMemory, discordEvent: DiscordEventData | undefined) {
   const { log } = useActions();
   const { userName, userDisplayName } = getUserDataFromDiscordEvent(discordEvent);
 
@@ -113,12 +117,12 @@ function rememberUser(step: CortexStep<any>, discordEvent: DiscordEventData | un
     log(`Remembered this about ${userName}:\n${remembered}`);
 
     remembered = `Schmoozie remembers this about ${userName}:\n${remembered.trim()}`;
-    step = step.withMemory(newMemory(remembered));
+    memory = memory.withMemory(newMemory(remembered));
   } else {
     log(`No memory about ${userName}`);
   }
 
-  return step;
+  return memory;
 }
 
 export default initialProcess;

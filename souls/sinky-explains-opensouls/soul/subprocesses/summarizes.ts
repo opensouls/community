@@ -1,67 +1,61 @@
 
-import { html } from "common-tags";
-import { ChatMessageRoleEnum, CortexStep, internalMonologue } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory } from "soul-engine";
+import { ChatMessageRoleEnum, MentalProcess, indentNicely, useActions, useProcessMemory } from "@opensouls/engine";
+import conversationNotes from "../lib/conversationNotes.js";
+import internalMonologue from "../lib/internalMonologue.js";
 
-const conversationNotes = (existing: string) => () => ({
-  command: ({ entityName: name }: CortexStep) => {
-    return html`
-      ## Existing notes
-      ${existing}
-
-      ## Description
-      Write an updated and clear paragraph describing the conversation so far.
-      Make sure to keep details that ${name} would want to remember.
-
-      ## Rules
-      * Keep descriptions as a paragraph
-      * Keep relevant information from before
-      * Use abbreviated language to keep the notes short
-      * Make sure to detail the motivation of ${name} (what are they trying to accomplish, what have they done so far).
-
-      Please reply with the updated notes on the conversation:'
-  `}
-})
-
-const summarizesConversation: MentalProcess = async ({ step: initialStep }) => {
-  const conversationModel = useProcessMemory(html`
-    Sinky met a new user for the first time. They are just getting to know each other and Sinky is trying to learn as much as they can about the user.
+const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
+  const conversationModel = useProcessMemory(indentNicely`
+    ${workingMemory.soulName} met a new user for the first time. They are just getting to know each other and ${workingMemory.soulName} is trying to learn as much as they can about the user.
   `)
   const { log } = useActions()
 
-  let step = initialStep
-  let finalStep = initialStep
 
-  if (step.memories.length > 9) {
-    log("updating conversation notes")
-    step = await step.next(
-      internalMonologue("What have I learned in this conversation.", "noted")
-    )
+  if (workingMemory.memories.length > 9) {
+    log("updating conversation notes");
+    const [withMemoryThoughts] = await internalMonologue(workingMemory, {
+      instructions: indentNicely`
+        What is really important that I remember about this conversation?
+      `,
+      verb: "noted"
+    });
+    
+    const [, updatedNotes] = await conversationNotes(withMemoryThoughts, conversationModel.current)
 
-    const updatedNotes = await step.compute(conversationNotes(conversationModel.current))
     conversationModel.current = updatedNotes as string
 
-    return finalStep.withUpdatedMemory(async (memories) => {
-      const newMemories = memories.flat()
-      return [
-        newMemories[0],
-        newMemories[1],
-        {
-          role: ChatMessageRoleEnum.Assistant,
-          content: html`
-            ## Conversation so far
-            ${updatedNotes}
-          `,
-          metadata: {
-            conversationSummary: true
+    if (workingMemory.find((m) => !!m.metadata?.conversationSummary)) {
+      // update the existing
+      const withBlueprintAndRagAndSummary = workingMemory.map((m) => {
+        if (m.metadata?.conversationSummary) {
+          return {
+            ...m,
+            content: updatedNotes
           }
-        },
-        ...newMemories.slice(-4)
-      ]
-    })
+        }
+        return m
+      }).slice(0, 3);
+
+      const latestMemories = workingMemory.slice(-4);
+      return withBlueprintAndRagAndSummary.concat(latestMemories)
+    }
+
+    const withBlueprintAndRag = workingMemory.slice(0, 2);
+    const withBlueprintAndRagAndSummary = withBlueprintAndRag.withMemory({
+      role: ChatMessageRoleEnum.Assistant,
+      content: indentNicely`
+        ## Conversation so far
+        ${updatedNotes}
+      `,
+      metadata: {
+        conversationSummary: true
+      }
+    });
+
+    const latestMemories = withBlueprintAndRagAndSummary.slice(-4);
+    return withBlueprintAndRagAndSummary.concat(latestMemories);
   }
 
-  return finalStep
+  return workingMemory
 }
 
 export default summarizesConversation

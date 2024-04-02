@@ -1,16 +1,18 @@
 
 import { html } from "common-tags";
-import { ChatMessageRoleEnum, CortexStep, brainstorm, decision, externalDialog, internalMonologue } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory, useProcessManager } from "soul-engine";
+import { MentalProcess, useActions, useProcessMemory, useProcessManager, WorkingMemory, createCognitiveStep, indentNicely, ChatMessageRoleEnum, z } from "@opensouls/engine";
+import externalDialog from "./lib/externalDialog";
+import brainstorm from "./lib/brainstorm";
+import decision from "./lib/decision";
 
-const generateIntention = (goal: string) => {
-  return () => {
-
-    return {
-      command: ({ entityName: name }: CortexStep) => {
-        return html`
+const generateIntention = createCognitiveStep((goal: string) => {
+  return {
+    command: ({ soulName: name }: WorkingMemory) => {
+      return {
+        role: ChatMessageRoleEnum.System,
+        content: indentNicely`
           Model the mind of ${name}.
-          
+
           ## Description
           Generate a new Directive for ${goal}.
 
@@ -35,24 +37,25 @@ const generateIntention = (goal: string) => {
           * Become more specific over time
 
           Please reply the updated markdown snippet.
-      `},
-      process: (step: CortexStep<any>, response: string) => {
-        return {
-          value: response,
-          memories: [{
-            role: ChatMessageRoleEnum.Assistant,
-            content: response
-          }],
-        }
+        `
       }
+    },
+    postProcess: async (_mem: WorkingMemory, response: string) => {
+      return [
+        {
+          role: ChatMessageRoleEnum.Assistant,
+          content: response
+        },
+        response
+      ]
     }
   }
-}
+});
 
-const provokesSpeaker: MentalProcess = async ({ step: initialStep }) => {
+const provokesSpeaker: MentalProcess = async ({ workingMemory }) => {
   const { speak, log } = useActions()
   const { invocationCount } = useProcessManager()
-  const intention = useProcessMemory(html`
+  const intention = useProcessMemory(indentNicely`
   # Sense of self
   Meta is unsure who they are
 
@@ -66,37 +69,43 @@ const provokesSpeaker: MentalProcess = async ({ step: initialStep }) => {
   Childlike
   `)
 
-
-  let step = initialStep
   if (invocationCount === 0) {
-    step = step.withMemory([{role: ChatMessageRoleEnum.Assistant, content: html`
+    workingMemory = workingMemory.withMemory({
+      role: ChatMessageRoleEnum.Assistant, content: indentNicely`
       Meta thought: Where am I?
-    `}])
+    `})
   }
 
-  step = step.withMemory([{role: ChatMessageRoleEnum.System, content: html`
+  workingMemory = workingMemory.withMemory({
+    role: ChatMessageRoleEnum.System, content: indentNicely`
     Model Meta's Mind with the following
 
     ${intention.current}
-  `}])
+  `})
 
-  const { stream, nextStep } = await step.next(
-    externalDialog("Converse with the user according to Meta's latest Mind: self, directive, and speaking style."),
-    { stream: true, model: "quality" }
-  );
+  const [withDialog, stream, speech] = await externalDialog(workingMemory,
+    "Converse with the user according to Meta's latest Mind: self, directive, and speaking style.",
+    { stream: true, model: "quality" });
   speak(stream);
 
-  const afterSpeech = await nextStep
-  const goals = await afterSpeech.next(brainstorm("What are some possible ideas for conversational goals Meta wants next? Can include its current goal"))
-  log("Brainstormed goals:", goals.value)
-  const goal = await goals.compute(decision("Which conversational goal does Meta want next (or keep doing)", goals.value))
+  const [withGoals, goals] = await brainstorm(withDialog, "What are some possible ideas for conversational goals Meta wants next? Can include its current goal")
+  log("Brainstormed goals:", goals)
+  const [, goal] = await decision(withGoals,
+    {
+      description: "Which conversational goal does Meta want next (or keep doing)",
+      choices: goals as z.EnumValues,
+    })
   log("Choose goal:", goal)
-  intention.current = await afterSpeech.compute(generateIntention(goal as string))
+  const [, updatedIntention] = await generateIntention(withDialog, goal)
   log("Updated directive")
+  intention.current = updatedIntention
 
-  return initialStep.withMemory([{role: ChatMessageRoleEnum.Assistant, content: html`
-  Meta said: ${afterSpeech.value}
-  `}])
+  return workingMemory.withMemory({
+    role: ChatMessageRoleEnum.Assistant,
+    content: indentNicely`
+      Meta said: ${await speech}
+    `
+  })
 }
 
 export default provokesSpeaker

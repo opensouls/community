@@ -1,5 +1,4 @@
-import { ChatMessageRoleEnum } from "socialagi";
-import { Perception } from "soul-engine/soul";
+import { ChatMessageRoleEnum, Perception } from "@opensouls/engine";
 import { DiscordEventData } from "../../discord/soulGateway.js";
 
 export function getDiscordUserIdFromPerception(perception: Perception | null | undefined) {
@@ -36,13 +35,4 @@ export function getUserDataFromDiscordEvent(discordEvent: DiscordEventData | und
     userName,
     userDisplayName,
   };
-}
-
-export function newMemory(content: string) {
-  return [
-    {
-      role: ChatMessageRoleEnum.Assistant,
-      content,
-    },
-  ];
 }
