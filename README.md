@@ -27,5 +27,3 @@ AI Souls are agentic and embodied digital beings, one day comprising thousands o
 1. Ask someone from OPEN SOULS to join the waitlist
 1. Meet with us
 1. Build something cool with the [Soul Engine](https://docs.souls.chat)
-2. Open up a PR!
-
