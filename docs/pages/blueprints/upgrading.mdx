@@ -11,7 +11,7 @@ This doc will cover the key information you need to upgrade your blueprints to t
 ### Major
 * There is no more CortexStep (and no more socialagi npm package). Instead, your MentalProcesses will be passed a [`WorkingMemory`](/core/working-memory) object.
 * There are no more default CognitiveFunctions imported from socialagi (like externalDialog, etc). Instead, you copy and paste [`CognitiveStep`s](/core/cognitive-step) from [the community library](https://github.com/opensouls/community/tree/main/library/cognitiveSteps)
-* `soul-engine` command line program now supports `install` to easily add community cognitiveSteps to your `soul/lib` directory (eg `npx soul-engine install cognitiveStep/externalDialog`)
+* `soul-engine` command line program now supports `install` to easily add community cognitiveSteps to your `soul/` directory (eg `npx soul-engine install cognitiveSteps/externalDialog`)
 * Your own custom CognitiveFunctions should be replaced by [`CognitiveStep`s](/core/cognitive-step)
 * `socialagi` should not be used and instead everything you need is exported by `@opensouls/engine`
 * In your client apps, do not import `soul-engine/soul` anymore and instead import `@opensouls/soul` (or just `@opensouls/engine` if you prefer, as soul is re-exported from there). The exports are the same and continue to work in the same manner.
@@ -53,7 +53,7 @@ Things to notice:
 
 First, install the community `externalDialog` cognitiveStep:
 ```bash copy
-npx soul-engine install cognitiveStep/externalDialog
+npx soul-engine install cognitiveSteps/externalDialog
 ```
 
 ```ts filename="initialProcess.ts" copy
