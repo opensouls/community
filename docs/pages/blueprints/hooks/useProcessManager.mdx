@@ -7,7 +7,7 @@ import { useProcessManager } from "@opensouls/engine"
 
 const exampleProcess: MentalProcess = async ({ workingMemory }) => {
   // access the internal MentalProcess API
-  const { invocationCount, setNextProcess, wait } = useProcessManager()
+  const { invocationCount, wait } = useProcessManager()
 
   // rest of the mental process
   // ...
@@ -27,17 +27,6 @@ import { Callout } from 'nextra/components'
 The invocation count resets whenever the soul transitions to a new `MentalProcess`.
 </Callout>
 
-## setNextProcess
-
-`setNextProcess` is a core tool for driving the internal state machine of a soul. Specifically, `setNextProcess(process: MentalProcess, params?: PropType)` schedules the next `MentalProcess` that will run on the next `Perception` in the perception queue. Optionally, parameters can be passed to the next `MentalProcess` via the `params`, e.g. `{ wasProvoked: true }`
-
-```javascript
-// schedule the next mental process
-setNextProcess(playsVictim)
-// or schedule the next mental process with params
-setNextProcess(playsVictim, { wasProvoked: true, })
-```
-
 ## wait
 
 `wait` simply waits the process some specified number of ms.
@@ -48,7 +37,7 @@ await wait(1000) // wait 1 second
 
 ## Putting it all together
 
-Here's an example process that makes use of the `invocationCount` and `setNextProcess` in order to define a compelling stateful behavior:
+Here's an example process that makes use of the `invocationCount` and a switch into a different mentalProcess in order to define a compelling stateful behavior:
 
 ```javascript filename="provokesSpeaker.js"
 import { MentalProcess, useProcessManager, useActions } from "@opensouls/engine";
@@ -57,7 +46,7 @@ import playsVictim from "./playsVictim.js";
 
 const provokesSpeaker: MentalProcess = async ({ workingMemory }) => {
   const { speak } = useActions()
-  const { invocationCount, setNextProcess } = useProcessManager()
+  const { invocationCount } = useProcessManager()
 
   let response;
   // compute a line of dialog
@@ -72,8 +61,7 @@ const provokesSpeaker: MentalProcess = async ({ workingMemory }) => {
   // and it's not the first invocation
   if (didProvokeTheUser && invocationCount > 0) {
     // schedule the next mental process via reference to playsVictim
-    setNextProcess(playsVictim)
-    return workingMemory
+    return [workingMemory, playsVictim]
   }
 
   return workingMemory
