@@ -51,7 +51,7 @@ const multiTexts: MentalProcess = async ({ workingMemory }) => {
       indentNicely`
         - Texty sends a sentence fragment, extending the train of thought from their last text
         - Make sure the fragment is ${lengthOfText} in length
-        - Their last text was: "${workingMemory.slice(-1)[0].value}"
+        - Their last text was: "${workingMemory.slice(-1).memories[0].content}"
       `,
       { model: "quality" }
     );
