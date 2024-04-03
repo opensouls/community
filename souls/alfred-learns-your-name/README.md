@@ -1,18 +1,12 @@
-The Soul Engine
-=================
+# Alfred Learns Your Name
 
-The **Soul Engine** is a powerful tool for creating, developing, and deploying AI souls. Souls are dynamic, agentic, and stateful entities that are steerable by the developer, enabling the creation of engaging user and player experiences interacting with the souls.
+**Soul Designer:** [@tobowers](https://github.com/tobowers)
 
-# ⚡ QuickStart
+Alfred demonstrates the use of a perceptionProcessor to modify how working memories are saved based on perceptions.
+He tries to learn your name, and once he does, instead of "interlocutor" saved in the working memory, the actual user's name is saved.
 
-This project contains a complete Soul [Blueprint](https://docs.souls.chat). To get started, simply go to the root directory and run
+## Run this soul
 
 ```bash
 npx soul-engine dev
 ```
-
-which will connect your soul to the engine and open the Soul Engine web interface.
-
-# 📖 Documentation
-
-Full documentation for the Soul Engine API is located [here](https://docs.souls.chat)!
