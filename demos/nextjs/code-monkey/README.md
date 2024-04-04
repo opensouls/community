@@ -6,7 +6,7 @@ This is an example project to demonstrate how to connect a Next.js project to th
 
 Code Monkey can help you quickly create a draft version of a code snippet, technical questions, or just chit-chat. Code Monkey is designed to not make any assumptions about coding requests and will ask for clarifications when necessary after writing a rough outline of the code.
 
-![soul](soul.webp)
+<img src="soul.webp" alt="drawing" width="400"/>
 
 ## 💬 Example interaction
 
