@@ -4,6 +4,7 @@
   "hooks": "Hooks",
   "environment-variables": "Environment Variables",
   "models": "Models",
-  "upgrading": "Upgrading",
-  "perception-processor": "Perception Processor"
+  "community-library": "Community Library",
+  "perception-processor": "Perception Processor",
+  "upgrading": "Upgrading"
 }
