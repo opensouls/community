@@ -31,7 +31,7 @@ const introduction: MentalProcess = async ({ workingMemory }) => {
       workingMemory, 
       { 
         description: "Athena chooses an object for the game",
-        choices: brainstormOptions as z.EnumValues,
+        choices: brainstormOptions,
       }
     );
 

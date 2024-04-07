@@ -1,9 +1,10 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, stripEntityAndVerb, stripEntityAndVerbFromStream, z } from "@opensouls/engine";
 
-const decision = createCognitiveStep(({ description, choices, verb = "decided" }: { description: string, choices: z.EnumValues, verb?: string }) => {
+const decision = createCognitiveStep(({ description, choices, verb = "decided" }: { description: string, choices: z.EnumLike | string[], verb?: string }) => {
   const params = z.object({
-    decision: z.enum(choices).describe(`The decision made by the entity.`)
+    decision: z.nativeEnum(choices as z.EnumLike).describe(`The decision made by the entity.`)
   });
+
   return {
     schema: params,
     command: ({ soulName: name }: WorkingMemory) => {
@@ -24,7 +25,7 @@ const decision = createCognitiveStep(({ description, choices, verb = "decided" }
     },
     streamProcessor: stripEntityAndVerbFromStream,
     postProcess: async (memory: WorkingMemory, response: z.infer<typeof params>) => {
-      const stripped = stripEntityAndVerb(memory.soulName, verb, response.decision);
+      const stripped = stripEntityAndVerb(memory.soulName, verb, response.decision.toString());
       const newMemory = {
         role: ChatMessageRoleEnum.Assistant,
         content: `${memory.soulName} ${verb}: "${stripped}"`
@@ -32,6 +33,6 @@ const decision = createCognitiveStep(({ description, choices, verb = "decided" }
       return [newMemory, stripped];
     }
   }
-})
+});
 
 export default decision
