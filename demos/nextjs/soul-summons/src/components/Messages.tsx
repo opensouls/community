@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { MessageProps } from '@/components/Soul';
+import { MessageProps } from '@/hooks/useSoulRoom';
 
 
 export const ActionCaret = {
@@ -43,14 +43,14 @@ export function MessageBox({ messages, className = '' }: { messages: MessageProp
 
                 const lastMessage = index > 0 ? messages[index - 1] : undefined;
                 const showName = message?.character && lastMessage?.character?.name !== message.character.name;
-                const nameClassName = `flex text-white w-min p-1 mt-2 ${message.character.color}`
+                const nameClassName = `flex text-white w-min p-1 mt-2 ${message?.character?.color}`
                 
                 return (
                     <>
                         {showName &&
                             <Name
                                 key={'name' + index}
-                                text={message.character.name}
+                                text={message?.character?.name}
                                 className={nameClassName} //
                                 // style={{ backgroundColor: message.character.color }}
                             />

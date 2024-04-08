@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from "react"
 import { useLocalStorage } from '@uidotdev/usehooks'
-import SoulVoice, { Label, Sprite, MessageProps, CharacterProps } from "../../components/Soul"
+import SoulVoice, { Label, Sprite } from "../../components/Soul"
+import { MessageProps, CharacterProps } from "@/hooks/useSoulRoom"
 import { MessageBox } from "../../components/Messages"
 import { CharacterBox } from "./Layout"
 import { create } from 'zustand'

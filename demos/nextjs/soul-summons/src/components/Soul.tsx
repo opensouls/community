@@ -1,38 +1,53 @@
 import React, { useEffect, useState, useMemo } from "react"
 import { useLocalStorage, useHover } from '@uidotdev/usehooks'
-import { Soul, said } from "soul-engine/soul"
-import { MessageBox } from "@/souls/Messages";
-import { MessageProps } from "@/souls/Soul";
-import { useUniverseStore, WorldState } from "@/souls/Desk";
+import { Soul, said } from "@opensouls/soul"
+import { MessageBox } from "./Messages";
+import { useSoulRoom, worldCharacter, MessageProps } from "@/hooks/useSoulRoom";
 import { twMerge } from "tailwind-merge";
 
-export type ActionTypes = "says" | "thinks" | "does" | "ambience"
 
-export type SoulProps = {
-    organization: string,
-    blueprint: string,
+
+export function Input({className = ''}: {className?: string}) {
+
+    const { messages, addEvent } = useSoulRoom();
+    const cn = twMerge('border-[1px] border-black px-4', className )
+
+    return (
+        <form
+            className="flex flex-row gap-2"
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                e.preventDefault();
+                const inputElement = e.currentTarget.elements[0] as HTMLInputElement;
+                if (inputElement.value === '') return console.log('no content');
+                addEvent({
+                    content: inputElement.value,
+                    type: 'thinks',
+                    character: worldCharacter,
+                    timestamp: Date.now(),
+                });
+                inputElement.value = '';
+            }}>
+            <input
+                type="text"
+                placeholder="chat"
+                className={cn}
+            />
+            <button>enter</button>
+        </form>
+    )
 }
 
-export type CharacterProps = {
-    name: string,
-    color?: string,
-}
 
-export type MessageProps = {
-    content: string,
-    type: ActionTypes
-    timestamp: number,
-    character?: CharacterProps,
-}
+//todo convert to useSoulSimple
+export default function SoulVoice({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) {
 
-export default function SoulVoice({ soulID, character }: { soulID: SoulProps, character: CharacterProps}) {
-
-    const { messages, addEvent } = useUniverseStore();
+    const { messages, addEvent } = useSoulRoom();
 
     const defaultMessage: MessageProps = useMemo(() => ({
         content: `I (${character.name}) exist.`,
         type: "says",
         character: character,
+        timestamp: Date.now(),
     }), [soulID]);
 
     const [currentWorldState, setCurrentWorldState] = useState<MessageProps>();
@@ -83,7 +98,7 @@ export default function SoulVoice({ soulID, character }: { soulID: SoulProps, ch
             //only add message internally
             setLocalMessages([...localMessages, messageProp]);
             setThinking(false);
-            
+
         });
 
         return initSoul;
@@ -109,7 +124,7 @@ export default function SoulVoice({ soulID, character }: { soulID: SoulProps, ch
 
                     console.log(`${character.name.toUpperCase()} dispatching ${newMessage.content}`);
                     soul.dispatch(said(newMessage?.character?.name ?? 'User', newMessage.content))
-                    
+
                 }
             }
 
