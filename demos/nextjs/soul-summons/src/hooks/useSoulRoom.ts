@@ -6,8 +6,8 @@ import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { Soul, said } from "@opensouls/soul"
 
-export type ActionTypes = "says" | "thinks" | "does" | "ambience"
-export type SoulStates = 'waiting' | 'thinking' | 'speaking' | 'having-regrets';
+export type ActionType = "says" | "thinks" | "does" | "ambience"
+export type SoulState = 'waiting' | 'thinking' | 'speaking';
 
 export type CharacterProps = {
     name: string,
@@ -16,19 +16,15 @@ export type CharacterProps = {
 
 export type MessageProps = {
     content: string,
-    type: ActionTypes
+    type: ActionType
     timestamp: number,
     character?: CharacterProps,
 }
 
-export const worldCharacter: CharacterProps = { name: 'world', color: 'bg-black' }
+export const PLAYER_CHARACTER: CharacterProps = { name: 'world', color: 'bg-black' }
+export const EXAMPLE_MESSAGE: MessageProps = { content: 'HONKKKK!!', type: 'ambience', character: PLAYER_CHARACTER, timestamp: Date.now() };
 
-const startState: MessageProps[] = [{
-    content: 'A windy knoll. The room hums. Dice, clock, and puddle are in a meeting.',
-    type: 'thinks',
-    character: worldCharacter,
-    timestamp: Date.now(),
-}];
+const startState: MessageProps[] = [];
 
 interface WorldState {
     messages: MessageProps[]
@@ -67,7 +63,7 @@ export type SoulProps = {
 export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) => {
 
     const { messages, addEvent } = useSoulRoom();
-    const [state, setState] = useState<SoulStates>('waiting');
+    const [state, setState] = useState<SoulState>('waiting');
 
     const defaultMessage: MessageProps = useMemo(() => ({
         content: `I (${character.name}) exist.`,
@@ -166,5 +162,5 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
     }, [messages, character],)
 
-    return { state, localMessages }
+    return { localMessages, state }
 }

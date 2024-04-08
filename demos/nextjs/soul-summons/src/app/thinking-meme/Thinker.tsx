@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useSoulRoom, useSoulSimple } from '@/hooks/useSoulRoom';
-import { Input } from '@/components/Soul';
+import { SoulState, ActionType, useSoulRoom, useSoulSimple } from '@/hooks/useSoulRoom';
+import { Input } from '@/components/Messages';
 import { MessageBox } from '@/components/Messages';
+import { Blinking } from '@/components/Graphics';
 
 const thinkingSoul = {
     name: 'overthinker',
@@ -16,6 +17,12 @@ const thinkingSoulID = {
     blueprint: 'thinking-soul',
 }
 
+const THOUGHT_STATES: Record<SoulState, string> = {
+    'waiting': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
+    'thinking': '/thinking-meme/ThinkingMeme_0002s_0001_enterHead.png',
+    'speaking': '/thinking-meme/ThinkingMeme_0002s_0001_exitHead.png',
+}
+
 export default function Thinker() {
 
     const { messages } = useSoulRoom();
@@ -24,22 +31,22 @@ export default function Thinker() {
     return (
         <>
             <p>whats up?</p>
+            <div className='relative flex flex-col bg-white select-none'>
 
-            <Input />
-            <MessageBox messages={messages} />
-
-            <div className='flex flex-col bg-white'>
-
+                <Input
+                    className='absolute left-8 top-8'
+                />
                 <p>whats up?</p>
                 <div className='relative bg-green m-auto w-[24em] h-[24em]'>
+                    <Blinking>
+                        <ImageLayer src={THOUGHT_STATES[state]} />
+                    </Blinking>
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
-
+                    <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} />
                 </div>
-
+                <MessageBox messages={messages} className='h-36'/>
             </div>
+
         </>
     )
 }
@@ -47,12 +54,15 @@ export default function Thinker() {
 function ImageLayer({ src = '', alt = '' }) {
 
     return (
-        <Image
-            className='absolute m-auto'
-            src={src}
-            alt={alt}
-            width={500}
-            height={500}
-        />
+        <>
+            {src &&
+                <Image
+                    className='absolute m-auto'
+                    src={src}
+                    alt={alt}
+                    width={500}
+                    height={500}
+                />}
+        </>
     )
 }
