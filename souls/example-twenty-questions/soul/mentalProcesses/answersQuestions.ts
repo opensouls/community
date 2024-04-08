@@ -2,7 +2,6 @@ import { MentalProcess, useProcessMemory, useActions } from "@opensouls/engine";
 import brainstorm from "../lib/brainstorm.js";
 import externalDialog from "../lib/externalDialog.js";
 import mentalQuery from "../lib/mentalQuery.js";
-import internalMonologue from "../cognitiveSteps/internalMonologue";
 
 const answersGuesses: MentalProcess<{object: string}> = async ({ workingMemory, params: { object } }) => {
   const questionsAttempted = useProcessMemory(0);
