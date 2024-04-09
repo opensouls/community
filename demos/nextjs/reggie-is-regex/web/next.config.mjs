@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
-
-const isProd = process.env.NODE_ENV === 'production'
-
 const nextConfig = {
-  assetPrefix: isProd ? '/test/opensouls/reggie/' : undefined,
+  assetPrefix: '/test/opensouls/reggie/',
 };
 
 export default nextConfig;
