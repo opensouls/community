@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -94,7 +96,7 @@ export function Input({ className = '', ...props }: { className?: string }) {
 }
 
 export function InputTextArea({ className = '', ...props }: { className?: string, [propName: string]: any }) {
-    
+
     const { addEvent } = useSoulRoom();
     const [value, setValue] = React.useState('');
 
@@ -167,7 +169,7 @@ export function MessageBox({ messages, className = '' }: { messages: MessageProp
     )
 }
 
-export function MessageSlug({ message, settings, className = '' }: { message: MessageProps }) {
+export function MessageSlug({ message }: { message: MessageProps }) {
 
     return (
         <div className='flex flex-row text-sm leading-4 tracking-tight'>

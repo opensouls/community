@@ -3,13 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { SoulState, ActionType, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
 import { InputForm, Input, InputTextArea } from '@/components/Messages';
-import { MessageBox } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { twMerge } from 'tailwind-merge';
 
 import Markdown from 'react-markdown';
-import { useLocalStorage } from '@uidotdev/usehooks';
-import { transcode } from 'buffer';
 
 const thinkingSoul = {
     name: 'overthinker',

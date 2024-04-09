@@ -1,7 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from "react"
-import { useLocalStorage } from '@uidotdev/usehooks'
+import { useState, useEffect, useMemo } from "react"
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { Soul, said } from "@opensouls/soul"
@@ -77,7 +76,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
     const [currentWorldState, setCurrentWorldState] = useState<MessageProps>();
     const [talking, setTalking] = useState<boolean>(true);
     const [connected, setConnected] = useState<boolean>(false);
-    const [localMessages, setLocalMessages] = useLocalStorage<MessageProps[]>('soul-' + soulID.blueprint, [defaultMessage]);
+    const [localMessages, setLocalMessages] = useState<MessageProps[]>([defaultMessage]);
 
     const soul = useMemo<Soul>(() => {
 

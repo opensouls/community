@@ -1,6 +1,3 @@
-import Image from "next/image";
-import Layout from "@/components/Layout";
-import Demo from "@/components/Demo";
 import Thinker from "./thinking-meme/Thinker";
 
 export default function Home() {

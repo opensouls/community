@@ -1,12 +1,11 @@
 "use-client" 
 
 import React, { useEffect, useState, useMemo } from "react"
-import { useLocalStorage, useHover } from '@uidotdev/usehooks'
 import { Soul, said } from "@opensouls/soul"
 import { MessageBox } from "./Messages";
 import { useSoulRoom, PLAYER_CHARACTER, MessageProps } from "@/hooks/useSoulRoom";
 import { Sprite } from "@/components/Graphics";
-import { twMerge } from "tailwind-merge";
+import { SoulProps, CharacterProps } from "@/hooks/useSoulRoom";
 
 //todo convert to useSoulSimple
 export default function SoulVoice({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) {
@@ -24,7 +23,7 @@ export default function SoulVoice({ soulID, character }: { soulID: SoulProps, ch
     const [thinking, setThinking] = useState<boolean>(false);
     const [talking, setTalking] = useState<boolean>(true);
     const [connected, setConnected] = useState<boolean>(false);
-    const [localMessages, setLocalMessages] = useLocalStorage<MessageProps[]>('soul-' + soulID.blueprint, [defaultMessage]);
+    const [localMessages, setLocalMessages] = useState<MessageProps[]>([defaultMessage]);
 
     const soul = useMemo<Soul>(() => {
 
@@ -46,6 +45,7 @@ export default function SoulVoice({ soulID, character }: { soulID: SoulProps, ch
                 content: newContent,
                 type: "says",
                 character: character,
+                timestamp: Date.now(),
             }
 
             // setMessages([...messages, messageProp]);
@@ -63,6 +63,7 @@ export default function SoulVoice({ soulID, character }: { soulID: SoulProps, ch
                 content: newContent,
                 type: "thinks",
                 character: character,
+                timestamp: Date.now(),
             }
 
             //only add message internally

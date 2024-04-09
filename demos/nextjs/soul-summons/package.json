@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@opensouls/engine": "^0.1.13",
     "@opensouls/soul": "^0.1.12",
     "@uidotdev/usehooks": "^2.4.1",
     "next": "14.1.4",

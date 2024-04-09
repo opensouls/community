@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useLocalStorage } from '@uidotdev/usehooks'
-import SoulVoice, { Label, Sprite } from "../../components/Soul"
+import SoulVoice from "@/components/Soul"
+import { Label, Sprite } from "@/components/Graphics"
 import { MessageProps, CharacterProps } from "@/hooks/useSoulRoom"
-import { MessageBox } from "../../components/Messages"
+import { Input, InputForm, MessageBox } from "../../components/Messages"
 import { CharacterBox } from "./Layout"
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
@@ -78,26 +78,9 @@ export default function Desk({ }) {
 
                             <hr className="border-gray-400" />
 
-                            <form
-                                className="flex flex-row gap-2"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    if (e.target[0].value === '') return console.log('no content');
-                                    addEvent({
-                                        content: e.target[0].value,
-                                        type: 'thinks',
-                                        character: worldCharacter,
-                                        timestamp: Date.now(),
-                                    });
-                                    e.target[0].value = '';
-                                }}>
-                                <input
-                                    type="text"
-                                    placeholder="chat"
-                                    className="border-[1px] border-black px-4"
-                                />
-                                <button>enter</button>
-                            </form>
+                            <InputForm>
+                                <Input />
+                            </InputForm>
 
                             <button
                                 className="border-[1px] bg-white border-black w-min px-4 hover:bg-black hover:text-white"
