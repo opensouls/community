@@ -69,7 +69,7 @@ export default function Thinker() {
         }
     }, [localMessages])
 
-    const textStyle = 'p-1 tracking-tight text-black' // border-black border-[1px]
+    const textStyle = 'p-2 tracking-tight bg-white bg-opacity-100' // border-black border-[1px]
     const width = 'min-w-[36em] w-[36em]' //md:min-w-[40em] md:w-[40em]
     const height = 'min-h-[36em] h-[36em]' //md:min-h-[40em] md:h-[40em]
     const scale = 'scale-50'
@@ -78,10 +78,18 @@ export default function Thinker() {
     return (
         <>
 
-            <div className={`flex flex-col gap-8 relative bg-white z-[1000] mt-8 mx-auto ${width} ${height}`}>
+            <div className={`flex flex-col gap-4 relative bg-white z-[1000] m-auto ${width} ${height}`}>
 
                 <div className={`relative border-[1px] border-black rounded-xl ${width} ${height}`}>
 
+                    <TextBox text={thought}
+                        className={`absolute right-[5em] top-[18em] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder}`}
+
+                    />
+                    <TextBox text={said}
+                        className={`absolute left-[5em] top-[16em] max-w-[12em] text-base text-black font-sans ${textStyle} ${showBorder}`}
+                    />
+                    
                     <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
                     {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
 
@@ -94,13 +102,6 @@ export default function Thinker() {
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} />
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} />
 
-                    <TextBox text={thought}
-                        className={`absolute right-[6em] top-[19em] max-w-[10em] min-h-[10em] text-sm opacity-25 ${textStyle} ${showBorder}`}
-
-                    />
-                    <TextBox text={said}
-                        className={`absolute left-[5em] top-[16em] max-w-[12em] min-h-[10em] text-base font-sans ${textStyle} ${showBorder}`}
-                    />
                 </div>
 
                 <div className={`absolute top-[5.5em] flex flex-col w-full`}>
@@ -115,7 +116,9 @@ export default function Thinker() {
                 </div>
 
                 {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
-
+                <a href='https://www.opensouls.studio/' target='_blank'>
+                    <img src='/logo.png' className='color-black text-black mx-auto w-[8em] opacity-50' />
+                </a>
             </div>
 
         </>
