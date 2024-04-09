@@ -3,7 +3,7 @@
 const isProd = process.env.NODE_ENV === 'production'
 
 const nextConfig = {
-  assetPrefix: isProd ? 'https://reggie-is-regex-opensouls.vercel.app/' : undefined,
+  assetPrefix: isProd ? '/test/opensouls/reggie/' : undefined,
 };
 
 export default nextConfig;
