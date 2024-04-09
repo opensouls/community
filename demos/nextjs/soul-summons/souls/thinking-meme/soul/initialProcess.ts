@@ -48,7 +48,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
 
   //do a thought
   [memory, stream] = await internalMonologue(memory, "Try to model the mind of the person speaking and beautifully appreciate what has been said from a shared perspective", {
-    stream: false,
+    stream: true,
     model: "quality",
   });
 
@@ -58,8 +58,6 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
     action: "thinks",
     content: stream
   });
-
-  await wait(500);
 
   //quick yes / no on whether to respond
   // const [, shouldSpeak] = await mentalQuery(memory, requiresResponse, { model: "quality" });

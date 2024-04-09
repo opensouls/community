@@ -88,17 +88,19 @@ export function ImageAnimated({ srcs, rate = 200, className = '' } : { srcs: str
     )
 }
 
-export function Blinking({ rate = 500, children }: { rate?: number, children: React.ReactNode }) {
+export function Blinking({ enabled = true, rate = 500, children }: { enabled?:boolean, rate?: number, children: React.ReactNode }) {
 
     const [visible, setVisible] = useState<boolean>(true);
 
     useEffect(() => {
+        if(!enabled) return;
+
         const timer = setInterval(() => {
             setVisible(last => !last);
         }, rate);
 
         return () => clearInterval(timer);
-    }, [rate])
+    }, [rate, enabled])
 
     return (
         <div className={visible ? 'visible' : 'invisible'}>

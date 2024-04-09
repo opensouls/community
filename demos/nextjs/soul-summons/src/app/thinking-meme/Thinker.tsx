@@ -42,6 +42,7 @@ export default function Thinker() {
     const [said, setSaid] = useState<string>('');
     const [prompt, setPrompt] = useState<string>('');
     const [emotion, setEmotion] = useState<string>('😐');
+    const [cycle, setCycle] = useState<string>('0');
 
     //do some filtering
     useEffect(() => {
@@ -52,9 +53,8 @@ export default function Thinker() {
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
             setPrompt(lastMessage.content)
             setThought('');
-            setEmotion('');
         } else if (lastMessage.type === 'thinks') {
-            setThought(lastMessage.content)
+            setThought(`${lastMessage.content} ${emotion}`)
         } else if (lastMessage.type === 'says') {
             setSaid(lastMessage.content)
         } else if (lastMessage.type === 'feels') {
@@ -75,9 +75,9 @@ export default function Thinker() {
 
 
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
-    const width = 'min-w-[36em] w-[36em]' //md:min-w-[40em] md:w-[40em]
-    const height = 'min-h-[36em] h-[36em]' //md:min-h-[40em] md:h-[40em]
-    const scale = 'duration-200 scale-[.65] md:scale-100 md:translate-y-[0%] md:translate-x-[0%]'
+    const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
+    const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
+    const scale = 'duration-200 scale-[1] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
     const showBorder = ''//border-[1px] border-red-500'
     const stateClassName = {
         'waiting': `${state === 'waiting' ? 'opacity-100' : 'opacity-100'}`,
@@ -86,23 +86,37 @@ export default function Thinker() {
         'speaking': `${state === 'speaking' ? 'opacity-100' : 'opacity-100'}`,
     }
 
+    const cycles = [
+        'I meet someone new',
+        'we talk',
+        'I fall in love',
+        'they leave',
+    ]
+
+    const positions = [
+        'w-[10em] top-[14%] left-[33%] text-center',
+        'w-[10em] top-[49%] right-[7%] text-right',
+        'w-[10em] bottom-[17%] left-[30%] text-center',
+        'w-[10em] top-[48%] left-[6%] text-left',
+    ]
+
     return (
         <>
-            <div className={`bg-white w-screen flex justify-center`}>
+            <div className={`bg-white w-screen flex justify-center ${scale} `}>
 
-                <Bentoish className={`relative ${width} ${height} ${scale} `}>
+                <Bentoish className={`relative ${width} ${height} `}>
 
                     <div className=''>
 
                         <TextBox
-                            text={`${thought} ${emotion}`}
-                            className={`absolute z-[1000] right-[5em] top-[18em] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
+                            text={`${thought}`}
+                            className={`absolute z-[1000] right-[10%] top-[42%] h-[30%] w-[30%] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
 
                         />
 
                         <TextBox
                             text={`${said}`}
-                            className={`absolute z-[1000] left-[5em] top-[16em] max-w-[12em] text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
+                            className={`absolute z-[1000] left-[14%] top-[45%] h-[30%] w-[30%] text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
                         />
 
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={stateClassName['thinking']} />
@@ -122,14 +136,15 @@ export default function Thinker() {
                         <p className='text-black'>mood:</p>
                         <p>{emotion}</p>
                     </div> */}
+
                     </div>
 
-                    <div className={`absolute top-[5.5em] flex flex-col w-full`}>
-                        <InputForm className={`w-[18em] mx-auto z-[100] ${showBorder}`}>
+                    <div className={`absolute top-[15%] flex flex-col w-full`}>
+                        <InputForm className={`w-[50%] text-sm mx-auto z-[100] ${showBorder}`}>
                             <InputTextArea
                                 className='w-full border-none bg-transparent focus:border-none outline-0'
                                 placeholder={'talk'}
-                                maxLength={75}
+                                maxLength={35}
 
                             />
                         </InputForm>
@@ -139,7 +154,25 @@ export default function Thinker() {
 
             </div>
 
-            <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+            <div className={`bg-white w-screen flex justify-center ${scale}`}>
+                <Bentoish className={`relative ${width} ${height} `}>
+                    <div className=''>
+                        {cycles.map((c, i) =>
+                            <Blinking enabled={i.toString() === cycle}>
+                                <TextBox
+                                    text={`${c}`}
+                                    className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]}`}
+                                />
+                            </Blinking>
+                        )}
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_chair.png'} />
+                    </div>
+                </Bentoish>
+            </div>
+
+            {/* <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+
                 <Bentoish className={`col-span-2 p-4`}>
                     <TextBox text={prompt} className={`text-sm text-gray-400 ${textStyle}`} />
                 </Bentoish>
@@ -147,14 +180,14 @@ export default function Thinker() {
                 <Bentoish className={`col-span-2 p-4`}>
                     <TextBox text={debugText} className={`text-sm text-gray-400 ${textStyle}`} />
                 </Bentoish>
-            </div>
+            </div> */}
         </>
     )
 }
 
-function Bentoish({ className, children }: { className:string, children: React.ReactNode }) {
+function Bentoish({ className, children }: { className: string, children: React.ReactNode }) {
 
-    const cn = twMerge(`rounded-xl border-[1px] border-black`, className);
+    const cn = twMerge(``, className); //rounded-xl border-[1px] border-black
 
     return (
         <div className={cn}>
