@@ -166,7 +166,7 @@ export default function Thinker() {
                             </Blinking>
                         )}
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} />
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_chair.png'} />
+                        <ImageLayer className='scale-[.75]' src={'/thinking-meme/ThinkingMeme_chair.png'} />
                     </div>
                 </Bentoish>
             </div>
