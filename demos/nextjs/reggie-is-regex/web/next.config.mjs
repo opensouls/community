@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
+
+const isProxyEnabled = process.env.ENABLE_PROXY === 'true';
+
 const nextConfig = {
-  assetPrefix: '/test/opensouls/reggie/',
+  assetPrefix: isProxyEnabled ? '/s/opensouls/reggie/' : undefined,
 };
 
 export default nextConfig;
