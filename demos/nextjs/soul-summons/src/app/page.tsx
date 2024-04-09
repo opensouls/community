@@ -1,5 +1,5 @@
 import Image from "next/image";
-import PageLayout from "@/components/Layout";
+import Layout from "@/components/Layout";
 import Demo from "@/components/Demo";
 import Thinker from "./thinking-meme/Thinker";
 
@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <main className="flex flex-col min-h-screen p-24 m-0">
 
-      <PageLayout />
+      {/* <Layout /> */}
       <Thinker />
 
     </main>

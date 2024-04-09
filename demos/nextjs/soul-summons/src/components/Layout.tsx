@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function PageLayout() {
+export default function Layout() {
 
     return (
         <div className="absolute z-10 max-w-5xl items-center justify-between font-mono text-sm lg:flex">

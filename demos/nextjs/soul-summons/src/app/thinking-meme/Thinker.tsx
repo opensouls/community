@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { SoulState, ActionType, useSoulRoom, useSoulSimple } from '@/hooks/useSoulRoom';
 import { Input } from '@/components/Messages';
 import { MessageBox } from '@/components/Messages';
-import { Blinking } from '@/components/Graphics';
+import { ImageLayer, Blinking } from '@/components/Graphics';
 
 const thinkingSoul = {
     name: 'overthinker',
@@ -29,7 +29,7 @@ export default function Thinker() {
     const { localMessages, state } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
 
     return (
-        <>
+        <div>
             <p>whats up?</p>
             <div className='relative flex flex-col bg-white select-none'>
 
@@ -41,28 +41,15 @@ export default function Thinker() {
                     <Blinking>
                         <ImageLayer src={THOUGHT_STATES[state]} />
                     </Blinking>
+                    {/* <Blinking>
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_eyes.png'} />
+                    </Blinking> */}
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} />
                 </div>
                 <MessageBox messages={messages} className='h-36'/>
             </div>
 
-        </>
-    )
-}
-
-function ImageLayer({ src = '', alt = '' }) {
-
-    return (
-        <>
-            {src &&
-                <Image
-                    className='absolute m-auto'
-                    src={src}
-                    alt={alt}
-                    width={500}
-                    height={500}
-                />}
-        </>
+        </div>
     )
 }

@@ -1,3 +1,5 @@
+"use-client" 
+
 import React, { useEffect, useState, useMemo } from "react"
 import { useLocalStorage, useHover } from '@uidotdev/usehooks'
 import { Soul, said } from "@opensouls/soul"

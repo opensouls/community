@@ -28,7 +28,7 @@ export const ActionStyling = {
 export function Input({ className = '' }: { className?: string }) {
 
     const { messages, addEvent } = useSoulRoom();
-    const cn = twMerge('border-[1px] border-black px-4', className)
+    const cn = twMerge('border-[1px] border-black px-4 text-black', className)
 
     return (
         <form
@@ -50,7 +50,8 @@ export function Input({ className = '' }: { className?: string }) {
                 placeholder="chat"
                 className={cn}
             />
-            <button>enter</button>
+            {/* <button>enter</button>
+            <button>enter</button> */}
         </form>
     )
 }
@@ -58,7 +59,7 @@ export function Input({ className = '' }: { className?: string }) {
 export function MessageBox({ messages, className = '' }: { messages: MessageProps[], className?: string }) {
 
     const ref = useRef<HTMLDivElement>(null);
-    const cn = twMerge('relative w-full h-24 flex flex-col grow-1 overflow-y-scroll justify-end content-end align-bottom p-2', className);
+    const cn = twMerge('border-black border-[1px] relative w-full h-24 flex flex-col grow-1 overflow-y-scroll justify-end content-end align-bottom p-2', className);
 
 
     useEffect(() => {

@@ -1,8 +1,11 @@
-import {useState, useEffect} from 'react'
-import {useHover} from '@uidotdev/usehooks'
-import {twMerge} from 'tailwind-merge'
+"use client"
 
-export function Label({ children, className = '' }:{children: React.ReactNode, className?: string}) {
+import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import { useHover } from '@uidotdev/usehooks'
+import { twMerge } from 'tailwind-merge'
+
+export function Label({ children, className = '' }: { children: React.ReactNode, className?: string }) {
 
     const cn = twMerge(className, 'font-bold font-mono text-md text-left text-[#222] text-center')
 
@@ -49,7 +52,24 @@ export function Sprite({ src = '', animate = false, onClick = () => { } }) {
     )
 }
 
-export function Blinking({rate=500, children}:{rate?: number, children: React.ReactNode}) {
+export function ImageLayer({ src = '', alt = '', className = '', width = 500, height = 500 }) {
+
+    const cn = twMerge('absolute m-auto', className)
+    return (
+        <>
+            {src &&
+                <Image
+                    className={cn}
+                    src={src}
+                    alt={alt}
+                    width={width}
+                    height={height}
+                />}
+        </>
+    )
+}
+
+export function Blinking({ rate = 500, children }: { rate?: number, children: React.ReactNode }) {
 
     const [visible, setVisible] = useState<boolean>(true);
 
