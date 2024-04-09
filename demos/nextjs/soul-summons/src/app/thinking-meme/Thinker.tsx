@@ -52,6 +52,7 @@ export default function Thinker() {
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
             setPrompt(lastMessage.content)
             setThought('');
+            setEmotion('');
         } else if (lastMessage.type === 'thinks') {
             setThought(lastMessage.content)
         } else if (lastMessage.type === 'says') {
@@ -94,13 +95,13 @@ export default function Thinker() {
                     <div className=''>
 
                         <TextBox
-                            text={thought}
+                            text={`${thought} ${emotion}`}
                             className={`absolute z-[1000] right-[5em] top-[18em] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
 
                         />
 
                         <TextBox
-                            text={said}
+                            text={`${said}`}
                             className={`absolute z-[1000] left-[5em] top-[16em] max-w-[12em] text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
                         />
 
