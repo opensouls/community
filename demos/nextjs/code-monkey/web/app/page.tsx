@@ -4,7 +4,6 @@ import { Button } from "@/components/button";
 import SendMessageForm from "@/components/send-message-form";
 import SoulMessage from "@/components/soul-message";
 import UserMessage from "@/components/user-message";
-import { env } from "@/lib/env";
 import { useOnMount } from "@/lib/hooks/use-on-mount";
 import { Soul, said } from "@opensouls/engine";
 import { Fragment, useRef, useState } from "react";
@@ -131,8 +130,8 @@ function useSoul({
     console.log("connecting soul...");
 
     const soulInstance = new Soul({
-      organization: env.NEXT_PUBLIC_OPENSOULS_ORG,
-      blueprint: env.NEXT_PUBLIC_OPENSOULS_BLUEPRINT,
+      organization: process.env.NEXT_PUBLIC_OPENSOULS_ORG!,
+      blueprint: process.env.NEXT_PUBLIC_OPENSOULS_BLUEPRINT!,
     });
 
     soulInstance.on("newSoulEvent", (event) => {
