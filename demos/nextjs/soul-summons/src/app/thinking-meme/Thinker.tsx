@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { SoulState, ActionType, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
-import { InputForm, Input } from '@/components/Messages';
+import { InputForm, Input, InputTextArea } from '@/components/Messages';
 import { MessageBox } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { twMerge } from 'tailwind-merge';
 
 import Markdown from 'react-markdown';
+import { useLocalStorage } from '@uidotdev/usehooks';
 
 const thinkingSoul = {
     name: 'overthinker',
@@ -19,9 +20,9 @@ const thinkingSoulID = {
 }
 
 const THOUGHT_STATES: Record<SoulState, string> = {
-    'waiting': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
-    'thinking': '/thinking-meme/ThinkingMeme_0002s_0001_enterHead.png',
-    'speaking': '/thinking-meme/ThinkingMeme_0002s_0001_exitHead.png',
+    'waiting': '/thinking-meme/ThinkingMeme_reply.png',
+    'thinking': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
+    'speaking': '/thinking-meme/ThinkingMeme_0000s_0001_exitHead.png',
 }
 const THINKING_BUBBLES = [
     '/thinking-meme/ThinkingMeme_0001s_0000_thought1.png',
@@ -47,6 +48,7 @@ export default function Thinker() {
 
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
             setPrompt(lastMessage.content)
+            setThought('');
         } else if (lastMessage.type === 'thinks') {
             setThought(lastMessage.content)
         } else if (lastMessage.type === 'says') {
@@ -55,29 +57,15 @@ export default function Thinker() {
 
     }, [messages])
 
-    const textStyle = 'p-1 text-sm tracking-tight border-black border-[1px]'
+    const textStyle = 'p-1 text-sm tracking-tight text-black' // border-black border-[1px]
 
     return (
-        <div>
-            {/* <p>whats up?</p> */}
-            <div className='relative flex flex-col bg-white select-none z-[1000]'>
+        <>
 
-                <InputForm className='absolute left-8 top-8'>
-                    <Input className='w-24' />
-                </InputForm>
+            <div className='flex flex-col gap-4 relative max-w-[36em] bg-white z-[1000] m-auto'>
 
-                <div className='relative bg-green m-auto w-[36em] h-[36em] border-red border-2 '>
 
-                    <TextBox text={prompt}
-                        className={`absolute m-auto top-[1em] max-w-[20em] bg-green-500 ${textStyle}`}
-                        style={{ x: '500', y: '500' }}
-                    />
-                    <TextBox text={thought}
-                        className={`absolute right-[5em] top-[17em] max-w-[10em] bg-red-500 ${textStyle}`}
-                    />
-                    <TextBox text={said}
-                        className={`absolute left-[5em] top-[19em] max-w-[14em] min-h-[12em] bg-gray-500 ${textStyle}`}
-                    />
+                <div className='relative h-[36em] border-[1px] border-black'>
 
                     <Blinking>
                         <ImageLayer src={THOUGHT_STATES[state]} />
@@ -85,21 +73,38 @@ export default function Thinker() {
                     {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
                     {/* {state === 'speaking' && <ImageAnimated srcs={THINKING_BUBBLES} />} */}
                     {/* <Blinking>
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_eyes.png'} />
-                    </Blinking> */}
+<ImageLayer src={'/thinking-meme/ThinkingMeme_eyes.png'} />
+</Blinking> */}
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} />
+                    <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} />
+
+                    <TextBox text={thought}
+                        className={`absolute right-[6em] top-[18em] max-w-[10em] ${textStyle}`}
+                    />
+                    <TextBox text={said}
+                        className={`absolute left-[5em] top-[19em] max-w-[14em] min-h-[12em] ${textStyle}`}
+                    />
+
                 </div>
-                <MessageBox messages={messages} className='h-36' />
+
+                <div className='absolute top-[5.5em] flex flex-col w-full'>
+                    <InputForm className='max-w-[16em] mx-auto z-[100]'>
+                        <InputTextArea className='border-none bg-transparent focus:border-none outline-0' placeholder={'say to soul'} />
+                    </InputForm>
+                </div>
+
+
+                <MessageBox messages={messages} className='h-36 p-4' />
             </div>
 
-        </div>
+        </>
     )
 }
 
 function TextBox({ text = '', className = '', ...props }) {
 
-    const cn = twMerge(`p-1 text-sm tracking-tight`, className);
+    const cn = twMerge(`p-1`, className);
     return (
         <Markdown className={cn} {...props}>
             {text}

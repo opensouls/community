@@ -26,9 +26,9 @@ export const Indentation = {
 }
 
 export const ActionStyling = {
-    "says": "text-black bg-white font-serif",
+    "says": "font-mono text-black bg-white",
     "thinks": "font-mono text-gray-600 bg-[#c5c5c5]",
-    "does": "font-mono text-red-500 font-serif",
+    "does": "font-mono text-red-500",
     "ambience": "font-mono text-gray-400 italic bg-[#f5f5f5]",
 }
 
@@ -63,22 +63,72 @@ export function InputForm({ children, className = '', ...props }: { children: Re
 
 export function Input({ className = '', ...props }: { className?: string }) {
 
+    const { addEvent } = useSoulRoom();
     const cn = twMerge('border-[1px] border-black px-4 text-black', className)
 
     return (
-        <input
-            type="text"
-            placeholder="chat"
+        <form
             className={cn}
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                e.preventDefault();
+                const inputElement = e.currentTarget.elements[0] as HTMLInputElement;
+                if (inputElement.value === '') return console.log('no content');
+                addEvent({
+                    content: inputElement.value,
+                    type: 'thinks',
+                    character: PLAYER_CHARACTER,
+                    timestamp: Date.now(),
+                });
+                inputElement.value = '';
+            }}
             {...props}
-        />
+        >
+            <input
+                type="text"
+                placeholder="chat"
+                className={cn}
+                {...props}
+            />
+        </form>
     )
 }
+
+export function InputTextArea({ className = '', ...props }: { className?: string, [propName: string]: any }) {
+    
+    const { addEvent } = useSoulRoom();
+    const [value, setValue] = React.useState('');
+
+    const cn = twMerge('border-[1px] border-black px-4 text-black', className);
+
+    const handleKeyDown = (event: any) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addEvent({
+                content: value,
+                type: 'thinks',
+                character: PLAYER_CHARACTER,
+                timestamp: Date.now(),
+            });
+            setValue('');
+        }
+    };
+
+    return (
+        <textarea
+            className={cn}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            style={{ resize: 'none' }}
+            {...props}
+        />
+    );
+}
+
 
 export function MessageBox({ messages, className = '' }: { messages: MessageProps[], className?: string }) {
 
     const ref = useRef<HTMLDivElement>(null);
-    const cn = twMerge('border-black border-[1px] relative w-full h-24 flex flex-col grow-1 overflow-y-scroll justify-end content-end align-bottom p-2', className);
+    const cn = twMerge('relative border-black border-[1px] w-full h-24 flex flex-col overflow-y-scroll p-2', className);
 
 
     useEffect(() => {
@@ -93,7 +143,7 @@ export function MessageBox({ messages, className = '' }: { messages: MessageProp
 
                 const lastMessage = index > 0 ? messages[index - 1] : undefined;
                 const showName = message?.character && lastMessage?.character?.name !== message.character.name;
-                const nameClassName = `flex text-white w-min p-1 mt-2 ${message?.character?.color}`
+                const nameClassName = `flex w-min text-black underline p-1 mt-1 ${message?.character?.color}`
 
                 return (
                     <div key={message?.timestamp}>
@@ -138,7 +188,7 @@ export function MessageSlug({ message, settings, className = '' }: { message: Me
 export function Name({ text = '', className = '', style = {} }) {
     return (
         <div
-            className={twMerge('flex font-bold leading-4 tracking-tight', className)}
+            className={twMerge('flex leading-4 tracking-tight', className)}
         >
             {text}
         </div>

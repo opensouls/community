@@ -21,7 +21,7 @@ export type MessageProps = {
     character?: CharacterProps,
 }
 
-export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor', color: 'bg-gray' }
+export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor', color: 'bg-gray-400' }
 export const EXAMPLE_MESSAGE: MessageProps = { content: 'HONKKKK!!', type: 'ambience', character: PLAYER_CHARACTER, timestamp: Date.now() };
 
 const startState: MessageProps[] = [];
@@ -60,6 +60,8 @@ export type SoulProps = {
     blueprint: string,
 }
 
+
+
 export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) => {
 
     const { messages, addEvent } = useSoulRoom();
@@ -73,7 +75,6 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
     }), [soulID]);
 
     const [currentWorldState, setCurrentWorldState] = useState<MessageProps>();
-    const [thinking, setThinking] = useState<boolean>(false);
     const [talking, setTalking] = useState<boolean>(true);
     const [connected, setConnected] = useState<boolean>(false);
     const [localMessages, setLocalMessages] = useLocalStorage<MessageProps[]>('soul-' + soulID.blueprint, [defaultMessage]);
@@ -91,7 +92,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
         //todo what else to destructure here,
         //should be generic function
-        //also shouldn't be inside useMemo
+        //also shouldn't be inside useMemo?
         initSoul.on("says", async ({ content }) => {
 
             const newContent = await content();
@@ -106,11 +107,10 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
             // setMessages([...messages, messageProp]);
             addEvent(messageProp);
-            setThinking(false);
+            setState('waiting');
 
         });
 
-        //todo what else to destructure here
         initSoul.on('thinks', async ({ content }) => {
 
             const newContent = await content();
@@ -125,7 +125,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
             //only add message internally
             setLocalMessages([...localMessages, messageProp]);
-            setThinking(false);
+            setState('speaking');
 
         });
 
@@ -148,10 +148,10 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
                     // console.log(`${soulID.blueprint}: New world state`, newWorldState);
                     setCurrentWorldState(newMessage);
-                    setThinking(true);
 
                     console.log(`${character.name.toUpperCase()} dispatching ${newMessage.content}`);
                     soul.dispatch(said(newMessage?.character?.name ?? 'User', newMessage.content))
+                    setState('thinking');
 
                 }
             }

@@ -5,7 +5,7 @@ import Thinker from "./thinking-meme/Thinker";
 
 export default function Home() {
   return (
-    <main className="flex flex-col min-h-screen p-24 m-0">
+    <main className="flex flex-col min-h-screen p-24 m-0 bg-white selection:bg-gray-200 font-serif ">
 
       {/* <Layout /> */}
       <Thinker />
