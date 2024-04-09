@@ -27,7 +27,7 @@ export default function MadeWithSoulEngine() {
         </div>
       </div>
       <div>        
-        <Link href="https://discord.gg/opensouls" rel="noopener noreferrer" target="_blank" className="flex gap-2 px-3 py-2 bg-[#5b5bd6] justify-center align-middle transition duration-75 ease-in-out hover:scale-105 hover:shadow-lg">
+        <Link href="https://discord.gg/opensouls" rel="noopener noreferrer" target="_blank" className="flex gap-2 px-3 py-2 bg-[#5b5bd6] justify-center align-middle rounded transition duration-75 ease-in-out hover:scale-105 hover:shadow-lg">
           <svg
             className="w-4 h-4"
             stroke="currentColor"
