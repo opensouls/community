@@ -86,9 +86,10 @@ export default function Thinker() {
                     {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
 
                     {/* {state === 'speaking' && <ImageAnimated srcs={THINKING_BUBBLES} />} */}
-                    {/* <Blinking>
-                        <ImageAnimated srcs={['/thinking-meme/ThinkingMeme_eyes.png','/thinking-meme/ThinkingMeme_eyes_star.png']} />
+                    {/* <Blinking rate={2600}>
+                        <ImageAnimated srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']} rate={2000} />
                     </Blinking> */}
+
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} />
                     <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} />
@@ -104,12 +105,17 @@ export default function Thinker() {
 
                 <div className={`absolute top-[5.5em] flex flex-col w-full`}>
                     <InputForm className={`w-[18em] mx-auto z-[100] ${showBorder}`}>
-                        <InputTextArea className='border-none bg-transparent focus:border-none outline-0' placeholder={'say to soul'} />
+                        <InputTextArea
+                            className='w-full border-none bg-transparent focus:border-none outline-0'
+                            placeholder={'talk'}
+                            maxLength={75}
+
+                        />
                     </InputForm>
                 </div>
 
+                {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
 
-                <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' />
             </div>
 
         </>

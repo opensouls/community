@@ -26,7 +26,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
   dispatch({
     name: workingMemory.soulName,
     action: "hears",
-    content: 'here it comes..'
+    content: 'Time to listen and ponder deeply.'
   });
 
 
