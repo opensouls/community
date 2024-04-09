@@ -7,7 +7,7 @@ import { devtools, persist } from 'zustand/middleware'
 import { Soul, said } from "@opensouls/soul"
 
 export type ActionType = "says" | "thinks" | "does" | "ambience"
-export type SoulState = 'waiting' | 'thinking' | 'speaking';
+export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
 
 export type CharacterProps = {
     name: string,
@@ -135,6 +135,8 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
     useEffect(() => {
 
+        setState('processing');
+
         const timer = setTimeout(() => {
 
             // console.log('timer');
@@ -156,7 +158,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
                 }
             }
 
-        }, 2000);
+        }, 500);
 
         return () => clearTimeout(timer);
 

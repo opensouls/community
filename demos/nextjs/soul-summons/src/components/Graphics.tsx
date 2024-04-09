@@ -69,7 +69,7 @@ export function ImageLayer({ src = '', alt = '', className = '', width = 1024, h
     )
 }
 
-export function ImageAnimated({ srcs, rate = 500, className = '' } : { srcs: string[], rate?: number, className?: string }) {
+export function ImageAnimated({ srcs, rate = 200, className = '' } : { srcs: string[], rate?: number, className?: string }) {
 
     const [frame, setFrame] = useState<number>(0);
 
