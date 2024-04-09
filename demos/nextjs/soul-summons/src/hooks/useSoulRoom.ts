@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo } from "react"
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
-import { Soul, said } from "@opensouls/soul"
+import { Soul, said, ActionEvent } from "@opensouls/soul"
 
-export type ActionType = "says" | "thinks" | "does" | "ambience"
+export type ActionType = "says" | "thinks" | "does" | "ambience" | 'feels'
 export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
 
 export type CharacterProps = {
@@ -36,30 +36,19 @@ const handleEvent = (newMessage: MessageProps) => {
     return newMessage
 }
 
-export const useSoulRoom = create<WorldState>()(
-    devtools(
-        persist(
-            (set) => ({
-                messages: startState,
-                addEvent: (newMessage) => set((state) => {
-                    handleEvent(newMessage);
-                    return { messages: [...state.messages, newMessage] }
-                }),
-                setEvents: (newArray) => set((state) => ({ messages: newArray })),
-            }),
-            {
-                name: 'universe',
-            },
-        ),
-    ),
-)
+export const useSoulRoom = create<WorldState>()((set) => ({
+    messages: startState,
+    addEvent: (newMessage) => set((state) => {
+        handleEvent(newMessage);
+        return { messages: [...state.messages, newMessage] }
+    }),
+    setEvents: (newArray) => set((state) => ({ messages: newArray })),
+}))
 
 export type SoulProps = {
     organization: string,
     blueprint: string,
 }
-
-
 
 export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) => {
 
@@ -92,6 +81,28 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
         //todo what else to destructure here,
         //should be generic function
         //also shouldn't be inside useMemo?
+
+        //not working atm
+        // initSoul.on("interactionRequest", async ({ content }) => {
+
+        initSoul.on("feels", async ({ content }) => {
+
+            const newContent = await content();
+            console.log("Soul feels", newContent);
+
+            const messageProp: MessageProps = {
+                content: newContent,
+                type: "feels",
+                character: character,
+                timestamp: Date.now(),
+            }
+
+            // setMessages([...messages, messageProp]);
+            addEvent(messageProp);
+            setState('thinking');
+
+        });
+
         initSoul.on("says", async ({ content }) => {
 
             const newContent = await content();
@@ -134,32 +145,34 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
     useEffect(() => {
 
-        setState('processing');
+        let timer = null
 
-        const timer = setTimeout(() => {
+        if (messages && connected && messages.length > 0) {
 
-            // console.log('timer');
+            const newMessage = messages[messages.length - 1];
+            // console.log('newWorldState', JSON.stringify(newMessage))
 
-            if (messages && connected && messages.length > 0) {
+            if (newMessage !== currentWorldState && newMessage?.character?.name !== character.name) {
+                setState('processing');
 
-                const newMessage = messages[messages.length - 1];
-                // console.log('newWorldState', JSON.stringify(newMessage))
+                timer = setTimeout(() => {
 
-                if (newMessage !== currentWorldState && newMessage?.character?.name !== character.name) {
-
+                    // console.log('timer');
                     // console.log(`${soulID.blueprint}: New world state`, newWorldState);
+
                     setCurrentWorldState(newMessage);
 
                     console.log(`${character.name.toUpperCase()} dispatching ${newMessage.content}`);
                     soul.dispatch(said(newMessage?.character?.name ?? 'User', newMessage.content))
                     setState('thinking');
 
-                }
+                }, 500);
             }
+        }
 
-        }, 500);
-
-        return () => clearTimeout(timer);
+        return () => {
+            if (timer) clearTimeout(timer);
+        }
 
     }, [messages, character],)
 

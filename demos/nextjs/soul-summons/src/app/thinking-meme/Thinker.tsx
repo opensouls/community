@@ -5,12 +5,15 @@ import { SoulState, ActionType, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } f
 import { InputForm, Input, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { twMerge } from 'tailwind-merge';
+import Image from 'next/image';
 
 import Markdown from 'react-markdown';
 
 const thinkingSoul = {
     name: 'overthinker',
 }
+
+const debugText = 'nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  '
 
 const thinkingSoulID = {
     organization: 'neilsonnn',
@@ -35,9 +38,10 @@ export default function Thinker() {
     const { messages } = useSoulRoom();
     const { localMessages, state } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
 
-    const [thought, setThought] = useState<string>('prompt blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl  ');
-    const [said, setSaid] = useState<string>('prompt blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl  ');
-    const [prompt, setPrompt] = useState<string>('prompt blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl  ');
+    const [thought, setThought] = useState<string>('');
+    const [said, setSaid] = useState<string>('');
+    const [prompt, setPrompt] = useState<string>('');
+    const [emotion, setEmotion] = useState<string>('😐');
 
     //do some filtering
     useEffect(() => {
@@ -52,6 +56,8 @@ export default function Thinker() {
             setThought(lastMessage.content)
         } else if (lastMessage.type === 'says') {
             setSaid(lastMessage.content)
+        } else if (lastMessage.type === 'feels') {
+            setEmotion(lastMessage.content)
         }
 
     }, [messages])
@@ -66,59 +72,93 @@ export default function Thinker() {
         }
     }, [localMessages])
 
-    const textStyle = 'p-2 tracking-tight bg-white bg-opacity-100' // border-black border-[1px]
+
+    const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
     const width = 'min-w-[36em] w-[36em]' //md:min-w-[40em] md:w-[40em]
     const height = 'min-h-[36em] h-[36em]' //md:min-h-[40em] md:h-[40em]
-    const scale = 'scale-50'
+    const scale = 'duration-200 scale-[.65] md:scale-100 md:translate-y-[0%] md:translate-x-[0%]'
     const showBorder = ''//border-[1px] border-red-500'
+    const stateClassName = {
+        'waiting': `${state === 'waiting' ? 'opacity-100' : 'opacity-100'}`,
+        'processing': `${state === 'processing' ? 'opacity-100' : 'opacity-100'}`,
+        'thinking': `${state === 'thinking' ? 'opacity-100' : 'opacity-100'}`,
+        'speaking': `${state === 'speaking' ? 'opacity-100' : 'opacity-100'}`,
+    }
 
     return (
         <>
+            <div className={`bg-white w-screen flex justify-center`}>
 
-            <div className={`flex flex-col gap-4 relative bg-white z-[1000] m-auto ${width} ${height}`}>
+                <Bentoish className={`relative ${width} ${height} ${scale} `}>
 
-                <div className={`relative border-[1px] border-black rounded-xl ${width} ${height}`}>
+                    <div className=''>
 
-                    <TextBox text={thought}
-                        className={`absolute right-[5em] top-[18em] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder}`}
+                        <TextBox
+                            text={thought}
+                            className={`absolute z-[1000] right-[5em] top-[18em] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
 
-                    />
-                    <TextBox text={said}
-                        className={`absolute left-[5em] top-[16em] max-w-[12em] text-base text-black font-sans ${textStyle} ${showBorder}`}
-                    />
-                    
-                    <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
-                    {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
+                        />
 
-                    {/* {state === 'speaking' && <ImageAnimated srcs={THINKING_BUBBLES} />} */}
-                    {/* <Blinking rate={2600}>
+                        <TextBox
+                            text={said}
+                            className={`absolute z-[1000] left-[5em] top-[16em] max-w-[12em] text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
+                        />
+
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={stateClassName['thinking']} />
+
+                        <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
+                        {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
+
+                        {/* {state === 'speaking' && <ImageAnimated srcs={THINKING_BUBBLES} />} */}
+                        {/* <Blinking rate={2600}>
                         <ImageAnimated srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']} rate={2000} />
                     </Blinking> */}
 
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} />
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} className={stateClassName['waiting']} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={stateClassName['speaking']} />
 
-                </div>
+                        {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
+                        <p className='text-black'>mood:</p>
+                        <p>{emotion}</p>
+                    </div> */}
+                    </div>
 
-                <div className={`absolute top-[5.5em] flex flex-col w-full`}>
-                    <InputForm className={`w-[18em] mx-auto z-[100] ${showBorder}`}>
-                        <InputTextArea
-                            className='w-full border-none bg-transparent focus:border-none outline-0'
-                            placeholder={'talk'}
-                            maxLength={75}
+                    <div className={`absolute top-[5.5em] flex flex-col w-full`}>
+                        <InputForm className={`w-[18em] mx-auto z-[100] ${showBorder}`}>
+                            <InputTextArea
+                                className='w-full border-none bg-transparent focus:border-none outline-0'
+                                placeholder={'talk'}
+                                maxLength={75}
 
-                        />
-                    </InputForm>
-                </div>
+                            />
+                        </InputForm>
+                    </div>
 
-                {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
-                <a href='https://www.opensouls.studio/' target='_blank'>
-                    <img src='/logo.png' className='color-black text-black mx-auto w-[8em] opacity-50' />
-                </a>
+                </Bentoish>
+
             </div>
 
+            <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+                <Bentoish className={`col-span-2 p-4`}>
+                    <TextBox text={prompt} className={`text-sm text-gray-400 ${textStyle}`} />
+                </Bentoish>
+
+                <Bentoish className={`col-span-2 p-4`}>
+                    <TextBox text={debugText} className={`text-sm text-gray-400 ${textStyle}`} />
+                </Bentoish>
+            </div>
         </>
+    )
+}
+
+function Bentoish({ className, children }: { className:string, children: React.ReactNode }) {
+
+    const cn = twMerge(`rounded-xl border-[1px] border-black`, className);
+
+    return (
+        <div className={cn}>
+            {children}
+        </div>
     )
 }
 
