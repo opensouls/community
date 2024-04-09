@@ -4,6 +4,13 @@ import { twMerge } from 'tailwind-merge';
 import { useSoulRoom, MessageProps, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
 import Markdown from 'react-markdown';
 
+export type TextProps = {
+    message: MessageProps,
+    showName: boolean,
+    actionFilter: string,
+}
+
+
 export const ActionCaret = {
     "says": "→",
     "thinks": "~",
@@ -25,34 +32,46 @@ export const ActionStyling = {
     "ambience": "font-mono text-gray-400 italic bg-[#f5f5f5]",
 }
 
-export function Input({ className = '' }: { className?: string }) {
+export function InputForm({ children, className = '', ...props }: { children: React.ReactNode, className?: string }) {
 
-    const { messages, addEvent } = useSoulRoom();
+    const { addEvent } = useSoulRoom();
+    const cn = twMerge('flex flex-row w-min gap-2', className)
+
+    return (
+        <>
+            <form
+                className={cn}
+                onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                    e.preventDefault();
+                    const inputElement = e.currentTarget.elements[0] as HTMLInputElement;
+                    if (inputElement.value === '') return console.log('no content');
+                    addEvent({
+                        content: inputElement.value,
+                        type: 'thinks',
+                        character: PLAYER_CHARACTER,
+                        timestamp: Date.now(),
+                    });
+                    inputElement.value = '';
+                }}
+                {...props}
+            >
+                {children}
+            </form>
+        </>
+    )
+}
+
+export function Input({ className = '', ...props }: { className?: string }) {
+
     const cn = twMerge('border-[1px] border-black px-4 text-black', className)
 
     return (
-        <form
-            className="flex flex-row gap-2"
-            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-                e.preventDefault();
-                const inputElement = e.currentTarget.elements[0] as HTMLInputElement;
-                if (inputElement.value === '') return console.log('no content');
-                addEvent({
-                    content: inputElement.value,
-                    type: 'thinks',
-                    character: PLAYER_CHARACTER,
-                    timestamp: Date.now(),
-                });
-                inputElement.value = '';
-            }}>
-            <input
-                type="text"
-                placeholder="chat"
-                className={cn}
-            />
-            {/* <button>enter</button>
-            <button>enter</button> */}
-        </form>
+        <input
+            type="text"
+            placeholder="chat"
+            className={cn}
+            {...props}
+        />
     )
 }
 
@@ -97,6 +116,23 @@ export function MessageBox({ messages, className = '' }: { messages: MessageProp
         </div>
     )
 }
+
+export function MessageSlug({ message, settings, className = '' }: { message: MessageProps }) {
+
+    return (
+        <div className='flex flex-row text-sm leading-4 tracking-tight'>
+            <div className={`p-1 flex ${ActionStyling[message.type]} ${Indentation[message.type]}`}>
+                {ActionCaret[message.type]}
+            </div>
+            <div className={`p-1 ${ActionStyling[message.type]}`}>
+                <Markdown>
+                    {message.content}
+                </Markdown>
+            </div>
+        </div>
+    )
+}
+
 
 
 export function Name({ text = '', className = '', style = {} }) {

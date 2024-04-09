@@ -52,7 +52,7 @@ export function Sprite({ src = '', animate = false, onClick = () => { } }) {
     )
 }
 
-export function ImageLayer({ src = '', alt = '', className = '', width = 500, height = 500 }) {
+export function ImageLayer({ src = '', alt = '', className = '', width = 1024, height = 1024 }) {
 
     const cn = twMerge('absolute m-auto', className)
     return (
@@ -66,6 +66,25 @@ export function ImageLayer({ src = '', alt = '', className = '', width = 500, he
                     height={height}
                 />}
         </>
+    )
+}
+
+export function ImageAnimated({ srcs, rate = 500, className = '' } : { srcs: string[], rate?: number, className?: string }) {
+
+    const [frame, setFrame] = useState<number>(0);
+
+    useEffect(() => {
+
+        const timer = setInterval(() => {
+            setFrame(frame == srcs.length - 1 ? 0 : frame + 1);
+        }, rate);
+
+        return () => clearInterval(timer);
+
+    }, [frame, rate])
+
+    return (
+        <ImageLayer src={srcs[frame]} className={className} />
     )
 }
 

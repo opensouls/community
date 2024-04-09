@@ -21,7 +21,7 @@ export type MessageProps = {
     character?: CharacterProps,
 }
 
-export const PLAYER_CHARACTER: CharacterProps = { name: 'world', color: 'bg-black' }
+export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor', color: 'bg-gray' }
 export const EXAMPLE_MESSAGE: MessageProps = { content: 'HONKKKK!!', type: 'ambience', character: PLAYER_CHARACTER, timestamp: Date.now() };
 
 const startState: MessageProps[] = [];
@@ -83,7 +83,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
         const initSoul = new Soul(soulID);
 
         initSoul.connect().then(() => {
-            // console.log("Connected to soul", soulID);
+            console.log("Connected to soul", soulID);
             setConnected(true);
         }).catch((error) => {
             console.error("Error connecting to soul", soulID, error);
