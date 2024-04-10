@@ -1,4 +1,28 @@
-import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, z, stripEntityAndVerb, stripEntityAndVerbFromStream } from "@opensouls/engine";
+import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, z, useActions } from "@opensouls/engine";
+import internalMonologue from "./internalMonologue.js";
+import externalDialog from "./externalDialog.js";
+import { RequestOptions } from "https";
+
+export type BuildingBlock = {
+    stream?: boolean,
+    model?: string,
+}
+
+const talk = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
+    const { dispatch, log } = useActions();
+    const [memory, stream] = await externalDialog(workingMemory, description, params);
+    dispatch({ name: workingMemory.soulName, action: "says", content: stream, _metadata: { state: 'says' } });
+    return [memory, stream] as [WorkingMemory, string];
+}
+
+const think = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
+    const { dispatch, log } = useActions();
+    const [memory, stream] = await internalMonologue(workingMemory, description, params);
+    dispatch({ name: workingMemory.soulName, action: "thinks", content: stream, _metadata: { state: 'thinks' } });
+    return [memory, stream] as [WorkingMemory, string];
+}
+
+
 
 const criteria = createCognitiveStep(({ description, criteria }: { description: string, criteria: string[] }) => {
 
@@ -37,36 +61,5 @@ const criteria = createCognitiveStep(({ description, criteria }: { description: 
     };
 });
 
-// const mentalQuery = createCognitiveStep((statement: string) => {
-
-//     const params = z.object({
-//         isStatementTrue: z.boolean().describe(`Is the statement true or false?`),
-//     });
-
-//     return {
-//         command: ({ soulName: name }: WorkingMemory) => {
-//             return {
-//                 role: ChatMessageRoleEnum.System,
-//                 name: name,
-//                 content: indentNicely`
-//           Model the mind of ${name} and decide if ${name} would believe the following statement is true or false:
-
-//           > ${statement}
-
-//           Please choose true if ${name} believes the statement is true, or false if ${name} believes the statement is false.
-//         `,
-//             };
-//         },
-//         schema: params,
-//         postProcess: async (memory: WorkingMemory, response: z.output<typeof params>) => {
-//             const newMemory = {
-//                 role: ChatMessageRoleEnum.Assistant,
-//                 content: `${memory.soulName} evaluated: \`${statement}\` and decided that the statement is ${response.isStatementTrue ? 'true' : 'false'}`
-//             };
-//             return [newMemory, response.isStatementTrue];
-//         }
-//     };
-// });
-
-export default criteria
+export { talk, think, criteria }
 

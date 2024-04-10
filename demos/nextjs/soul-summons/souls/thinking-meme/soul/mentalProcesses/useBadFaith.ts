@@ -49,7 +49,7 @@ const useBadFaith: MentalProcess = async ({ workingMemory }) => {
     }
 
     let metadata:any = { 
-      animation: rabbitDepth.current < rabbitHole.length - 1 ? 'crazy-eyes' : '',
+      animation: rabbitDepth.current < rabbitHole.length - 1 ? 'angry' : '',
       state: rabbitDepth.current === rabbitHole.length - 1 ? 'thinks' : ''
     };
 
@@ -60,6 +60,7 @@ const useBadFaith: MentalProcess = async ({ workingMemory }) => {
       - Thinks short thought, only a sentence or so.
       `,
       { stream: true, model: "quality", });
+      
     dispatch({
       name: workingMemory.soulName, action: "thinks", content: stream,
       _metadata: metadata,

@@ -24,6 +24,9 @@ const thinkingSoulID = {
     debug: true, 
 }
 
+export enum ANIMATIONS { idle, gone, angry }
+export type AnimationType = typeof ANIMATIONS[number];
+
 const THOUGHT_STATES: Record<SoulState, string> = {
     'waiting': '/thinking-meme/ThinkingMeme_reply.png',
     'processing': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
@@ -82,12 +85,14 @@ export default function Thinker() {
     }, [localMessages])
 
 
+    
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
     const selectedStyle = 'underline';
     const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
     const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
     const scale = 'duration-200 scale-[.75] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
     const showBorder = ''//border-[1px] border-red-500'
+    const characterVisible = `duration-200 ${metadata?.animation !== 'gone' ? 'opacity-100' : 'opacity-0'}`
 
     const stateClassName = {
         'waiting': `${state === 'waiting' ? 'opacity-100' : 'opacity-100'}`,
@@ -118,7 +123,7 @@ export default function Thinker() {
 
                     <div className=''>
 
-                        {metadata?.animation && <Blinking rate={5800}>
+                        {metadata?.animation === ANIMATIONS.angry && <Blinking rate={5800}>
                             <ImageAnimated
                                 className='z-[1111]'
                                 srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']}
@@ -136,10 +141,10 @@ export default function Thinker() {
                             className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] break-words text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
                         />
 
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={stateClassName['thinking']} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={`${stateClassName['thinking']} ${characterVisible}`} />
                         <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
                         {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={stateClassName['speaking']} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={`${stateClassName['speaking']} ${characterVisible}`} />
 
                         {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
                         <p className='text-black'>mood:</p>
