@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import { useSoul } from "./SoulProvider";
 import { ActionEvent } from "@opensouls/soul";
@@ -34,7 +36,7 @@ const RegexInput: React.FC = () => {
       return;
     }
     setButtonDisabled(true)
-    setThought("")
+    setThought("...")
     console.log("dispatching regexChanged", inputValue);
     soul.dispatch({
       action: "regexChanged",
@@ -49,7 +51,7 @@ const RegexInput: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-full text-white">
-      <div className="flex items-center justify-center bg-reggie-purple rounded-full p-6 mx-6">
+      <div className="flex items-center justify-center bg-reggie-purple rounded-full p-6 mx-6 min-h-[76px]">
         <p className="text-lg text-md border-1 border-gray-200 text-white placeholder-white text-center px-5">{thought}</p>
       </div>
       <div className="flex items-center justify-center h-full space-x-2 mt-10 mx-6">
@@ -57,7 +59,7 @@ const RegexInput: React.FC = () => {
         <div className="flex items-center justify-center">
           <input
             type="text"
-            className="w-full h-full p-5 text-2xl md:text-6xl border-1 border-gray-200 bg-black text-white placeholder-white text-center"
+            className="w-full h-full p-5 text-2xl md:text-6xl border-1 border-gray-200 bg-background text-white placeholder-white text-center"
             defaultValue={defaultRegex}
             onChange={handleInputChange}
             onKeyDown={(event) => {
