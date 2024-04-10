@@ -22,7 +22,7 @@ export default function Home() {
     <SoulProvider>
       <main className="flex min-h-screen flex-col items-center justify-center space-y-8">
         <RegexInput />
-        <div className="fixed bottom-10 w-full">
+        <div className="fixed bottom-5 sm:bottom-9 w-full">
           <MadeWithSoulEngine />
         </div>
       </main>
