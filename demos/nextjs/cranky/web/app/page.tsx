@@ -16,14 +16,14 @@ export type SoulChatMessage = {
 export type ChatMessage = UserChatMessage | SoulChatMessage;
 
 export const metadata: Metadata = {
-  title: "Cranky, the misanthrope ASCII artist",
+  title: "Cranky, the misanthropic ASCII artist",
   openGraph: {
     images: [
       {
         url: "https://souls.chat/s/opensouls/cranky/og.png",
         width: 1200,
         height: 630,
-        alt: "Cranky, the misanthrope ASCII artist"
+        alt: "Cranky, the misanthropic ASCII artist"
       }
     ]
   },

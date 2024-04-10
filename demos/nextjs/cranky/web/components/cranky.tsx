@@ -90,7 +90,7 @@ export default function Cranky() {
               src="/splash.png"
               width={512}
               height={512}
-              alt="Cranky, the misanthrope ASCII artist"
+              alt="Cranky, the misanthropic ASCII artist"
               priority
             />
             <span className="text-center text-c-green sm:text-3xl">{`Use the text input below to send Cranky a message (at your own risk).`}</span>

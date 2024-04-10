@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Code Monkey",
-  description: "helps you write CODE!",
+  title: "Cranky",
+  description: "The misanthropic ASCII artist",
 };
 
 export default function Layout({
