@@ -1,0 +1,15 @@
+{
+  "name": "cranky",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cd web && npm run dev"
+  },
+  "dependencies": {
+    "@opensouls/engine": "^0.1.12"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
