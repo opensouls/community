@@ -9,6 +9,7 @@ import SendMessageForm from "./send-message-form";
 import SoulMessage from "./soul-message";
 import UserMessage from "./user-message";
 import MadeWithSoulEngine from "./made-with-soul-engine";
+import getAssetPath from "@/lib/assets";
 
 export type UserChatMessage = {
   type: "user";
@@ -84,12 +85,25 @@ export default function Cranky() {
       <div className="flex flex-col gap-6 pb-64 px-8">
         {messages.length === 0 ? (
           <div className="flex flex-col w-full min-h-screen items-center sm:justify-center gap-8 sm:gap-20">
-            <Image src="/splash.png" width={512} height={512} alt="Cranky, the misanthrope ASCII artist" priority />
+            <Image
+              loader={({ src }) => getAssetPath(src)}
+              src="/splash.png"
+              width={512}
+              height={512}
+              alt="Cranky, the misanthrope ASCII artist"
+              priority
+            />
             <span className="text-center text-c-green sm:text-3xl">{`Use the text input below to send Cranky a message (at your own risk).`}</span>
           </div>
         ) : (
           messages.map((message, i) => (
-            <Fragment key={i}>{message.type === "user" ? <UserMessage>{message.content}</UserMessage> : <SoulMessage message={message} />}</Fragment>
+            <Fragment key={i}>
+              {message.type === "user" ? (
+                <UserMessage>{message.content}</UserMessage>
+              ) : (
+                <SoulMessage message={message} />
+              )}
+            </Fragment>
           ))
         )}
       </div>
