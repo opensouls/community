@@ -9,6 +9,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
 
   const { speak, dispatch, log } = useActions();
   const { wait } = useProcessManager()
+  const cycle = useProcessMemory('0'); 
   const emotion = useProcessMemory('😐');
 
   let memory = workingMemory;
@@ -33,18 +34,18 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
     content: '*starts listening*'
   });
 
-  [, stream] = await emojiEmotion(memory, `How are you feeling at this exact moment? Your last emotion was ${emotion.current}`, {
-    stream: false,
-    model: "quality",
-  });
+  // [, stream] = await emojiEmotion(memory, `How are you feeling at this exact moment? Your last emotion was ${emotion.current}`, {
+  //   stream: false,
+  //   model: "quality",
+  // });
   
-  emotion.current = stream;
+  // emotion.current = stream;
 
-  dispatch({
-    name: workingMemory.soulName,
-    action: "feels",
-    content: stream
-  });
+  // dispatch({
+  //   name: workingMemory.soulName,
+  //   action: "feels",
+  //   content: stream
+  // });
 
   //do a thought
   [memory, stream] = await internalMonologue(memory, "Try to model the mind of the person speaking and beautifully appreciate what has been said from a shared perspective", {
@@ -64,12 +65,20 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
   // log("Should speak:", shouldSpeak);
 
   [memory, stream] = await externalDialog(memory, "Give a lowkey response at what has been said, show the smallest glimmer about what you've been thinking about.", {
-    stream: false,
+    stream: true,
     model: "quality",
   });
 
   speak(stream);
 
+  cycle.current = ((parseInt(cycle.current) + 1) % 4).toString();
+
+  // log('listening');
+  dispatch({
+    name: workingMemory.soulName,
+    action: "state",
+    content: cycle.current
+  });
 
   await memory.finished;
   return memory;

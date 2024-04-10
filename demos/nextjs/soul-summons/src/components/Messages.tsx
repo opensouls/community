@@ -19,6 +19,7 @@ export const ActionCaret: Record<ActionType, string> = {
     "does": "!",
     "ambience": "...",
     "feels": ">",
+    "state": ">",
 }
 
 export const Indentation: Record<ActionType, string> = {
@@ -27,6 +28,7 @@ export const Indentation: Record<ActionType, string> = {
     "does": "ml-4",
     "ambience": "ml-4",
     "feels": "ml-4",
+    "state": "ml-4",
 }
 
 export const ActionStyling: Record<ActionType, string> = {
@@ -35,6 +37,7 @@ export const ActionStyling: Record<ActionType, string> = {
     "does": "font-mono text-red-500",
     "ambience": "font-mono text-gray-400 italic bg-[#f5f5f5]",
     "feels": "font-mono text-black bg-[#f5f5f5]",
+    "state": "font-mono text-black bg-[#f5f5f5]",
 }
 
 export function InputForm({ children, className = '', ...props }: { children: React.ReactNode, className?: string }) {

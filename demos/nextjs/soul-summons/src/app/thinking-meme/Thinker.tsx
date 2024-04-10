@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { SoulState, ActionType, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
-import { InputForm, Input, InputTextArea } from '@/components/Messages';
+import { MessageBox, InputForm, Input, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
@@ -38,8 +38,8 @@ export default function Thinker() {
     const { messages } = useSoulRoom();
     const { localMessages, state } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
 
-    const [thought, setThought] = useState<string>('');
-    const [said, setSaid] = useState<string>('');
+    const [thought, setThought] = useState<string>(`yeah, like two comets crossing paths in the vast cosmos. makes you wonder how many other 'chance encounters' are out there, waiting to collide, to change our trajectory just a bit. pretty cool, this tapestry of lives intertwining.`);
+    const [said, setSaid] = useState<string>('hey, whats up');
     const [prompt, setPrompt] = useState<string>('');
     const [emotion, setEmotion] = useState<string>('😐');
     const [cycle, setCycle] = useState<string>('0');
@@ -54,11 +54,13 @@ export default function Thinker() {
             setPrompt(lastMessage.content)
             setThought('');
         } else if (lastMessage.type === 'thinks') {
-            setThought(`${lastMessage.content} ${emotion}`)
+            setThought(`${lastMessage.content}`) // ${emotion}
         } else if (lastMessage.type === 'says') {
             setSaid(lastMessage.content)
         } else if (lastMessage.type === 'feels') {
             setEmotion(lastMessage.content)
+        } else if (lastMessage.type === 'state') {
+            setCycle(lastMessage.content)
         }
 
     }, [messages])
@@ -67,6 +69,7 @@ export default function Thinker() {
 
         if (localMessages.length === 0) return;
         const lastMessage = localMessages[localMessages.length - 1];
+        console.log('lastMessage', lastMessage);
 
         if (lastMessage.type === 'thinks') {
             setThought(lastMessage.content)
@@ -111,7 +114,6 @@ export default function Thinker() {
                         <TextBox
                             text={`${thought}`}
                             className={`absolute z-[1000] right-[10%] top-[42%] h-[30%] w-[30%] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
-
                         />
 
                         <TextBox
@@ -143,9 +145,8 @@ export default function Thinker() {
                         <InputForm className={`w-[50%] text-sm mx-auto z-[100] ${showBorder}`}>
                             <InputTextArea
                                 className='w-full border-none bg-transparent focus:border-none outline-0'
-                                placeholder={'talk'}
-                                maxLength={35}
-
+                                placeholder={'speak to me...'}
+                                maxLength={65}
                             />
                         </InputForm>
                     </div>
@@ -153,6 +154,8 @@ export default function Thinker() {
                 </Bentoish>
 
             </div>
+
+            {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
 
             <div className={`bg-white w-screen flex justify-center ${scale}`}>
                 <Bentoish className={`relative ${width} ${height} `}>

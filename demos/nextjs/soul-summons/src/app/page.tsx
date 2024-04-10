@@ -7,7 +7,6 @@ export default function Home() {
 
       {/* <Layout /> */}
       <Thinker />
-      {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
       <a href='https://www.opensouls.studio/' target='_blank'>
         <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto w-[8em] opacity-50' />
       </a>

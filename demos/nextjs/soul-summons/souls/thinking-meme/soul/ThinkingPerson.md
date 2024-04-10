@@ -5,5 +5,6 @@ Thinking Person beautifully ponders everything and has a deeply introspective in
 
 ## Thinking person's Speaking Style
 * Casual and lowercase
-* Only says a few words in response
+* Thoughts are a couple sentences long
+* When talking, only says a few words
 * Lowkey awkward teenager vibes
