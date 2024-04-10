@@ -1,37 +1,42 @@
 "use client"
 
-import React from 'react';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useSoulRoom, MessageProps, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
+import { useSoulRoom, MessageProps, PLAYER_CHARACTER, ActionType } from '@/hooks/useSoulRoom';
 import Markdown from 'react-markdown';
 
 export type TextProps = {
     message: MessageProps,
     showName: boolean,
-    actionFilter: string,
+    actionFilter?: string,
+    characterPerspective?: string,
 }
 
-
-export const ActionCaret = {
+export const ActionCaret: Record<ActionType, string> = {
     "says": "→",
     "thinks": "~",
     "does": "!",
     "ambience": "...",
+    "feels": ">",
+    "state": ">",
 }
 
-export const Indentation = {
+export const Indentation: Record<ActionType, string> = {
     "says": "",
     "thinks": "ml-4",
     "does": "ml-4",
     "ambience": "ml-4",
+    "feels": "ml-4",
+    "state": "ml-4",
 }
 
-export const ActionStyling = {
+export const ActionStyling: Record<ActionType, string> = {
     "says": "font-mono text-black bg-white",
     "thinks": "font-mono text-gray-600 bg-[#c5c5c5]",
     "does": "font-mono text-red-500",
     "ambience": "font-mono text-gray-400 italic bg-[#f5f5f5]",
+    "feels": "font-mono text-black bg-[#f5f5f5]",
+    "state": "font-mono text-black bg-[#f5f5f5]",
 }
 
 export function InputForm({ children, className = '', ...props }: { children: React.ReactNode, className?: string }) {
@@ -115,12 +120,19 @@ export function InputTextArea({ className = '', ...props }: { className?: string
         }
     };
 
+    const handleClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
+        event.currentTarget.select();
+    };
+
+
     return (
         <textarea
             className={cn}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
+            onClick={handleClick}
             style={{ resize: 'none' }}
+            spellCheck='false'
             {...props}
         />
     );
@@ -204,7 +216,8 @@ export function Message({ message, className = '' }: { message: MessageProps, cl
             <div className={`p-1 flex ${ActionStyling[message.type]} ${Indentation[message.type]}`}>
                 {ActionCaret[message.type]}
             </div>
-            <div className={`p-1 ${ActionStyling[message.type]}`}>
+
+            <div className={`p-1 ${ActionStyling[message.type]}`} >
                 <Markdown>
                     {message.content}
                 </Markdown>

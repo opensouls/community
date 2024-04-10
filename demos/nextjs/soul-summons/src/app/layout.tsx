@@ -17,7 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <link rel="icon" href="/icon.png" sizes="any" />
-      <body className={inter.className}>{children}</body>
+      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+      <body className={inter.className + ' bg-white'}>{children}</body>
     </html>
   );
 }

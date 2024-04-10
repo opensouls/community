@@ -1,16 +1,19 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { SoulState, ActionType, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
-import { InputForm, Input, InputTextArea } from '@/components/Messages';
+import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
+import { MessageBox, InputForm, Input, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { twMerge } from 'tailwind-merge';
+import Image from 'next/image';
 
 import Markdown from 'react-markdown';
 
 const thinkingSoul = {
     name: 'overthinker',
 }
+
+const debugText = 'nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  '
 
 const thinkingSoulID = {
     organization: 'neilsonnn',
@@ -33,11 +36,13 @@ const THINKING_BUBBLES = [
 export default function Thinker() {
 
     const { messages } = useSoulRoom();
-    const { localMessages, state } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
+    const { localMessages, state, metadata } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
 
-    const [thought, setThought] = useState<string>('prompt blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl  ');
-    const [said, setSaid] = useState<string>('prompt blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl  ');
-    const [prompt, setPrompt] = useState<string>('prompt blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl blabh blabh abl  ');
+    const [thought, setThought] = useState<string>(`yeah, like two comets crossing paths in the vast cosmos. makes you wonder how many other 'chance encounters' are out there, waiting to collide, to change our trajectory just a bit. pretty cool, this tapestry of lives intertwining.`);
+    const [said, setSaid] = useState<string>('hey, whats up');
+    const [prompt, setPrompt] = useState<string>('');
+    const [emotion, setEmotion] = useState<string>('😐');
+    const [cycle, setCycle] = useState<string>('0');
 
     //do some filtering
     useEffect(() => {
@@ -48,10 +53,15 @@ export default function Thinker() {
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
             setPrompt(lastMessage.content)
             setThought('');
+            setSaid('');
         } else if (lastMessage.type === 'thinks') {
-            setThought(lastMessage.content)
+            setThought(`${lastMessage.content}`) // ${emotion}
         } else if (lastMessage.type === 'says') {
             setSaid(lastMessage.content)
+        } else if (lastMessage.type === 'feels') {
+            setEmotion(lastMessage.content)
+        } else if (lastMessage.type === 'state') {
+            setCycle(lastMessage.content)
         }
 
     }, [messages])
@@ -60,65 +70,136 @@ export default function Thinker() {
 
         if (localMessages.length === 0) return;
         const lastMessage = localMessages[localMessages.length - 1];
+        console.log('lastMessage', lastMessage);
 
         if (lastMessage.type === 'thinks') {
             setThought(lastMessage.content)
         }
     }, [localMessages])
 
-    const textStyle = 'p-2 tracking-tight bg-white bg-opacity-100' // border-black border-[1px]
-    const width = 'min-w-[36em] w-[36em]' //md:min-w-[40em] md:w-[40em]
-    const height = 'min-h-[36em] h-[36em]' //md:min-h-[40em] md:h-[40em]
-    const scale = 'scale-50'
+
+    const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
+    const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
+    const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
+    const scale = 'duration-200 scale-[1] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
     const showBorder = ''//border-[1px] border-red-500'
+    const stateClassName = {
+        'waiting': `${state === 'waiting' ? 'opacity-100' : 'opacity-100'}`,
+        'processing': `${state === 'processing' ? 'opacity-100' : 'opacity-100'}`,
+        'thinking': `${state === 'thinking' ? 'opacity-100' : 'opacity-100'}`,
+        'speaking': `${state === 'speaking' ? 'opacity-100' : 'opacity-100'}`,
+    }
+
+    const cycles = [
+        'I meet someone new',
+        'we talk',
+        'I fall in love',
+        'they leave',
+    ]
+
+    const positions = [
+        'w-[10em] top-[14%] left-[33%] text-center',
+        'w-[10em] top-[49%] right-[7%] text-right',
+        'w-[10em] bottom-[17%] left-[30%] text-center',
+        'w-[10em] top-[48%] left-[6%] text-left',
+    ]
 
     return (
         <>
+            <div className={`bg-white w-screen flex justify-center ${scale} `}>
 
-            <div className={`flex flex-col gap-4 relative bg-white z-[1000] m-auto ${width} ${height}`}>
+                <Bentoish className={`relative ${width} ${height} `}>
 
-                <div className={`relative border-[1px] border-black rounded-xl ${width} ${height}`}>
+                    <div className=''>
 
-                    <TextBox text={thought}
-                        className={`absolute right-[5em] top-[18em] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder}`}
+                        {metadata?.animation && <Blinking rate={5800}>
+                            <ImageAnimated 
+                            className='z-[1111]'
+                            srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']} 
+                            rate={3200} />
+                        </Blinking>}
 
-                    />
-                    <TextBox text={said}
-                        className={`absolute left-[5em] top-[16em] max-w-[12em] text-base text-black font-sans ${textStyle} ${showBorder}`}
-                    />
-                    
-                    <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
-                    {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
-
-                    {/* {state === 'speaking' && <ImageAnimated srcs={THINKING_BUBBLES} />} */}
-                    {/* <Blinking rate={2600}>
-                        <ImageAnimated srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']} rate={2000} />
-                    </Blinking> */}
-
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} />
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} />
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} />
-
-                </div>
-
-                <div className={`absolute top-[5.5em] flex flex-col w-full`}>
-                    <InputForm className={`w-[18em] mx-auto z-[100] ${showBorder}`}>
-                        <InputTextArea
-                            className='w-full border-none bg-transparent focus:border-none outline-0'
-                            placeholder={'talk'}
-                            maxLength={75}
-
+                        <TextBox
+                            text={`${thought}`}
+                            className={`absolute right-[10%] top-[42%] h-[30%] w-[30%] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
                         />
-                    </InputForm>
-                </div>
 
-                {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
-                <a href='https://www.opensouls.studio/' target='_blank'>
-                    <img src='/logo.png' className='color-black text-black mx-auto w-[8em] opacity-50' />
-                </a>
+                        <TextBox
+                            text={`${said}`}
+                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
+                        />
+
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={stateClassName['thinking']} />
+
+                        <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
+                        {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
+
+
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} className={stateClassName['waiting']} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={stateClassName['speaking']} />
+
+                        {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
+                        <p className='text-black'>mood:</p>
+                        <p>{emotion}</p>
+                    </div> */}
+
+                    </div>
+
+                    <div className={`absolute top-[15%] flex flex-col w-full`}>
+                        <InputForm className={`w-[50%] text-sm mx-auto z-[100] ${showBorder}`}>
+                            <InputTextArea
+                                className='w-full border-none bg-transparent focus:border-none outline-0'
+                                placeholder={'speak to me...'}
+                                maxLength={65}
+                            />
+                        </InputForm>
+                    </div>
+
+                </Bentoish>
+
             </div>
 
+            {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
+
+            <div className={`bg-white w-screen flex justify-center ${scale}`}>
+                <Bentoish className={`relative ${width} ${height} `}>
+                    <div className=''>
+                        {cycles.map((c, i) =>
+                            <Blinking key={i} enabled={i.toString() === cycle}>
+                                <TextBox
+                                    text={`${c}`}
+                                    className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]}`}
+                                />
+                            </Blinking>
+                        )}
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} />
+                        <ImageLayer className='scale-[.75]' src={'/thinking-meme/ThinkingMeme_chair.png'} />
+                    </div>
+                </Bentoish>
+            </div>
+
+            {/* <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+
+                <Bentoish className={`col-span-2 p-4`}>
+                    <TextBox text={prompt} className={`text-sm text-gray-400 ${textStyle}`} />
+                </Bentoish>
+
+                <Bentoish className={`col-span-2 p-4`}>
+                    <TextBox text={debugText} className={`text-sm text-gray-400 ${textStyle}`} />
+                </Bentoish>
+            </div> */}
         </>
+    )
+}
+
+function Bentoish({ className, children }: { className: string, children: React.ReactNode }) {
+
+    const cn = twMerge(``, className); //rounded-xl border-[1px] border-black
+
+    return (
+        <div className={cn}>
+            {children}
+        </div>
     )
 }
 

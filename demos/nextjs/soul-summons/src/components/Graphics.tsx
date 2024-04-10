@@ -54,7 +54,7 @@ export function Sprite({ src = '', animate = false, onClick = () => { } }) {
 
 export function ImageLayer({ src = '', alt = '', className = '', width = 1024, height = 1024 }) {
 
-    const cn = twMerge('absolute m-auto select-none ', className)
+    const cn = twMerge('absolute m-auto ', className)
     return (
         <>
             {src &&
@@ -88,17 +88,21 @@ export function ImageAnimated({ srcs, rate = 200, className = '' } : { srcs: str
     )
 }
 
-export function Blinking({ rate = 500, children }: { rate?: number, children: React.ReactNode }) {
+export function Blinking({ enabled = true, rate = 500, children }: { enabled?:boolean, rate?: number, children: React.ReactNode }) {
 
     const [visible, setVisible] = useState<boolean>(true);
 
     useEffect(() => {
+        if(!enabled) {
+            setVisible(true);
+            return;
+        }
         const timer = setInterval(() => {
             setVisible(last => !last);
         }, rate);
 
         return () => clearInterval(timer);
-    }, [rate])
+    }, [rate, enabled])
 
     return (
         <div className={visible ? 'visible' : 'invisible'}>
