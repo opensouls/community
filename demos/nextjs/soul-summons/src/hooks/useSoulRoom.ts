@@ -7,7 +7,7 @@ import { Soul, said, ActionEvent } from "@opensouls/soul"
 import { v4 as uuidv4 } from 'uuid';
 
 const ACTIONS = ["says", "thinks", "does", "ambience", "feels", "state"] as const;
-type ActionType = typeof ACTIONS[number];
+export type ActionType = typeof ACTIONS[number];
 
 export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
 

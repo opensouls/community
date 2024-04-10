@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { SoulState, ActionType, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
+import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
 import { MessageBox, InputForm, Input, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { twMerge } from 'tailwind-merge';
@@ -161,7 +161,7 @@ export default function Thinker() {
                 <Bentoish className={`relative ${width} ${height} `}>
                     <div className=''>
                         {cycles.map((c, i) =>
-                            <Blinking enabled={i.toString() === cycle}>
+                            <Blinking key={i} enabled={i.toString() === cycle}>
                                 <TextBox
                                     text={`${c}`}
                                     className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]}`}

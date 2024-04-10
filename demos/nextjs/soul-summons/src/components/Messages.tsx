@@ -1,7 +1,6 @@
 "use client"
 
-import React from 'react';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useSoulRoom, MessageProps, PLAYER_CHARACTER, ActionType } from '@/hooks/useSoulRoom';
 import Markdown from 'react-markdown';
@@ -217,7 +216,8 @@ export function Message({ message, className = '' }: { message: MessageProps, cl
             <div className={`p-1 flex ${ActionStyling[message.type]} ${Indentation[message.type]}`}>
                 {ActionCaret[message.type]}
             </div>
-            <div className={`p-1 ${ActionStyling[message.type]}`}>
+
+            <div className={`p-1 ${ActionStyling[message.type]}`} >
                 <Markdown>
                     {message.content}
                 </Markdown>
