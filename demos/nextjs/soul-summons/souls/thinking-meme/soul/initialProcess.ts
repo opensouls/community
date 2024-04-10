@@ -4,8 +4,8 @@ import externalDialog from "./lib/externalDialog.js";
 import internalMonologue from "./lib/internalMonologue.js";
 import emojiEmotion from "./lib/emojiEmotion.js";
 import mentalQuery from "./lib/mentalQuery.js";
-import useBadFaith, { isBadFaith } from "./processes/useBadFaith.js";
-import useMultiDialog from "./processes/useMultiDialog.js";
+import useBadFaith, { isBadFaith } from "./mentalProcesses/useBadFaith.js";
+import useMultiDialog from "./mentalProcesses/useMultiDialog.js";
 
 const initialProcess: MentalProcess = async ({ workingMemory }) => {
 
@@ -32,9 +32,9 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
   dispatch({ name: workingMemory.soulName,action: "hears",content: '*starts listening*'});
 
   // process debugging
-  // log('process switch');
-  // return [memory, useMultiDialog];
-  // return [memory, useBadFaith, { executeNow: true }];
+  log('process switch');
+  return [memory, useMultiDialog, { executeNow: true }];
+  return [memory, useBadFaith, { executeNow: true }];
 
   //do a thought asap before making decisions so they at least get some text
   [memory, stream] = await internalMonologue(memory,

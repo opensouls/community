@@ -9,49 +9,57 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
   const { wait } = useProcessManager()
   const fragmentNo = useProcessMemory(0)
   const { pendingPerceptions } = usePerceptions();
-
-  log("done with multi dialog")
-
+  const debug = false; 
   let thought
   let memory = workingMemory;
+
+  if(debug) log("multi dialog")
+
+  if (pendingPerceptions.current.length > 0) {
+    if(debug) log("ignoring due to pending");
+    return memory;
+  }
 
   [memory, thought] = await externalDialog(memory,
     "Speaks a sentence fragment, part of a larger or greater thought to come",
     { model: "quality" })
-
-  if (pendingPerceptions.current.length > 0) {
-    return memory
-  }
-
   speak(thought);
 
-  let count = Math.round(Math.random() * 4)
-  fragmentNo.current = count
+  const [, countString] = await decision(memory, {
+    description: `Pick a random number, you picked ${fragmentNo.current} last time.`,
+    choices: ['5', '4', '3', '2', '1', '0'],
+  }, { model: "fast" });
+  let count = parseInt(countString);
 
-  if (count === 0) {
-    return memory
-  }
+  fragmentNo.current = count;
+  if(debug) log('sending', fragmentNo.current, 'messages');
 
   while (count > 1) {
-
+    count -= 1;
+    if(debug) log('message', count)
     await wait(200)
 
-    let count = Math.round(Math.random() * 3)
-    const choices = ['very long', 'long', 'medium', 'short'];
-    const preStep = memory;
+    const [, lengthOfText] = await decision(workingMemory, {
+      description: "Pick a random length.",
+      choices: ['very long', 'long', 'medium', 'short'],
+    }, { model: "fast" })
 
+    const preStep = memory;
+    const lastThought = memory.slice(-1).memories[0].content;
+    if(debug) log('last thought', lastThought);
     let nextText
     [memory, nextText] = await externalDialog(
       memory,
       indentNicely`
-        - Says a sentence fragment, extending the train of thought from their last text
-        - Make sure the fragment is ${choices[count]} in length
-        - Their last text was: "${memory.slice(-1).memories[0].content}"
+        - Says a sentence fragment, extending the train of thought from the last thing they said
+        - Make sure the fragment is ${lengthOfText} in length
+        - Their last text was: "${lastThought}"
       `,
       { model: "quality" }
     );
 
     if (pendingPerceptions.current.length > 0) {
+      if(debug) log('exited early due to pending perceptions')
       return preStep;
     }
 
@@ -61,11 +69,12 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
   const [, shouldText] = await decision(memory, {
     description: "Should one more thing be said to finish their last text fragment?",
     choices: ["yes", "no"],
-  }, { model: "quality" })
+  }, { model: "fast" })
 
   if (shouldText === "yes") {
     let speech;
     const preStep = memory;
+    if(debug) log('one last thought');
     [memory, speech] = await externalDialog(
       memory,
       indentNicely`
@@ -73,14 +82,17 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
       `,
       { model: "quality" }
     );
+
     if (pendingPerceptions.current.length > 0) {
+      if(debug) log('exited early due to pending perceptions')
       return preStep
     }
+
     speak(speech);
   }
 
-  log("done with multi dialog")
-  return [memory, initialProcess, { executeNow: true }]
+  if(debug) log("done with multi dialog")
+  return [memory, initialProcess]
 }
 
 export default useMultiDialog
