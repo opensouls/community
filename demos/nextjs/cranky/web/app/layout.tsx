@@ -2,10 +2,12 @@ import { fontCrankyTerminal, fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import "./globals.css";
+import getAssetPath from "@/lib/assets";
 
 export const metadata: Metadata = {
   title: "Cranky",
   description: "The misanthropic ASCII artist",
+  icons: getAssetPath("/favicon.ico"),
 };
 
 export default function Layout({
