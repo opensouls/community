@@ -4,9 +4,10 @@ import decision from "../lib/decision.js"
 import initialProcess from "../initialProcess.js";
 
 const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
+
   const { speak, log } = useActions()
-  const fragmentNo = useProcessMemory(0)
   const { wait } = useProcessManager()
+  const fragmentNo = useProcessMemory(0)
   const { pendingPerceptions } = usePerceptions();
 
   log("done with multi dialog")
