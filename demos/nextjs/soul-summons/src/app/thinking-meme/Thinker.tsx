@@ -98,25 +98,59 @@ export default function Thinker() {
     ]
 
     const positions = [
-        'w-[10em] top-[14%] left-[33%] text-center',
-        'w-[10em] top-[49%] right-[7%] text-right',
-        'w-[10em] bottom-[17%] left-[30%] text-center',
-        'w-[10em] top-[48%] left-[6%] text-left',
+        'w-[50%] top-[7%] left-[30%] text-center',
+        'w-[50%] top-[50%] right-[-4%] text-right',
+        'w-[50%] bottom-[8%] left-[28%] text-center',
+        'w-[50%] top-[49%] left-[-8%] text-left',
     ]
+
 
     return (
         <>
+
+
+            <div className={`bg-white w-screen flex justify-center ${scale}`}>
+                <Bentoish className={`relative w-[24em] h-[24em] `}>
+
+                    <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} className={stateClassName['waiting']} />
+
+                    <div className=''>
+                        {cycles.map((c, i) =>
+                            <Blinking key={i} enabled={i.toString() === cycle} opacity={true}>
+                                <TextBox
+                                    text={`${c}`}
+                                    className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]}`}
+                                />
+                            </Blinking>
+                        )}
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} />
+                        {/* <ImageLayer className='scale-[.75]' src={'/thinking-meme/ThinkingMeme_chair.png'} /> */}
+                    </div>
+
+                    <div className={`absolute top-[45%] flex flex-col w-full`}>
+                        <InputForm className={`w-[60%] text-sm mx-auto z-[100] ${showBorder}`}>
+                            <InputTextArea
+                                className='w-full border-none bg-transparent focus:border-none outline-0'
+                                placeholder={'break the cycle...'}
+                                maxLength={65}
+                            />
+                        </InputForm>
+                    </div>
+
+                </Bentoish>
+            </div>
+
             <div className={`bg-white w-screen flex justify-center ${scale} `}>
 
-                <Bentoish className={`relative ${width} ${height} `}>
+                <Bentoish className={`relative ${width} ${height} mt-[-11em] `}>
 
                     <div className=''>
 
                         {metadata?.animation && <Blinking rate={5800}>
-                            <ImageAnimated 
-                            className='z-[1111]'
-                            srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']} 
-                            rate={3200} />
+                            <ImageAnimated
+                                className='z-[1111]'
+                                srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']}
+                                rate={3200} />
                         </Blinking>}
 
                         <TextBox
@@ -135,7 +169,6 @@ export default function Thinker() {
                         {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
 
 
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} className={stateClassName['waiting']} />
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={stateClassName['speaking']} />
 
                         {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
@@ -145,15 +178,6 @@ export default function Thinker() {
 
                     </div>
 
-                    <div className={`absolute top-[15%] flex flex-col w-full`}>
-                        <InputForm className={`w-[50%] text-sm mx-auto z-[100] ${showBorder}`}>
-                            <InputTextArea
-                                className='w-full border-none bg-transparent focus:border-none outline-0'
-                                placeholder={'speak to me...'}
-                                maxLength={65}
-                            />
-                        </InputForm>
-                    </div>
 
                 </Bentoish>
 
@@ -161,22 +185,6 @@ export default function Thinker() {
 
             {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
 
-            <div className={`bg-white w-screen flex justify-center ${scale}`}>
-                <Bentoish className={`relative ${width} ${height} `}>
-                    <div className=''>
-                        {cycles.map((c, i) =>
-                            <Blinking key={i} enabled={i.toString() === cycle}>
-                                <TextBox
-                                    text={`${c}`}
-                                    className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]}`}
-                                />
-                            </Blinking>
-                        )}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} />
-                        <ImageLayer className='scale-[.75]' src={'/thinking-meme/ThinkingMeme_chair.png'} />
-                    </div>
-                </Bentoish>
-            </div>
 
             {/* <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
 

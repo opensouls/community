@@ -54,7 +54,7 @@ export function Sprite({ src = '', animate = false, onClick = () => { } }) {
 
 export function ImageLayer({ src = '', alt = '', className = '', width = 1024, height = 1024 }) {
 
-    const cn = twMerge('absolute m-auto ', className)
+    const cn = twMerge('absolute m-auto select-none ', className)
     return (
         <>
             {src &&
@@ -69,7 +69,7 @@ export function ImageLayer({ src = '', alt = '', className = '', width = 1024, h
     )
 }
 
-export function ImageAnimated({ srcs, rate = 200, className = '' } : { srcs: string[], rate?: number, className?: string }) {
+export function ImageAnimated({ srcs, rate = 200, className = '' }: { srcs: string[], rate?: number, className?: string }) {
 
     const [frame, setFrame] = useState<number>(0);
 
@@ -88,12 +88,16 @@ export function ImageAnimated({ srcs, rate = 200, className = '' } : { srcs: str
     )
 }
 
-export function Blinking({ enabled = true, rate = 500, children }: { enabled?:boolean, rate?: number, children: React.ReactNode }) {
+export function Blinking(
+    { enabled = true, rate = 500, opacity = false, opacityClass = 'opacity-50', children }:
+        { enabled?: boolean, rate?: number, opacity?: boolean, opacityClass?: string, children: React.ReactNode }
+) {
 
     const [visible, setVisible] = useState<boolean>(true);
+    const cn = opacity ? (visible ? 'opacity-100' : opacityClass) : (visible ? 'visible' : 'invisible');
 
     useEffect(() => {
-        if(!enabled) {
+        if (!enabled) {
             setVisible(true);
             return;
         }
@@ -102,10 +106,10 @@ export function Blinking({ enabled = true, rate = 500, children }: { enabled?:bo
         }, rate);
 
         return () => clearInterval(timer);
-    }, [rate, enabled])
+    }, [rate])
 
     return (
-        <div className={visible ? 'visible' : 'invisible'}>
+        <div className={cn}>
             {children}
         </div>
     )
