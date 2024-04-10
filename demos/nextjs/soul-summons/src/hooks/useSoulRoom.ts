@@ -75,6 +75,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
     const { messages, addEvent, setEvent, getEvent } = useSoulRoom();
     const [state, setState] = useState<SoulState>('waiting');
+    const [metadata, setMetadata] = useState<any>({});
 
     const defaultMessage: MessageProps = useMemo(() => ({
         content: `I (${character.name}) exist.`,
@@ -117,7 +118,14 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
                 value = await event.content();
             }
 
-            if (event.action === 'thinks') {
+            setMetadata(event._metadata);
+
+            if(event._metadata && event._metadata.state) {
+                const state = event._metadata.state;
+                console.log('STATE_OVERRIDE', state)
+                if(state as SoulState !== state) {console.error('state mismatch')}
+                setState(state as SoulState);
+            } else if (event.action === 'thinks') {
                 setState('speaking');
             } else if (event.action === 'says') {
                 setState('waiting');
@@ -220,5 +228,5 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
     }, [soul, messages, character],)
 
-    return { localMessages, state }
+    return { localMessages, state, metadata }
 }

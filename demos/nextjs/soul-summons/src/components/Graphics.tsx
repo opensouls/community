@@ -93,8 +93,10 @@ export function Blinking({ enabled = true, rate = 500, children }: { enabled?:bo
     const [visible, setVisible] = useState<boolean>(true);
 
     useEffect(() => {
-        if(!enabled) return;
-
+        if(!enabled) {
+            setVisible(true);
+            return;
+        }
         const timer = setInterval(() => {
             setVisible(last => !last);
         }, rate);

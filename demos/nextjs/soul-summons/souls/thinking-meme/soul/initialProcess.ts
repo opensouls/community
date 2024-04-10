@@ -50,9 +50,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
     { stream: true, model: "quality" });
 
   log("thinking");
-  dispatch({ name: workingMemory.soulName, action: "thinks", content: stream });
-
-
+  dispatch({ name: workingMemory.soulName, action: "thinks", content: stream, _metadata: { state: 'thinks' } });
 
   //emotions (take too long to process)
   // [, stream] = await emojiEmotion(memory,
@@ -77,7 +75,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
   // return [memory, useMultiDialog, { executeNow: true }];
 
   //increase the cycle
-  dispatch({ name: workingMemory.soulName, action: "state", content: cycle.current });
+  dispatch({ name: workingMemory.soulName, action: "state", content: cycle.current, _metadata: { state: 'error' }  });
 
   // await memory.finished;
   return memory;

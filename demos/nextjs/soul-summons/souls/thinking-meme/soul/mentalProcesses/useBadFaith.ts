@@ -39,6 +39,11 @@ const useBadFaith: MentalProcess = async ({ workingMemory }) => {
       return [memory, initialProcess];
     }
 
+    let metadata:any = { animation: 'crazy-eyes'}
+    if(rabbitDepth.current === rabbitHole.length - 1) {
+      metadata.state = 'thinks';
+    }
+
     [memory, stream] = await internalMonologue(memory,
       indentNicely`
       - Has a thought deeply rooted in the feeling of ${rabbitHole[rabbitDepth.current]} stage of grief. 
@@ -48,7 +53,7 @@ const useBadFaith: MentalProcess = async ({ workingMemory }) => {
       { stream: true, model: "quality", });
     dispatch({
       name: workingMemory.soulName, action: "thinks", content: stream,
-      _metadata: { state: 'thinking' }
+      _metadata: metadata,
     });
 
     rabbitDepth.current++;
