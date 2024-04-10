@@ -5,6 +5,15 @@ import mentalQuery from "../lib/mentalQuery.js";
 import externalDialog from "../lib/externalDialog.js";
 import internalMonologue from "../lib/internalMonologue.js";
 
+const branchBadFaith = async (memory: WorkingMemory) => {
+  const { speak, dispatch, log } = useActions();
+  log("branching bad faith");
+  const [, decision] = await isBadFaith(memory);
+  log('are we in bad faith?', decision);
+  if (decision) { return [memory, useBadFaith, { executeNow: true }] }
+
+}
+
 const isBadFaith = async (memory: WorkingMemory) => await mentalQuery(memory,
   "Something mean, upsetting, or jolting was said to you.",
 );
@@ -14,7 +23,7 @@ const isGoodFaith = async (memory: WorkingMemory) => await mentalQuery(memory,
 );
 
 const rabbitHole = [
-  'shock', 'denial', 'anger', 'bargaining', 'depression', 'testing', 'acceptance',
+  'shock', 'anger', 'bargaining', 'acceptance',
 ]
 
 const useBadFaith: MentalProcess = async ({ workingMemory }) => {
@@ -39,10 +48,10 @@ const useBadFaith: MentalProcess = async ({ workingMemory }) => {
       return [memory, initialProcess];
     }
 
-    let metadata:any = { animation: 'crazy-eyes'}
-    if(rabbitDepth.current === rabbitHole.length - 1) {
-      metadata.state = 'thinks';
-    }
+    let metadata:any = { 
+      animation: rabbitDepth.current < rabbitHole.length - 1 ? 'crazy-eyes' : '',
+      state: rabbitDepth.current === rabbitHole.length - 1 ? 'thinks' : ''
+    };
 
     [memory, stream] = await internalMonologue(memory,
       indentNicely`
@@ -69,4 +78,4 @@ const useBadFaith: MentalProcess = async ({ workingMemory }) => {
 };
 
 export default useBadFaith;
-export { isBadFaith, isGoodFaith }
+export { isBadFaith, isGoodFaith, branchBadFaith}

@@ -71,7 +71,7 @@ export function InputForm({ children, className = '', ...props }: { children: Re
 export function Input({ className = '', ...props }: { className?: string }) {
 
     const { addEvent } = useSoulRoom();
-    const cn = twMerge('border-[1px] border-black px-4 text-black', className)
+    const cn = twMerge('border-[1px] border-black p-2 text-black', className)
 
     return (
         <form
@@ -105,7 +105,7 @@ export function InputTextArea({ className = '', ...props }: { className?: string
     const { addEvent } = useSoulRoom();
     const [value, setValue] = React.useState('');
 
-    const cn = twMerge('border-[1px] border-black px-4 text-black', className);
+    const cn = twMerge('border-[1px] border-black p-2 text-black', className);
 
     const handleKeyDown = (event: any) => {
         if (event.key === 'Enter') {

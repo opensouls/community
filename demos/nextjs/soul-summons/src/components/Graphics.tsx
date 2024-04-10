@@ -89,12 +89,12 @@ export function ImageAnimated({ srcs, rate = 200, className = '' }: { srcs: stri
 }
 
 export function Blinking(
-    { enabled = true, rate = 500, opacity = false, opacityClass = 'opacity-50', children }:
-        { enabled?: boolean, rate?: number, opacity?: boolean, opacityClass?: string, children: React.ReactNode }
+    { enabled = true, rate = 500, opacity = false, opacityClass = 'opacity-50', className = '', children }:
+        { enabled?: boolean, rate?: number, opacity?: boolean, opacityClass?: string, className?: string, children: React.ReactNode }
 ) {
 
     const [visible, setVisible] = useState<boolean>(true);
-    const cn = opacity ? (visible ? 'opacity-100' : opacityClass) : (visible ? 'visible' : 'invisible');
+    const cn = twMerge(opacity ? (visible ? 'opacity-100' : opacityClass) : (visible ? 'visible' : 'invisible'), className);
 
     useEffect(() => {
         if (!enabled) {
@@ -106,7 +106,7 @@ export function Blinking(
         }, rate);
 
         return () => clearInterval(timer);
-    }, [rate])
+    }, [rate, enabled])
 
     return (
         <div className={cn}>

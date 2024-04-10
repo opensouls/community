@@ -15,9 +15,13 @@ const thinkingSoul = {
 
 const debugText = 'nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  '
 
+console.log("API", process.env.NEXT_PUBLIC_SOUL_APIKEY);
+
 const thinkingSoulID = {
     organization: 'neilsonnn',
     blueprint: 'thinking-meme',
+    token: process.env.NEXT_PUBLIC_SOUL_APIKEY,
+    debug: true, 
 }
 
 const THOUGHT_STATES: Record<SoulState, string> = {
@@ -79,10 +83,12 @@ export default function Thinker() {
 
 
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
+    const selectedStyle = 'underline';
     const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
     const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
-    const scale = 'duration-200 scale-[1] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
+    const scale = 'duration-200 scale-[.75] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
     const showBorder = ''//border-[1px] border-red-500'
+
     const stateClassName = {
         'waiting': `${state === 'waiting' ? 'opacity-100' : 'opacity-100'}`,
         'processing': `${state === 'processing' ? 'opacity-100' : 'opacity-100'}`,
@@ -104,45 +110,11 @@ export default function Thinker() {
         'w-[50%] top-[49%] left-[-8%] text-left',
     ]
 
-
     return (
         <>
+            <div className={`w-screen flex justify-center ${scale} `}>
 
-
-            <div className={`bg-white w-screen flex justify-center ${scale}`}>
-                <Bentoish className={`relative w-[24em] h-[24em] `}>
-
-                    <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} className={stateClassName['waiting']} />
-
-                    <div className=''>
-                        {cycles.map((c, i) =>
-                            <Blinking key={i} enabled={i.toString() === cycle} opacity={true}>
-                                <TextBox
-                                    text={`${c}`}
-                                    className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]}`}
-                                />
-                            </Blinking>
-                        )}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} />
-                        {/* <ImageLayer className='scale-[.75]' src={'/thinking-meme/ThinkingMeme_chair.png'} /> */}
-                    </div>
-
-                    <div className={`absolute top-[45%] flex flex-col w-full`}>
-                        <InputForm className={`w-[60%] text-sm mx-auto z-[100] ${showBorder}`}>
-                            <InputTextArea
-                                className='w-full border-none bg-transparent focus:border-none outline-0'
-                                placeholder={'break the cycle...'}
-                                maxLength={65}
-                            />
-                        </InputForm>
-                    </div>
-
-                </Bentoish>
-            </div>
-
-            <div className={`bg-white w-screen flex justify-center ${scale} `}>
-
-                <Bentoish className={`relative ${width} ${height} mt-[-11em] `}>
+                <Bentoish className={`relative ${width} ${height} `}>
 
                     <div className=''>
 
@@ -150,25 +122,23 @@ export default function Thinker() {
                             <ImageAnimated
                                 className='z-[1111]'
                                 srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']}
-                                rate={3200} />
+                                rate={3200}
+                            />
                         </Blinking>}
 
                         <TextBox
                             text={`${thought}`}
-                            className={`absolute right-[10%] top-[42%] h-[30%] w-[30%] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
+                            className={`absolute leading-[.1em] right-[10%] top-[42%] h-[50%] w-[30%] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
                         />
 
                         <TextBox
                             text={`${said}`}
-                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
+                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] break-words text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
                         />
 
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={stateClassName['thinking']} />
-
                         <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
                         {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
-
-
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={stateClassName['speaking']} />
 
                         {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
@@ -183,19 +153,39 @@ export default function Thinker() {
 
             </div>
 
+            <div className={`w-screen flex justify-center ${scale} mt-[-4em]`}>
+                <Bentoish className={`relative w-[22em] h-[22em] `}>
+                    <div className=''>
+                        {cycles.map((c, i) =>
+                            <TextBox
+                                text={`${c}`}
+                                className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]} ${i.toString() === cycle && 'underline text-black'}`}
+                            />
+                        )}
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} />
+                        <Blinking opacity={true}>
+                            <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} className={`stateClassName['speaking'] scale-[1.15]` } />
+                        </Blinking>
+                        {/* <ImageLayer className='scale-[.75]' src={'/thinking-meme/ThinkingMeme_chair.png'} /> */}
+                    </div>
+
+                    <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute top-[42%] z-[1000] flex flex-col w-full`}>
+                        <InputForm className={`w-[62%] text-sm mx-auto z-[100] ${showBorder}`}>
+                            <InputTextArea
+                                className='relative w-full bg-transparent outline-0 border-gray-400 border-none'
+                                placeholder={'break the cycle...'}
+                                maxLength={65}
+                            />
+                        </InputForm>
+
+
+                    </Blinking>
+
+                </Bentoish>
+            </div>
+
             {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
 
-
-            {/* <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-
-                <Bentoish className={`col-span-2 p-4`}>
-                    <TextBox text={prompt} className={`text-sm text-gray-400 ${textStyle}`} />
-                </Bentoish>
-
-                <Bentoish className={`col-span-2 p-4`}>
-                    <TextBox text={debugText} className={`text-sm text-gray-400 ${textStyle}`} />
-                </Bentoish>
-            </div> */}
         </>
     )
 }
@@ -213,7 +203,7 @@ function Bentoish({ className, children }: { className: string, children: React.
 
 function TextBox({ text = '', className = '', style = {}, ...props }) {
 
-    const cn = twMerge(`p-1`, className);
+    const cn = twMerge(`p-1 overflow-clip`, className);
     return (
         <Markdown className={cn} {...props} >
             {text}
