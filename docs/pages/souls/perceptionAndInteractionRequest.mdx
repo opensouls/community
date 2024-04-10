@@ -45,7 +45,7 @@ export default exampleProcess
 
 ## Example Mental Process Dispatch
 
-Your `MentalProcess` can dispatch _metadata as well..
+Your `MentalProcess` can dispatch _metadata as well. By default, every step within workingMemory will dispatch `action:"says"` until otherwise specified by you. 
 
 
 ```typescript filename="heartReactor.ts"
@@ -85,7 +85,6 @@ soul.on("emojiReacts", (evt: ActionEvent) => {
   this.message.react(await evt.content()) 
 })
 ```
-
 
 ## Reference
 
