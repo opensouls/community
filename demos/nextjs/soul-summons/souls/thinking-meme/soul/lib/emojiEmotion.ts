@@ -16,17 +16,16 @@ const emojiEmotion = createCognitiveStep((instructions: string | { instructions:
         role: ChatMessageRoleEnum.System,
         name: name,
         content: indentNicely`
-          Model the mind of ${name} and pick one or two emojis that show how they're feeling.
+          Model the mind of ${name}.
 
           ## Description
           ${instructionString}
 
           ## Rules
           * Emojis returned should match the personality of ${name}.
-          * Only respond with the format '${name} ${verb}: "😐"', no additional commentary or text.
-          * Follow the Description when creating the emoji response!
+          * Pick one or two face emojis that show how ${name} is feeling.
 
-          Please reply with the mood of ${name} in emoji form. Use the format: '${name} ${verb}: "😍"'
+          Please reply with the emojis in the format: '${name} ${verb}: "😍"'
         `
       };
     },
