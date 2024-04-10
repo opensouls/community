@@ -2,7 +2,8 @@
 
 **Soul Designer:** [@tobowers](https://github.com/tobowers)
 
-This soul, named Raggy, is designed to demonstrate the RAG capabilities built into the SOUL ENGINE. There are some documents in the `./rag` directory and those get pushed up to our vector store.
+This soul, named Raggy, is designed to demonstrate the buleprint-wide memory capabilities built into the soul engine. There are docs in the `/docs` directory and running `npm run docs:chunk` will move them into the `stores/docs` directory. `npm run docs:push` will sync the soul engine with the chunked docs.
+
 Then, souls within the organization can access the information contained in those files.
 
 The source code for these processes can be found in the `./soul` directory.
@@ -12,7 +13,11 @@ The source code for these processes can be found in the `./soul` directory.
 In this directory run
 
 ```bash
-npx soul-engine rag push ./rag
+npm run docs:chunk
+```
+
+```bash
+npm run docs:push
 ```
 
 then

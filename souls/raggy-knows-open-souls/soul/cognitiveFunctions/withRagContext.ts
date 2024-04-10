@@ -22,8 +22,8 @@ const withRagContext = async (workingMemory: WorkingMemory) => {
 
   const questionAnswers = await Promise.all(questions.map(async (question) => {
     log("search for ", question)
-    const vectorResults = await search(question, { minSimilarity: 0.4 })
-    log("found", vectorResults.length, "entries")
+    const vectorResults = await search(question, { minSimilarity: 0.6 })
+    log("found", vectorResults.length, "entries, similarity:", vectorResults.map((r) => r.similarity))
 
     if (vectorResults.length === 0) {
       return {

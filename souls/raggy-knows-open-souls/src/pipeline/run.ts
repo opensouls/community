@@ -16,6 +16,9 @@ async function processRagDirectory() {
 
   const rootDir = join(__dirname, '..', '..', 'docs');
 
+  const storeDirRoot = join(__dirname, '..', '..', 'stores', 'docs')
+
+  await fs.mkdir(storeDirRoot, { recursive: true });
 
   for (const file of files) {
     console.log("file: ", file)
@@ -27,7 +30,7 @@ async function processRagDirectory() {
     let sectionNumber = 0;
     for (const section of sections) {
       const sectionFileName = `${relative(rootDir, file).replace(/[\/\\]/, '_')}__${sectionNumber}`;
-      const sectionFilePath = join(__dirname, '..', '..', 'stores', 'docs', sectionFileName);
+      const sectionFilePath = join(storeDirRoot, sectionFileName);
       await fs.writeFile(sectionFilePath, section, 'utf8');
       console.log(`Section ${sectionNumber} of file ${file} saved as ${sectionFileName}`);
       sectionNumber++;
