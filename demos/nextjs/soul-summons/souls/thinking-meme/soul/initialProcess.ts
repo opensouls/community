@@ -6,6 +6,8 @@ import emojiEmotion from "./lib/emojiEmotion.js";
 import mentalQuery from "./lib/mentalQuery.js";
 import useBadFaith, { isBadFaith } from "./mentalProcesses/useBadFaith.js";
 import useMultiDialog from "./mentalProcesses/useMultiDialog.js";
+import conversationCycle from "./conversationCycle.js";
+
 
 const initialProcess: MentalProcess = async ({ workingMemory }) => {
 
@@ -29,12 +31,18 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
   }
 
   //let the client know we are listening to this perception
-  dispatch({ name: workingMemory.soulName,action: "hears",content: '*starts listening*'});
+  dispatch({ name: workingMemory.soulName, action: "hears", content: '*starts listening*' });
+
+
+  //decide if the speaker is in bad faith
+  //kick out to process
+  const [, decision] = await isBadFaith(memory);
+  log('are we in bad faith?', decision);
+  if (decision) { return [memory, useBadFaith, { executeNow: true }] }
 
   // process debugging
-  log('process switch');
-  return [memory, useMultiDialog, { executeNow: true }];
-  return [memory, useBadFaith, { executeNow: true }];
+  // log('process switch');
+  // return [memory, useMultiDialog, { executeNow: true }];
 
   //do a thought asap before making decisions so they at least get some text
   [memory, stream] = await internalMonologue(memory,
@@ -44,11 +52,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
   log("thinking");
   dispatch({ name: workingMemory.soulName, action: "thinks", content: stream });
 
-  //decide if the speaker is in bad faith
-  //kick out to process
-  const [, decision] = await isBadFaith(memory);
-  log('are we in bad faith?', decision);
-  if (decision) { return [memory, useBadFaith, { executeNow: true }] }
+
 
   //emotions (take too long to process)
   // [, stream] = await emojiEmotion(memory,
@@ -66,11 +70,16 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
     { stream: true, model: "quality", });
   speak(stream);
 
-  //increase the cycle
+
+  //do some thinking about the other persons mental model
   cycle.current = ((parseInt(cycle.current) + 1) % 4).toString();
+
+  // return [memory, useMultiDialog, { executeNow: true }];
+
+  //increase the cycle
   dispatch({ name: workingMemory.soulName, action: "state", content: cycle.current });
 
-  await memory.finished;
+  // await memory.finished;
   return memory;
 };
 
