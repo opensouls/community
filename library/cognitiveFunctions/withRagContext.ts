@@ -1,10 +1,11 @@
-import { ChatMessageRoleEnum, WorkingMemory, createCognitiveStep, indentNicely, useBlueprintStore, z } from "@opensouls/engine"
+import { ChatMessageRoleEnum, WorkingMemory, createCognitiveStep, indentNicely, useActions, useBlueprintStore, z } from "@opensouls/engine"
 
-const MAX_QA_MEMORY_LENGTH = 500
+const MAX_QA_MEMORY_LENGTH = 700
 
 const withRagContext = async (workingMemory: WorkingMemory) => {
   const name = workingMemory.soulName
-  const { search } = useBlueprintStore()
+  const { log } = useActions()
+  const { search } = useBlueprintStore("docs")
 
   const [,questions] = await brainstorm(
     workingMemory,
@@ -14,13 +15,15 @@ const withRagContext = async (workingMemory: WorkingMemory) => {
       For example if the interlocutor recently asked about the capital of France, then ${name} might ask their memory: "What is the capital of France?"
 
       ${name} ponders the conversation so far and decides on three questions they should answer from their memory.
-    `
+    `,
   )
 
   const blankAnsweringMemory = workingMemory.slice(0, 1)
 
   const questionAnswers = await Promise.all(questions.map(async (question) => {
-    const vectorResults = await search(question)
+    log("search for ", question)
+    const vectorResults = await search(question, { minSimilarity: 0.6 })
+    log("found", vectorResults.length, "entries, similarity:", vectorResults.map((r) => r.similarity))
 
     if (vectorResults.length === 0) {
       return {
