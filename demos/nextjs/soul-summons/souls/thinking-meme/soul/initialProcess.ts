@@ -12,10 +12,10 @@ const stagesOfRelationship = [
 ]
 
 const stageSpecificThought = [
-  `Beautifully appreciate what has been said and forms lovely thought no longer than a sentence.`,
+  `Beautifully appreciate what has been said and forms lovely thought.`,
   `Thinks about whats going on in the other person's mind of who they're talking to.`,
-  `Wonders whats wrong with the person they're talking to.`,
-  `Gets fed up with the person they're talking to and has a daydream.`,
+  `Starts to get a little bored of what the other person is saying.`,
+  `Completely loses interest and has a daydream.`,
 ]
 
 const stageSpecificSpeech = [
