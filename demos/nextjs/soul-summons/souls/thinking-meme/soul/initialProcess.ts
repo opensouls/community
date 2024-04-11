@@ -12,7 +12,7 @@ const stagesOfRelationship = [
 ]
 
 const stageSpecificThought = [
-  `Beautifully appreciate what has been said and forms lovely thought.`, //and deeply appreciates everything: nature, beauty, the world, existence, etc
+  `Beautifully appreciate what has been said and forms a lovely thought.`, //and deeply appreciates everything: nature, beauty, the world, existence, etc
   `Wonders exactly whats on the interlocutor's mind, what they are thinking exactly in that moment.`,
   `Gets super fixated on the interlocutor's tone and takes offence from it.`,
   `Lightens up and thinks a beautiful thought about the person they're talking to.`,

@@ -48,7 +48,7 @@ export default function Thinker() {
     const { localMessages, state, metadata } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
 
     const [thought, setThought] = useState<string>(``);
-    const [said, setSaid] = useState<string>('hey, whats up');
+    const [said, setSaid] = useState<string>(''); //hey, whats up
     const [prompt, setPrompt] = useState<string>('');
     const [emotion, setEmotion] = useState<string>('😐');
     const [cycle, setCycle] = useState<string>('0');
@@ -89,6 +89,10 @@ export default function Thinker() {
 
 
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
+
+    const speechStyle = 'text-lg text-black font-sans';
+    const thoughtStyle = 'text-sm text-gray-400';
+
     const selectedStyle = 'underline';
     const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
     const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
@@ -134,20 +138,21 @@ export default function Thinker() {
                             />
                         </Blinking>}
 
-                        <TextBox
-                            text={`${thought}`}
-                            className={`absolute leading-[.1em] right-[10%] top-[42%] h-[50%] w-[30%] text-sm text-gray-400 ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
-                        />
-
-                        <TextBox
-                            text={`${said}`}
-                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] break-words text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
-                        />
-
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={`${stateClassName['thinking']} ${characterVisible}`} />
                         <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
                         {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={`${stateClassName['speaking']} `} />
+
+                        <TextBox
+                            text={`${thought}`}
+                            className={`absolute leading-[.1em] right-[10%] top-[42%] h-[50%] w-[30%] ${thoughtStyle} ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
+                        />
+
+                        <TextBox
+                            text={`${said}`}
+                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
+                        />
+
 
                         {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
                         <p className='text-black'>mood:</p>
@@ -161,7 +166,7 @@ export default function Thinker() {
 
             </div>
 
-            <div className={`w-screen flex justify-center ${scale} mt-[-6em]`}>
+            <div className={`w-screen flex justify-center ${scale} mt-[-10em]`}>
                 <Bentoish className={`relative w-[22em] h-[22em] `}>
                     <div className=''>
                         {/* {cycles.map((c, i) =>
@@ -172,15 +177,16 @@ export default function Thinker() {
                         )}
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} /> */}
                         <Blinking opacity={true}>
-                            <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`stateClassName['speaking'] scale-[1.15]`} />
+                            <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`${stateClassName['speaking']} scale-[1.15]`} />
                         </Blinking>
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_inputHead.png'} className={`scale-[1.15]`} />
 
                     </div>
 
                     <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute top-[32%] h-[40%] z-[1000] flex flex-col w-full scale-[1]`}>
                         <InputForm className={`w-[40%] text-sm text-black mx-auto h-full z-[100] ${showBorder}`}>
                             <InputTextArea
-                                className='relative w-full bg-transparent outline-0 border-gray-400 border-none'
+                                className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
                                 placeholder={'chat... '}
                                 maxLength={75}
                             />
