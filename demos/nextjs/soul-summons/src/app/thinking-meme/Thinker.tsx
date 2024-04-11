@@ -15,11 +15,12 @@ const thinkingSoul = {
 
 console.log("API", process.env.NEXT_PUBLIC_SOUL_APIKEY);
 
+const debug = process.env.NODE_ENV !== 'production';
 const thinkingSoulID = {
     organization: 'neilsonnn',
     blueprint: 'thinking-meme',
     token: process.env.NEXT_PUBLIC_SOUL_APIKEY,
-    debug: true,
+    debug: debug,
 }
 
 export enum ANIMATIONS {
