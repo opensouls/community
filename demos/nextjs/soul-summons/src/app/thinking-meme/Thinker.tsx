@@ -80,13 +80,12 @@ export default function Thinker() {
 
         if (localMessages.length === 0) return;
         const lastMessage = localMessages[localMessages.length - 1];
-        console.log('lastMessage', lastMessage);
+        // console.log('lastMessage', lastMessage);
 
         if (lastMessage.type === 'thinks') {
             setThought(lastMessage.content)
         }
     }, [localMessages])
-
 
 
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]

@@ -2,7 +2,7 @@ import { MentalProcess } from "@opensouls/engine";
 import { useActions, useProcessManager } from "@opensouls/engine";
 import initialProcess from "../initialProcess.js";
 
-const useSilentTreatment: MentalProcess = async ({ workingMemory }) => {
+const silentTreatmentProcess: MentalProcess = async ({ workingMemory }) => {
 
   let stream;
 
@@ -34,5 +34,5 @@ const useSilentTreatment: MentalProcess = async ({ workingMemory }) => {
   return [workingMemory, initialProcess];
 };
 
-export default useSilentTreatment;
+export default silentTreatmentProcess;
 

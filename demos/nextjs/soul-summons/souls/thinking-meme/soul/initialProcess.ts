@@ -1,7 +1,6 @@
 import { MentalProcess, WorkingMemory, useSoulMemory, useActions, useProcessMemory, usePerceptions } from "@opensouls/engine";
 import { useBlueprintStore, useOrganizationStore, useProcessManager } from "@opensouls/engine";
-import useBadFaith, { isBadFaith, branchBadFaith} from "./mentalProcesses/useBadFaith.js";
-import useSilentTreatment from "./mentalProcesses/useSilentTreatment.js";
+import badFaithProcess, { isBadFaith, branchBadFaith} from "./mentalProcesses/badFaithProcess.js";
 import { talk, think } from "./lib/buildingBlocks.js";
 
 const stagesOfRelationship = [
@@ -47,9 +46,9 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
   //TODO move this to perceptionProcessor so it always runs no matter what
   const [, decision] = await isBadFaith(memory);
   log('are we in bad faith?', decision);
-  if (decision) { return [memory, useBadFaith, { executeNow: true }] }
+  if (decision) { return [memory, badFaithProcess, { executeNow: true }] }
 
-  //TODO with topper, how to return a process from branchBadFaith?
+  //TODO with topper, how to switch to a different process from branchBadFaith without a if() return statement?
   // await branchBadFaith(memory);
 
 

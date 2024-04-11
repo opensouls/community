@@ -20,8 +20,9 @@ export type MessageProps = {
     content: string,
     type: ActionType
     character?: CharacterProps,
-    timestamp?: number,
-    uuid?: string,
+    metadata?: any,
+    _timestamp?: number,
+    _uuid?: string,
 }
 
 export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor', color: 'bg-gray-400' }
@@ -38,11 +39,10 @@ interface WorldState {
 }
 
 const handleEvent = (newMessage: MessageProps) => {
-    console.log('adding event', JSON.stringify(newMessage));
     const messageWithTimestampAndUUID = {
         ...newMessage,
-        timestamp: Date.now(),
-        uuid: uuidv4(),
+        timestamp: newMessage._timestamp ?? Date.now(),
+        uuid: newMessage._uuid ?? uuidv4(),
     }
     return messageWithTimestampAndUUID
 }
@@ -55,15 +55,18 @@ export const useSoulRoom = create<WorldState>()((set, get) => ({
     }),
     setEvents: (newArray) => set((state) => ({ messages: newArray })),
     setEvent: (index: number, newMessage: MessageProps) => set((state) => {
-        const m = state.messages;
-        m[index] = newMessage;
-        return { messages: m }
+        const messages = [...state.messages];
+        messages[index] = newMessage;
+        return { messages };
     }),
     getEvent: (uuid: string) => {
+        //todo make a record w/ uuid
         const messages = get().messages;
-        const index = messages.findIndex((message) => message.uuid === uuid);
-        return index !== -1 ? [messages[index], index] : [null, -1];
+        const index = messages.findIndex((m) => m._uuid === uuid);
+        if (index === -1) { return [null, -1]; }
+        return [messages[index], index];
     }
+
 }))
 
 export type SoulProps = {
@@ -97,7 +100,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
         setSoul(initSoul);
 
         initSoul.connect().then(() => {
-            console.log("Connected to soul", soulID);
+            console.log("Connected to soul", soulID.blueprint);
             setConnected(true);
         }).catch((error) => {
             console.error("Error connecting to soul", soulID, error);
@@ -120,10 +123,11 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
             setMetadata(event._metadata);
 
-            if(event._metadata && event._metadata.state) {
+
+            if (event._metadata && event._metadata.state) {
                 const state = event._metadata.state;
                 console.log('STATE_OVERRIDE', state)
-                if(state as SoulState !== state) {console.error('state mismatch')}
+                if (state as SoulState !== state) { console.error('state mismatch') }
                 setState(state as SoulState);
             } else if (event.action === 'thinks') {
                 setState('speaking');
@@ -134,7 +138,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
             }
 
             console.log(event.name, event.action, value);
-            const message = createEvent(event, value);
+            const message = ingestAction(event, value);
             let index = -1;
 
             if (local) {
@@ -149,35 +153,42 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
             if (stream) {
 
                 console.log(event.name, event.action, value, 'streaming');
+
                 for await (const txt of event.stream()) {
-                    // console.log(event.action, txt);
-                    const index = message.uuid ? getEvent(message.uuid)[1] : -1;
-                    if(index === -1) {console.error('could not find message in messages');}
-                    setEvent(index, { ...message, content: (message.content + txt).trim() });
+                    if (message._uuid === undefined) { return; }
+                    const [m, index] = getEvent(message._uuid);
+                    if (m === undefined) { console.error('could not find message in messages'); }
+                    message.content = (message.content + txt).trim();
+                    setEvent(index, message);
+
                     // setLocalMessages(last => {
                     //     last[index].content = (last[index].content + txt).trim()
                     //     console.log(last[index].content);
                     //     return last;
                     // });
                 }
+
                 console.log(event.name, event.action, value, 'streaming done');
             }
         }
 
-        function createEvent(event: ActionEvent, content: string) {
+        function ingestAction(event: ActionEvent, content: string) {
+
             const message: MessageProps = {
+                ...event,
                 content: content,
                 type: event.action as ActionType,
                 character: character,
-                timestamp: Date.now(),
-                uuid: uuidv4(),
+                metadata: event._metadata,
+                _timestamp: event._timestamp,
+                _uuid: uuidv4(),
             }
 
             return message;
         }
 
         const eventHandlers = ACTIONS.reduce((acc, action) => {
-            acc[action] = async (evt) => await onEvent()(evt);
+            acc[action] = async (evt) => await onEvent(false, false)(evt);
             return acc;
         }, {} as Record<ActionType, (evt: ActionEvent) => Promise<void>>);
 
@@ -189,6 +200,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
             ACTIONS.forEach(action => {
                 initSoul.off(action, eventHandlers[action]);
             });
+            console.log('disconnecting soul', soulID.blueprint);
         };
 
     }, [soulID, character])

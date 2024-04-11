@@ -29,7 +29,7 @@ const rabbitHole = [
   'shock', 'anger', 'bargaining', 'acceptance',
 ]
 
-const useBadFaith: MentalProcess = async ({ workingMemory }) => {
+const badFaithProcess: MentalProcess = async ({ workingMemory }) => {
 
   let memory = workingMemory;
   let stream;
@@ -123,9 +123,9 @@ const branchBadFaith = async (memory: WorkingMemory) => {
   log("branching bad faith");
   const [, decision] = await isBadFaith(memory);
   log('are we in bad faith?', decision);
-  if (decision) { return [memory, useBadFaith, { executeNow: true }] }
+  if (decision) { return [memory, badFaithProcess, { executeNow: true }] }
 
 };
 
-export default useBadFaith;
+export default badFaithProcess;
 export { isBadFaith, isGoodFaith, branchBadFaith }

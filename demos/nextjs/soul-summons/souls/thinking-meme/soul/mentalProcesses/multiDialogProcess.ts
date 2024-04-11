@@ -3,7 +3,7 @@ import externalDialog from "../lib/externalDialog.js";
 import decision from "../lib/decision.js"
 import initialProcess from "../initialProcess.js";
 
-const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
+const multiDialogProcess: MentalProcess = async ({ workingMemory }) => {
 
   const { speak, log } = useActions()
   const { wait } = useProcessManager()
@@ -83,6 +83,8 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
       { model: "quality" }
     );
 
+
+    //TODO some sort of postprocess after cognitive steps finish to evalute if we should continue
     if (pendingPerceptions.current.length > 0) {
       if(debug) log('exited early due to pending perceptions')
       return preStep
@@ -95,4 +97,4 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
   return [memory, initialProcess]
 }
 
-export default useMultiDialog
+export default multiDialogProcess
