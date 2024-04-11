@@ -1,36 +1,22 @@
 import { MentalProcess, WorkingMemory, useSoulMemory, useActions, useProcessMemory, usePerceptions } from "@opensouls/engine";
 import { useBlueprintStore, useOrganizationStore, useProcessManager } from "@opensouls/engine";
-import badFaithProcess, { isBadFaith, branchBadFaith} from "./mentalProcesses/badFaithProcess.js";
+import externalDialog from "./lib/externalDialog.js";
+import internalMonologue from "./lib/internalMonologue.js";
+import emojiEmotion from "./lib/emojiEmotion.js";
+import mentalQuery from "./lib/mentalQuery.js";
+import useBadFaith, { isBadFaith, branchBadFaith } from "./mentalProcesses/useBadFaith.js";
+import useSilentTreatment from "./mentalProcesses/useSilentTreatment.js";
+import useMultiDialog from "./mentalProcesses/useMultiDialog.js";
+import conversationCycle from "./conversationCycle.js";
 import { talk, think } from "./lib/buildingBlocks.js";
-
-const stagesOfRelationship = [
-  'I meet someone new',
-  'we talk',
-  'I fall in love',
-  'they leave',
-]
-
-const stageSpecificThought = [
-  `Beautifully appreciate what has been said and forms a lovely thought.`, //and deeply appreciates everything: nature, beauty, the world, existence, etc
-  `Wonders exactly whats on the interlocutor's mind, what they are thinking exactly in that moment.`,
-  `Gets super fixated on the interlocutor's tone and takes offence from it.`,
-  `Lightens up and thinks a beautiful thought about the person they're talking to.`,
-]
-
-const stageSpecificSpeech = [
-  `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
-  `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
-  `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
-  `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
-]
 
 const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory: WorkingMemory }) => {
 
   const { dispatch, log, scheduleEvent } = useActions();
-  const cycle = useProcessMemory(0);
+  const cycle = useProcessMemory('0');
 
-  //TODO start using common folder for types shared with client
-  const relationship = useSoulMemory("relationship", stagesOfRelationship[0])
+  //TODO start getting types?
+  const relationship = useSoulMemory("relationship", 'I meet someone new')
 
   let memory = workingMemory;
   let stream;
@@ -47,31 +33,35 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
   const [, decision] = await isBadFaith(memory);
   log('are we in bad faith?', decision);
 
-  if (decision) { return [memory, badFaithProcess, { executeNow: true }] }
+  if (decision) { return [memory, useBadFaith, { executeNow: true }] }
 
   //can we just jump straight into the process? (this will reset things like invocations, etc.)
-  //return [memory, badFaithProcess, { executeNow: true }]
+  //return [memory, useBadFaith, { executeNow: true }]
+
+  //TODO with topper, how to return a process from branchBadFaith?
+  // await branchBadFaith(memory);
 
 
-  log('thought', stageSpecificThought[cycle.current]);
   [memory, stream] = await think(memory,
-    stageSpecificThought[cycle.current],
+    "Beautifully appreciate what has been said and forms lovely thought, a longish sentence.",
     { stream: true, model: "quality" }
   );
 
-  log('speech', stageSpecificSpeech[cycle.current]);
   [memory, stream] = await talk(memory,
-    stageSpecificSpeech[cycle.current],
+    "Give a lowkey response to what has last been said, disregarding what your thoughts about it were.",
     { stream: true, model: "quality" }
   );
-  
+
+
+
+
   //check if cycle should be added
   //TODO a store for base that automatically gets attached to all dispatches? 
-  cycle.current = (cycle.current + 1) % 4;
+  cycle.current = ((parseInt(cycle.current) + 1) % 8).toString();
   dispatch({
     name: workingMemory.soulName,
     action: "state",
-    content: cycle.current.toString(),
+    content: cycle.current,
     _metadata: { state: 'error' }
   });
 

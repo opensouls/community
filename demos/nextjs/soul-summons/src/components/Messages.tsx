@@ -56,7 +56,6 @@ export function InputForm({ children, className = '', ...props }: { children: Re
                         content: inputElement.value,
                         type: 'thinks',
                         character: PLAYER_CHARACTER,
-                        timestamp: Date.now(),
                     });
                     inputElement.value = '';
                 }}
@@ -84,7 +83,6 @@ export function Input({ className = '', ...props }: { className?: string }) {
                     content: inputElement.value,
                     type: 'thinks',
                     character: PLAYER_CHARACTER,
-                    timestamp: Date.now(),
                 });
                 inputElement.value = '';
             }}
@@ -114,7 +112,6 @@ export function InputTextArea({ className = '', ...props }: { className?: string
                 content: value,
                 type: 'thinks',
                 character: PLAYER_CHARACTER,
-                timestamp: Date.now(),
             });
             setValue('');
         }
@@ -160,7 +157,7 @@ export function MessageBox({ messages, className = '' }: { messages: MessageProp
                 const nameClassName = `flex w-min text-black underline p-1 mt-1 ${message?.character?.color}`
 
                 return (
-                    <div key={message?.timestamp}>
+                    <div key={message?._uuid}>
                         {showName &&
                             <Name
                                 text={message?.character?.name}

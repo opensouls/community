@@ -7,7 +7,6 @@ import { useSoulRoom, useSoulSimple, PLAYER_CHARACTER, MessageProps } from "@/ho
 import { Sprite } from "@/components/Graphics";
 import { SoulProps, CharacterProps } from "@/hooks/useSoulRoom";
 
-//todo convert to useSoulSimple
 export default function SoulVoice({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) {
 
     const { messages, addEvent } = useSoulRoom();

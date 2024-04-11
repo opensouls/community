@@ -8,8 +8,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 const ACTIONS = ["says", "thinks", "does", "ambience", "feels", "state"] as const;
 export type ActionType = typeof ACTIONS[number];
-
 export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
+
+export type SoulProps = {
+    organization: string,
+    blueprint: string,
+}
 
 export type CharacterProps = {
     name: string,
@@ -23,6 +27,7 @@ export type MessageProps = {
     metadata?: any,
     _timestamp?: number,
     _uuid?: string,
+    event?: ActionEvent,
 }
 
 export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor', color: 'bg-gray-400' }
@@ -69,11 +74,6 @@ export const useSoulRoom = create<WorldState>()((set, get) => ({
 
 }))
 
-export type SoulProps = {
-    organization: string,
-    blueprint: string,
-}
-
 export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) => {
 
     const { messages, addEvent, setEvent, getEvent } = useSoulRoom();
@@ -94,6 +94,8 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
     const [connected, setConnected] = useState<boolean>(false);
     const [localMessages, setLocalMessages] = useState<MessageProps[]>([defaultMessage]);
 
+
+
     useEffect(() => {
 
         const initSoul = new Soul(soulID);
@@ -105,12 +107,6 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
         }).catch((error) => {
             console.error("Error connecting to soul", soulID, error);
         });
-
-        //todo what else to destructure here,
-        //should be generic function
-        //also shouldn't be inside useMemo?
-
-        //not working atm
 
         const onEvent = (stream = false, local = false) => async (event: ActionEvent) => {
 
@@ -180,6 +176,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
                 type: event.action as ActionType,
                 character: character,
                 metadata: event._metadata,
+                event: event,
                 _timestamp: event._timestamp,
                 _uuid: uuidv4(),
             }

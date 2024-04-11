@@ -20,7 +20,6 @@ const startState: MessageProps[] = [{
     content: 'A windy knoll. The room hums. Dice, clock, and puddle are in a meeting.',
     type: 'thinks',
     character: worldCharacter,
-    timestamp: Date.now(),
 }];
 
 interface WorldState {
@@ -58,7 +57,7 @@ export default function Desk({ }) {
     const { messages, addEvent } = useUniverseStore();
 
     function onClick() {
-        addEvent({ content: 'Honk.', type: 'ambience', character: hornCharacter, timestamp: Date.now() });
+        addEvent({ content: 'Honk.', type: 'ambience', character: hornCharacter});
     }
 
     return (

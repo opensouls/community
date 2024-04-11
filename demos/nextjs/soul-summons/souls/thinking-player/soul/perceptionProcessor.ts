@@ -21,30 +21,7 @@ const perceptionProcessor: PerceptionProcessor = async ({ perception, workingMem
 
   workingMemory = workingMemory.withMemory(memory)
 
-  
-//TODO think about conversation flow
-
-//----------------------
-//(1) chatting to person (sending a few messages, each one shouldn't necessarily be responded to)
-//add to working memory
-//await wait(1000)  //wait a bit before responding
-// if(pending) return [workingMemory, null] //ok lets leave they're still talking
-
-//----------------------
-//(2) ok time to respond to them? 
-//  return [workingMemory, currentProcess]
-
-//----------------------
-//(3) what if we want to handle process/conversation routing here? (ie. old school game dialog trees)
-// maybe go up or down a process tree 
-//(are they trying to continue the chain of thought or go onto something else?
-
-//----------------------
-//(4) what if the LLM could write its on processes here? 
-
-
   return [workingMemory, currentProcess]
 }
 
 export default perceptionProcessor
-
