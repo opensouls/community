@@ -215,7 +215,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
                     setCurrentWorldState(newMessage);
 
                     console.log(`${character.name.toUpperCase()} dispatching ${newMessage.content}`);
-                    soul.dispatch(said(newMessage?.character?.name ?? 'User', newMessage.content))
+                    soul.dispatch(said(newMessage?.character?.name ?? 'Interlocutor', newMessage.content))
                     setState('thinking');
 
                 }, 500);

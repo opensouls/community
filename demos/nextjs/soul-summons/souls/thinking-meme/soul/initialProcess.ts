@@ -1,22 +1,37 @@
 import { MentalProcess, WorkingMemory, useSoulMemory, useActions, useProcessMemory, usePerceptions } from "@opensouls/engine";
 import { useBlueprintStore, useOrganizationStore, useProcessManager } from "@opensouls/engine";
-import externalDialog from "./lib/externalDialog.js";
-import internalMonologue from "./lib/internalMonologue.js";
-import emojiEmotion from "./lib/emojiEmotion.js";
-import mentalQuery from "./lib/mentalQuery.js";
 import useBadFaith, { isBadFaith, branchBadFaith} from "./mentalProcesses/useBadFaith.js";
 import useSilentTreatment from "./mentalProcesses/useSilentTreatment.js";
-import useMultiDialog from "./mentalProcesses/useMultiDialog.js";
-import conversationCycle from "./conversationCycle.js";
 import { talk, think } from "./lib/buildingBlocks.js";
+
+const stagesOfRelationship = [
+  'I meet someone new',
+  'we talk',
+  'I fall in love',
+  'they leave',
+]
+
+const stageSpecificThought = [
+  `Beautifully appreciate what has been said and forms lovely thought no longer than a sentence.`,
+  `Thinks about whats going on in the other person's mind of who they're talking to.`,
+  `Wonders whats wrong with the person they're talking to.`,
+  `Gets fed up with the person they're talking to and has a daydream.`,
+]
+
+const stageSpecificSpeech = [
+  `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
+  `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
+  `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
+  `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
+]
 
 const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory: WorkingMemory }) => {
 
   const { dispatch, log, scheduleEvent } = useActions();
-  const cycle = useProcessMemory('0');
+  const cycle = useProcessMemory(0);
 
-  //TODO get this type from project?
-  const relationship = useSoulMemory("relationship", 'I meet someone new')
+  //TODO get client types from some common folder?
+  const relationship = useSoulMemory("relationship", stagesOfRelationship[0])
 
   let memory = workingMemory;
   let stream;
@@ -39,24 +54,22 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
 
 
   [memory, stream] = await think(memory,
-    "Beautifully appreciate what has been said and forms lovely thought, a longish sentence.",
+    stageSpecificThought[cycle.current],
     { stream: true, model: "quality" }
   );
 
   [memory, stream] = await talk(memory,
-    "Give a lowkey response to what has last been said, disregarding what your thoughts about it were.",
+    stageSpecificSpeech[cycle.current],
     { stream: true, model: "quality" }
   );
-
-
-
   
   //check if cycle should be added
-  cycle.current = ((parseInt(cycle.current) + 1) % 8).toString();
+  //TODO a store for base that automatically gets attached to all dispatches? 
+  cycle.current = (cycle.current + 1) % 4;
   dispatch({
     name: workingMemory.soulName,
     action: "state",
-    content: cycle.current,
+    content: cycle.current.toString(),
     _metadata: { state: 'error' }
   });
 

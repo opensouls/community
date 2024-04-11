@@ -19,13 +19,13 @@ const thinkingSoulID = {
     organization: 'neilsonnn',
     blueprint: 'thinking-meme',
     token: process.env.NEXT_PUBLIC_SOUL_APIKEY,
-    debug: true, 
+    debug: true,
 }
 
-export enum ANIMATIONS { 
-    idle='idle', 
-    gone='gone', 
-    angry='angry' 
+export enum ANIMATIONS {
+    idle = 'idle',
+    gone = 'gone',
+    angry = 'angry'
 }
 export type AnimationType = keyof typeof ANIMATIONS;
 
@@ -47,7 +47,7 @@ export default function Thinker() {
     const { messages } = useSoulRoom();
     const { localMessages, state, metadata } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
 
-    const [thought, setThought] = useState<string>(`yeah, like two comets crossing paths in the vast cosmos. makes you wonder how many other 'chance encounters' are out there, waiting to collide, to change our trajectory just a bit. pretty cool, this tapestry of lives intertwining.`);
+    const [thought, setThought] = useState<string>(``);
     const [said, setSaid] = useState<string>('hey, whats up');
     const [prompt, setPrompt] = useState<string>('');
     const [emotion, setEmotion] = useState<string>('😐');
@@ -87,7 +87,7 @@ export default function Thinker() {
     }, [localMessages])
 
 
-    
+
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
     const selectedStyle = 'underline';
     const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
@@ -161,28 +161,28 @@ export default function Thinker() {
 
             </div>
 
-            <div className={`w-screen flex justify-center ${scale} mt-[1em]`}>
+            <div className={`w-screen flex justify-center ${scale} mt-[-6em]`}>
                 <Bentoish className={`relative w-[22em] h-[22em] `}>
                     <div className=''>
-                        {cycles.map((c, i) =>
+                        {/* {cycles.map((c, i) =>
                             <TextBox
                                 text={`${c}`}
                                 className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]} ${i.toString() === cycle && 'underline text-black'}`}
                             />
                         )}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} /> */}
                         <Blinking opacity={true}>
-                            <ImageLayer src={'/thinking-meme/ThinkingMeme_input.png'} className={`stateClassName['speaking'] scale-[1.15]` } />
+                            <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`stateClassName['speaking'] scale-[1.15]`} />
                         </Blinking>
-                        {/* <ImageLayer className='scale-[.75]' src={'/thinking-meme/ThinkingMeme_chair.png'} /> */}
+
                     </div>
 
-                    <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute top-[42%] z-[1000] flex flex-col w-full scale-[1]`}>
-                        <InputForm className={`w-[62%] text-sm mx-auto z-[100] ${showBorder}`}>
+                    <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute top-[32%] h-[40%] z-[1000] flex flex-col w-full scale-[1]`}>
+                        <InputForm className={`w-[40%] text-sm text-black mx-auto h-full z-[100] ${showBorder}`}>
                             <InputTextArea
                                 className='relative w-full bg-transparent outline-0 border-gray-400 border-none'
-                                placeholder={'break the cycle...'}
-                                maxLength={65}
+                                placeholder={'chat... '}
+                                maxLength={75}
                             />
                         </InputForm>
                     </Blinking>
@@ -194,6 +194,10 @@ export default function Thinker() {
 
         </>
     )
+}
+
+export function ThoughtThinker() {
+
 }
 
 function Bentoish({ className, children }: { className: string, children: React.ReactNode }) {
