@@ -1,13 +1,14 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
-import { MessageBox, InputForm, Input, InputTextArea } from '@/components/Messages';
 import Badge, { Pulse } from '@/components/Badge';
+import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps } from '@/hooks/useSoulRoom';
+import { InputForm, Input, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Layout';
 
 import Image from 'next/image';
+import { Soul } from '@opensouls/soul';
 
 
 
@@ -16,8 +17,15 @@ const thinkingSoul = {
 }
 
 console.log("API", process.env.NEXT_PUBLIC_SOUL_APIKEY);
-
 const debug = process.env.NODE_ENV !== 'production';
+
+const playerSoulID = {
+    organization: 'neilsonnn',
+    blueprint: 'thinking-meme-player',
+    token: process.env.NEXT_PUBLIC_SOUL_APIKEY,
+    debug: debug,
+}
+
 const thinkingSoulID = {
     organization: 'neilsonnn',
     blueprint: 'thinking-meme',
@@ -45,10 +53,45 @@ const THINKING_BUBBLES = [
 ]
 
 
+
 export default function ThinkerRoleplay() {
 
+    return (
+        <>
+
+            <SpeakerRobot
+                soulID={playerSoulID}
+                isPlayer={true}
+            />
+            <SpeakerRobot
+                soulID={thinkingSoulID}
+            />
+
+            {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
+            <div className='mx-auto flex flex-col align-middle'>
+
+                <a href={'https://github.com/opensouls/community'} target='_blank'>
+                    <Badge className='mx-auto'>
+                        <Pulse />
+                        {'thinking-roleplay'}
+                    </Badge>
+                </a>
+                <a href='https://www.opensouls.studio/' target='_blank' className="flex mx-auto w-[8em] mt-[-.25em]">
+                    <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
+                </a>
+            </div>
+        </>
+    )
+}
+
+type SpeakerProps = {
+    soulID: SoulProps,
+    flipped?: boolean,
+}
+export function SpeakerRobot({ soulID, isPlayer = false }: { soulID: SoulProps, isPlayer?: boolean }) {
+
     const { messages } = useSoulRoom();
-    const { localMessages, state, metadata } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
+    const { localMessages, state, metadata } = useSoulSimple({ soulID: soulID, character: thinkingSoul });
 
     const [thought, setThought] = useState<string>(``);
     const [said, setSaid] = useState<string>(''); //hey, whats up
@@ -89,16 +132,16 @@ export default function ThinkerRoleplay() {
         }
     }, [localMessages])
 
-
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
     const speechStyle = 'text-lg text-black font-sans';
     const thoughtStyle = 'text-sm text-gray-400';
 
+    const flip = isPlayer ? 'scale-x-[-1]' : '';
     const selectedStyle = 'underline';
     const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
     const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
     const scale = 'duration-200 scale-[.75] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
-    const showBorder = ''//border-[1px] border-red-500'
+    const showBorder = 'border-[1px] border-red-500'
     const characterVisible = `${metadata?.animation !== 'gone' ? 'opacity-100' : 'opacity-0'}`
     const speechBubbleVisible = `${metadata?.animation !== 'gone' && metadata?.animation !== 'angry' ? 'opacity-100' : 'opacity-0'}`
 
@@ -116,17 +159,10 @@ export default function ThinkerRoleplay() {
         'they leave',
     ]
 
-    const positions = [
-        'w-[50%] top-[7%] left-[30%] text-center',
-        'w-[50%] top-[50%] right-[-4%] text-right',
-        'w-[50%] bottom-[8%] left-[28%] text-center',
-        'w-[50%] top-[49%] left-[-8%] text-left',
-    ]
-
     return (
         <>
             <div className={`w-screen flex justify-center ${scale} mt-[-2em]`}>
-                <Bentoish className={`relative ${width} ${height} `}>
+                <Bentoish className={`relative ${width} ${height} ${flip}`}>
 
                     <div className=''>
 
@@ -139,19 +175,43 @@ export default function ThinkerRoleplay() {
                         </Blinking>}
 
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={`${stateClassName['thinking']} ${characterVisible}`} />
-                        <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
                         {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={`${stateClassName['speaking']} `} />
 
                         <TextBox
                             text={`${thought}`}
-                            className={`absolute leading-[.1em] right-[10%] top-[42%] h-[50%] w-[30%] ${thoughtStyle} ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
+                            className={`absolute leading-[.1em] right-[10%] top-[42%] h-[50%] w-[30%] ${thoughtStyle} ${textStyle} ${showBorder} ${stateClassName['thinking']} ${flip}`}
                         />
 
-                        <TextBox
-                            text={`${said}`}
-                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
-                        />
+
+                        {isPlayer ? (
+                            <>
+                                <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] z-[1000] flex flex-col scale-[1] ${flip}`}>
+                                    <InputForm className={`text-sm text-black mx-auto h-full z-[100] ${showBorder}`}>
+                                        <InputTextArea
+                                            className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
+                                            placeholder={'chat... '}
+                                            maxLength={75}
+                                        />
+                                    </InputForm>
+                                </Blinking>
+                                <TextBox
+                                    text={`${said}`}
+                                    className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
+                                />
+                            </>
+
+                        ) : (
+                            <>
+                                <TextBox
+                                    text={`${said}`}
+                                    className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
+                                />
+                            </>
+
+                        )}
+
+
 
 
                         {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
@@ -166,49 +226,15 @@ export default function ThinkerRoleplay() {
 
             </div>
 
-            <div className={`w-screen flex justify-center ${scale} mt-[-10em]`}>
-                <Bentoish className={`relative w-[22em] h-[22em] `}>
-                    <div className=''>
-                        {/* {cycles.map((c, i) =>
-                            <TextBox
-                                text={`${c}`}
-                                className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]} ${i.toString() === cycle && 'underline text-black'}`}
-                            />
-                        )}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} /> */}
-                        <Blinking opacity={true}>
-                            <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`${stateClassName['speaking']} scale-[1.15]`} />
-                        </Blinking>
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_inputHead.png'} className={`scale-[1.15]`} />
-
-                    </div>
-
-                    <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute top-[32%] h-[40%] z-[1000] flex flex-col w-full scale-[1]`}>
-                        <InputForm className={`w-[40%] text-sm text-black mx-auto h-full z-[100] ${showBorder}`}>
-                            <InputTextArea
-                                className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
-                                placeholder={'chat... '}
-                                maxLength={75}
-                            />
-                        </InputForm>
-                    </Blinking>
-
-                </Bentoish>
-            </div>
-
-            {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
-            <div className='mx-auto flex flex-col align-middle'>
-
-                <a href={'https://github.com/opensouls/community'} target='_blank'>
-                    <Badge className='mx-auto'>
-                        <Pulse />
-                        {'thinking-roleplay'}
-                    </Badge>
-                </a>
-                <a href='https://www.opensouls.studio/' target='_blank' className="flex mx-auto w-[8em] mt-[-.25em]">
-                    <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
-                </a>
-            </div>
         </>
     )
 }
+
+export function SpeechHead() {
+
+}
+
+export function SpeechBubble() {
+
+}
+
