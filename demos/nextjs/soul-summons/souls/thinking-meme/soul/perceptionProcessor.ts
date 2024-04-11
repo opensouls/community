@@ -39,9 +39,13 @@ const perceptionProcessor: PerceptionProcessor = async ({ perception, workingMem
 // maybe go up or down a process tree 
 //(are they trying to continue the chain of thought or go onto something else?
 
-//----------------------
-//(4) what if the LLM could write its on processes here? 
+//---------------------- 
+//(4) [[bigger design ideas]] like what if the LLM could write its on processes here?
 
+
+//meanwhile in the background other processes might be running
+//before we run a step do we ask the processor if its still ok?
+//we might want to interrupt it before or after the step runs?
 
   return [workingMemory, currentProcess]
 }

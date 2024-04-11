@@ -45,7 +45,7 @@ const THINKING_BUBBLES = [
 ]
 
 
-export default function Thinker() {
+export default function ThinkerRoleplay() {
 
     const { messages } = useSoulRoom();
     const { localMessages, state, metadata } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
@@ -202,7 +202,7 @@ export default function Thinker() {
                 <a href={'https://github.com/opensouls/community'} target='_blank'>
                     <Badge className='mx-auto'>
                         <Pulse />
-                        {'thinking-meme'}
+                        {'thinking-roleplay'}
                     </Badge>
                 </a>
                 <a href='https://www.opensouls.studio/' target='_blank' className="flex mx-auto w-[8em] mt-[-.25em]">

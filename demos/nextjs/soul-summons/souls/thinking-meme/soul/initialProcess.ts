@@ -1,7 +1,7 @@
 import { MentalProcess, WorkingMemory, useSoulMemory, useActions, useProcessMemory, usePerceptions } from "@opensouls/engine";
 import { useBlueprintStore, useOrganizationStore, useProcessManager } from "@opensouls/engine";
-import badFaithProcess, { isBadFaith, branchBadFaith} from "./mentalProcesses/badFaithProcess.js";
-import { talk, think } from "./lib/buildingBlocks.js";
+import badFaithProcess, { isBadFaith, branchBadFaith } from "./mentalProcesses/badFaithProcess.js";
+import { talk, think, state } from "./lib/buildingBlocks.js";
 
 const stagesOfRelationship = [
   'I meet someone new',
@@ -24,12 +24,14 @@ const stageSpecificSpeech = [
   `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
 ]
 
+
+
 const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory: WorkingMemory }) => {
 
   const { dispatch, log, scheduleEvent } = useActions();
   const cycle = useProcessMemory(0);
 
-  //TODO start using common folder for types shared with client
+  //TODO start using common folder for types shared with client (but in a way it doesn't break community library support?)
   const relationship = useSoulMemory("relationship", stagesOfRelationship[0])
 
   let memory = workingMemory;
@@ -49,8 +51,17 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
 
   if (decision) { return [memory, badFaithProcess, { executeNow: true }] }
 
-  //can we just jump straight into the process? (this will reset things like invocations, etc.)
-  //return [memory, badFaithProcess, { executeNow: true }]
+  //process invocations/memory
+  //return [memory, badFaithProcess, { executeNow: true, interruptable: true, returnTo: initialProcess }]
+
+
+  //could we just jump straight into the process? (this will reset things like invocations, etc.)
+  //do we even need this? why do we need this? 
+
+  //would be useful to have invocations/other things get tracked by other functions
+  //we don't have access to those with cognitiveFunctions
+  //ex. I can run some process in the middle that changes some variables on itself and then comes back to the original process
+  //return [memory, badFaithProcess, { executeNow: true, interruptable: true, returnTo: initialProcess}]
 
 
   log('thought', stageSpecificThought[cycle.current]);
@@ -64,10 +75,12 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
     stageSpecificSpeech[cycle.current],
     { stream: true, model: "quality" }
   );
-  
+
   //check if cycle should be added
-  //TODO a store for base that automatically gets attached to all dispatches? 
+  //TODO a metadata object that automatically gets attached to all dispatches? 
   cycle.current = (cycle.current + 1) % 4;
+  state(memory, { cycle: cycle.current });
+
   dispatch({
     name: workingMemory.soulName,
     action: "state",

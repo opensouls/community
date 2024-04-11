@@ -7,9 +7,18 @@ import internalMonologue from "../lib/internalMonologue.js";
 import { stripEntityAndVerb } from "@opensouls/engine";
 import { stripAndTrim } from "../utils/stringHelper.js";
 
+
+const rabbitHole = [
+  'shock', 'anger', 'bargaining', 'acceptance',
+]
+
 const isBadFaith = async (memory: WorkingMemory) => {
+
   const lastComment = stripAndTrim(memory.slice(-1).memories[0].content.toString());
   const { log } = useActions();
+
+  //using
+
   log('is bad faith?', lastComment);
   return await mentalQuery(memory,
     `Is "${lastComment}" a really nasty, mean, or upsetting thing to say?`,
@@ -24,10 +33,6 @@ const isGoodFaith = async (memory: WorkingMemory) => {
     "Something nice and kind was said to you.",
   );
 }
-
-const rabbitHole = [
-  'shock', 'anger', 'bargaining', 'acceptance',
-]
 
 const badFaithProcess: MentalProcess = async ({ workingMemory }) => {
 
@@ -45,7 +50,7 @@ const badFaithProcess: MentalProcess = async ({ workingMemory }) => {
   log('mean comment', originalMeanComment.current);
 
   //discard the offending message (we forget it)
-  //not using atm
+  //we might have to say this if something super egregious was said so it doesn't mar the working memory?
   let cleanMemory = memory.slice(0, -1);
 
   let metadata: any = {

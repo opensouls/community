@@ -2,15 +2,16 @@ import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, 
 import internalMonologue from "./internalMonologue.js";
 import externalDialog from "./externalDialog.js";
 import { RequestOptions } from "https";
+import { SoulEvent } from "@opensouls/engine";
 
 export type BuildingBlock = {
     stream?: boolean,
     model?: string,
-    metadata?: any,
+    metadata?: SoulEvent['_metadata'],
 }
 
 const talk = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
-    
+
     const { dispatch, log } = useActions();
     const [memory, stream] = await externalDialog(workingMemory, description, params);
     dispatch({
@@ -41,6 +42,19 @@ const think = async (workingMemory: WorkingMemory, description: string, params?:
     });
 
     return [memory, stream] as [WorkingMemory, string];
+}
+
+
+const state = (workingMemory: WorkingMemory, metadata: SoulEvent['_metadata']) => {
+    const { dispatch, log } = useActions();
+
+    dispatch({
+        name: workingMemory.soulName,
+        action: "state",
+        content: '',
+        _metadata: metadata
+    });
+
 }
 
 
@@ -82,5 +96,5 @@ const criteria = createCognitiveStep(({ description, criteria }: { description: 
     };
 });
 
-export { talk, think, criteria }
+export { talk, think, state, criteria }
 

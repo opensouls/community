@@ -5,6 +5,7 @@ import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { Soul, said, ActionEvent } from "@opensouls/soul"
 import { v4 as uuidv4 } from 'uuid';
+import { SoulEvent } from "@opensouls/engine"
 
 const ACTIONS = ["says", "thinks", "does", "ambience", "feels", "state"] as const;
 export type ActionType = typeof ACTIONS[number];
@@ -78,7 +79,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
     const { messages, addEvent, setEvent, getEvent } = useSoulRoom();
     const [state, setState] = useState<SoulState>('waiting');
-    const [metadata, setMetadata] = useState<any>({});
+    const [metadata, setMetadata] = useState<SoulEvent['_metadata']>({});
 
     const defaultMessage: MessageProps = useMemo(() => ({
         content: `I (${character.name}) exist.`,
@@ -93,8 +94,6 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
     const [talking, setTalking] = useState<boolean>(true);
     const [connected, setConnected] = useState<boolean>(false);
     const [localMessages, setLocalMessages] = useState<MessageProps[]>([defaultMessage]);
-
-
 
     useEffect(() => {
 
@@ -117,8 +116,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
                 value = await event.content();
             }
 
-            setMetadata(event._metadata);
-
+            setMetadata((last) => ({...last, ...event._metadata}));
 
             if (event._metadata && event._metadata.state) {
                 const state = event._metadata.state;
@@ -136,6 +134,10 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
             console.log(event.name, event.action, value);
             const message = ingestAction(event, value);
             let index = -1;
+
+            //eventually add this as a `useSoulStore` that the room and the souls both use
+            //local messages are only added to our store
+            //speaking and other actions get added to the room store
 
             if (local) {
                 setLocalMessages(last => {

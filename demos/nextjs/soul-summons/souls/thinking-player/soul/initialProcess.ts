@@ -22,6 +22,8 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
   let stream;
 
   //TODO, discuss options to formalize this pattern
+  //also think about how to call pendingPerceptions from functions
+  
   //maybe add a param 'perceptionInterrupt' when it detects a pendingPerception after a cognitivestep
   //or maybe 'perceptionInterrupt' can also specifiy a process to run when they're interrupted ex. run 'can you stop interrupting me' 
   const { pendingPerceptions } = usePerceptions()
