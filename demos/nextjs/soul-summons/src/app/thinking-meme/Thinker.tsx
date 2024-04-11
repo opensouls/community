@@ -13,8 +13,6 @@ const thinkingSoul = {
     name: 'overthinker',
 }
 
-const debugText = 'nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  nice day huh!  '
-
 console.log("API", process.env.NEXT_PUBLIC_SOUL_APIKEY);
 
 const thinkingSoulID = {
@@ -24,8 +22,12 @@ const thinkingSoulID = {
     debug: true, 
 }
 
-export enum ANIMATIONS { idle, gone, angry }
-export type AnimationType = typeof ANIMATIONS[number];
+export enum ANIMATIONS { 
+    idle='idle', 
+    gone='gone', 
+    angry='angry' 
+}
+export type AnimationType = keyof typeof ANIMATIONS;
 
 const THOUGHT_STATES: Record<SoulState, string> = {
     'waiting': '/thinking-meme/ThinkingMeme_reply.png',
@@ -92,7 +94,8 @@ export default function Thinker() {
     const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
     const scale = 'duration-200 scale-[.75] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
     const showBorder = ''//border-[1px] border-red-500'
-    const characterVisible = `duration-200 ${metadata?.animation !== 'gone' ? 'opacity-100' : 'opacity-0'}`
+    const characterVisible = `${metadata?.animation !== 'gone' ? 'opacity-100' : 'opacity-0'}`
+    const speechBubbleVisible = `${metadata?.animation !== 'gone' && metadata?.animation !== 'angry' ? 'opacity-100' : 'opacity-0'}`
 
     const stateClassName = {
         'waiting': `${state === 'waiting' ? 'opacity-100' : 'opacity-100'}`,
@@ -117,7 +120,7 @@ export default function Thinker() {
 
     return (
         <>
-            <div className={`w-screen flex justify-center ${scale} `}>
+            <div className={`w-screen flex justify-center ${scale} mt-[-10em]`}>
 
                 <Bentoish className={`relative ${width} ${height} `}>
 
@@ -125,7 +128,7 @@ export default function Thinker() {
 
                         {metadata?.animation === ANIMATIONS.angry && <Blinking rate={5800}>
                             <ImageAnimated
-                                className='z-[1111]'
+                                className=''
                                 srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']}
                                 rate={3200}
                             />
@@ -138,13 +141,13 @@ export default function Thinker() {
 
                         <TextBox
                             text={`${said}`}
-                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] break-words text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']}`}
+                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] break-words text-base text-black font-sans ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
                         />
 
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={`${stateClassName['thinking']} ${characterVisible}`} />
                         <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
                         {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={`${stateClassName['speaking']} ${characterVisible}`} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={`${stateClassName['speaking']} `} />
 
                         {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
                         <p className='text-black'>mood:</p>
@@ -158,7 +161,7 @@ export default function Thinker() {
 
             </div>
 
-            <div className={`w-screen flex justify-center ${scale} mt-[-4em]`}>
+            <div className={`w-screen flex justify-center ${scale} mt-[1em]`}>
                 <Bentoish className={`relative w-[22em] h-[22em] `}>
                     <div className=''>
                         {cycles.map((c, i) =>
@@ -174,7 +177,7 @@ export default function Thinker() {
                         {/* <ImageLayer className='scale-[.75]' src={'/thinking-meme/ThinkingMeme_chair.png'} /> */}
                     </div>
 
-                    <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute top-[42%] z-[1000] flex flex-col w-full`}>
+                    <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute top-[42%] z-[1000] flex flex-col w-full scale-[1]`}>
                         <InputForm className={`w-[62%] text-sm mx-auto z-[100] ${showBorder}`}>
                             <InputTextArea
                                 className='relative w-full bg-transparent outline-0 border-gray-400 border-none'
@@ -182,8 +185,6 @@ export default function Thinker() {
                                 maxLength={65}
                             />
                         </InputForm>
-
-
                     </Blinking>
 
                 </Bentoish>

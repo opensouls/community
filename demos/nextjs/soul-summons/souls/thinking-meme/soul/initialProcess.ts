@@ -4,15 +4,15 @@ import externalDialog from "./lib/externalDialog.js";
 import internalMonologue from "./lib/internalMonologue.js";
 import emojiEmotion from "./lib/emojiEmotion.js";
 import mentalQuery from "./lib/mentalQuery.js";
-import useBadFaith, { isBadFaith, branchBadFaith } from "./mentalProcesses/useBadFaith.js";
+import useBadFaith, { isBadFaith, branchBadFaith} from "./mentalProcesses/useBadFaith.js";
+import useSilentTreatment from "./mentalProcesses/useSilentTreatment.js";
 import useMultiDialog from "./mentalProcesses/useMultiDialog.js";
 import conversationCycle from "./conversationCycle.js";
 import { talk, think } from "./lib/buildingBlocks.js";
-// import { CYCLE}
 
 const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory: WorkingMemory }) => {
 
-  const { dispatch, log } = useActions();
+  const { dispatch, log, scheduleEvent } = useActions();
   const cycle = useProcessMemory('0');
 
   //TODO get this type from project?
@@ -49,9 +49,16 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
   );
 
 
+
+  
   //check if cycle should be added
-  cycle.current = ((parseInt(cycle.current) + 1) % 4).toString();
-  dispatch({ name: workingMemory.soulName, action: "state", content: cycle.current, _metadata: { state: 'error' } });
+  cycle.current = ((parseInt(cycle.current) + 1) % 8).toString();
+  dispatch({
+    name: workingMemory.soulName,
+    action: "state",
+    content: cycle.current,
+    _metadata: { state: 'error' }
+  });
 
 
   //schedule some extra bonus messages here 

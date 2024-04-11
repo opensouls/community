@@ -6,19 +6,40 @@ import { RequestOptions } from "https";
 export type BuildingBlock = {
     stream?: boolean,
     model?: string,
+    metadata?: any,
 }
 
 const talk = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
+    
     const { dispatch, log } = useActions();
     const [memory, stream] = await externalDialog(workingMemory, description, params);
-    dispatch({ name: workingMemory.soulName, action: "says", content: stream, _metadata: { state: 'says' } });
+    dispatch({
+        name: workingMemory.soulName,
+        action: "says",
+        content: stream,
+        _metadata: {
+            state: 'says',
+            ...params?.metadata
+        }
+    });
+
     return [memory, stream] as [WorkingMemory, string];
 }
 
 const think = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
+
     const { dispatch, log } = useActions();
     const [memory, stream] = await internalMonologue(workingMemory, description, params);
-    dispatch({ name: workingMemory.soulName, action: "thinks", content: stream, _metadata: { state: 'thinks' } });
+    dispatch({
+        name: workingMemory.soulName,
+        action: "thinks",
+        content: stream,
+        _metadata: {
+            state: 'thinks',
+            ...params?.metadata
+        }
+    });
+
     return [memory, stream] as [WorkingMemory, string];
 }
 
