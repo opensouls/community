@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Badge, { Pulse } from '@/components/Badge';
-import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps } from '@/hooks/useSoulRoom';
+import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps, CharacterProps } from '@/hooks/useSoulRoom';
 import { InputForm, Input, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Layout';
@@ -61,10 +61,12 @@ export default function ThinkerRoleplay() {
 
             <SpeakerRobot
                 soulID={playerSoulID}
+                character={PLAYER_CHARACTER}
                 isPlayer={true}
             />
             <SpeakerRobot
                 soulID={thinkingSoulID}
+                character={thinkingSoul}
             />
 
             {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
@@ -86,12 +88,13 @@ export default function ThinkerRoleplay() {
 
 type SpeakerProps = {
     soulID: SoulProps,
-    flipped?: boolean,
+    character: CharacterProps,
+    isPlayer?: boolean,
 }
-export function SpeakerRobot({ soulID, isPlayer = false }: { soulID: SoulProps, isPlayer?: boolean }) {
+export function SpeakerRobot({ soulID, character, isPlayer = false }: SpeakerProps) {
 
     const { messages } = useSoulRoom();
-    const { localMessages, state, metadata } = useSoulSimple({ soulID: soulID, character: thinkingSoul });
+    const { localMessages, state, metadata } = useSoulSimple({ soulID: soulID, character: character });
 
     const [thought, setThought] = useState<string>(``);
     const [said, setSaid] = useState<string>(''); //hey, whats up
@@ -104,6 +107,8 @@ export function SpeakerRobot({ soulID, isPlayer = false }: { soulID: SoulProps, 
 
         if (messages.length === 0) return;
         const lastMessage = messages[messages.length - 1];
+
+        if(lastMessage?.character?.name !== character.name) return;
 
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
             setPrompt(lastMessage.content)
@@ -187,7 +192,7 @@ export function SpeakerRobot({ soulID, isPlayer = false }: { soulID: SoulProps, 
                         {isPlayer ? (
                             <>
                                 <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] z-[1000] flex flex-col scale-[1] ${flip}`}>
-                                    <InputForm className={`text-sm text-black mx-auto h-full z-[100] ${showBorder}`}>
+                                    <InputForm className={`text-sm text-black mx-auto w-full h-full z-[100] ${showBorder}`}>
                                         <InputTextArea
                                             className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
                                             placeholder={'chat... '}
@@ -195,17 +200,13 @@ export function SpeakerRobot({ soulID, isPlayer = false }: { soulID: SoulProps, 
                                         />
                                     </InputForm>
                                 </Blinking>
-                                <TextBox
-                                    text={`${said}`}
-                                    className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
-                                />
                             </>
 
                         ) : (
                             <>
                                 <TextBox
                                     text={`${said}`}
-                                    className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
+                                    className={`absolute border-green-500 left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
                                 />
                             </>
 

@@ -131,7 +131,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
                 setState('thinking');
             }
 
-            console.log(event.name, event.action, value);
+            // console.log(event.name, event.action, value);
             const message = ingestAction(event, value);
             let index = -1;
 
