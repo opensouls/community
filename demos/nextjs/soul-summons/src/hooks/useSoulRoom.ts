@@ -31,6 +31,11 @@ export type MessageProps = {
     event?: ActionEvent,
 }
 
+export type SoulSettings = {
+    canHear: boolean,
+    canSpeak: boolean,
+}
+
 export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor', color: 'bg-gray-400' }
 export const EXAMPLE_MESSAGE: MessageProps = { content: 'HONKKKK!!', type: 'ambience', character: PLAYER_CHARACTER };
 
@@ -75,7 +80,17 @@ export const useSoulRoom = create<WorldState>()((set, get) => ({
 
 }))
 
-export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) => {
+type SoulSimpleProps = {
+    soulID: SoulProps,
+    character: CharacterProps,
+    settings?: SoulSettings,
+}
+
+export const useSoulSimple = ({ soulID, character,
+    settings = {
+        canHear: true,
+        canSpeak: true,
+    } }: SoulSimpleProps) => {
 
     const { messages, addEvent, setEvent, getEvent } = useSoulRoom();
     const [state, setState] = useState<SoulState>('waiting');
@@ -90,9 +105,8 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
     const [soul, setSoul] = useState<Soul>();
 
-    const [currentWorldState, setCurrentWorldState] = useState<MessageProps>();
-    const [talking, setTalking] = useState<boolean>(true);
     const [connected, setConnected] = useState<boolean>(false);
+    const [localRoomState, setLocalRoomState] = useState<MessageProps>();
     const [localMessages, setLocalMessages] = useState<MessageProps[]>([defaultMessage]);
 
     useEffect(() => {
@@ -116,7 +130,7 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
                 value = await event.content();
             }
 
-            setMetadata((last) => ({...last, ...event._metadata}));
+            setMetadata((last) => ({ ...last, ...event._metadata }));
 
             if (event._metadata && event._metadata.state) {
                 const state = event._metadata.state;
@@ -145,7 +159,9 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
                     return [...last, message]
                 });
             } else {
-                addEvent(message);
+                if (settings.canSpeak) {
+                    addEvent(message);
+                }
             }
 
             if (stream) {
@@ -204,29 +220,28 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
 
     }, [soulID, character])
 
+
+    //routes new messages to each soul
     useEffect(() => {
 
-        if (!soul) { return }
-
-        let timer = null
+        if (!soul || !settings.canHear) { return }
+        let timer = null;
 
         if (messages && connected && messages.length > 0) {
 
             const newMessage = messages[messages.length - 1];
             // console.log('newWorldState', JSON.stringify(newMessage))
 
-            if (newMessage !== currentWorldState && newMessage?.character?.name !== character.name) {
+            if (newMessage.type === 'says' && newMessage !== localRoomState && newMessage?.character?.name !== character.name) {
                 setState('processing');
 
                 timer = setTimeout(() => {
-
                     // console.log('timer');
                     // console.log(`${soulID.blueprint}: New world state`, newWorldState);
 
-                    setCurrentWorldState(newMessage);
-
-                    console.log(`${character.name.toUpperCase()} dispatching ${newMessage.content}`);
-                    soul.dispatch(said(newMessage?.character?.name ?? 'Interlocutor', newMessage.content))
+                    setLocalRoomState(newMessage);
+                    sendPerception(newMessage?.character?.name ?? 'Interlocutor', newMessage.content);
+                    
                     setState('thinking');
 
                 }, 500);
@@ -237,7 +252,13 @@ export const useSoulSimple = ({ soulID, character }: { soulID: SoulProps, charac
             if (timer) clearTimeout(timer);
         }
 
-    }, [soul, messages, character],)
+    }, [soul, messages, character, settings])
 
-    return { localMessages, state, metadata }
+    function sendPerception(name: string, content: string) {
+        if (!soul) { console.error('no soul!'); return; }
+        console.log(`${character.name.toUpperCase()} percepting ${content.slice(0, 10)}`);
+        soul.dispatch(said(name, content));
+    }
+
+    return { localMessages, state, metadata, sendPerception }
 }

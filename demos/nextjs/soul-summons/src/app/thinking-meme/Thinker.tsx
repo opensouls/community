@@ -176,7 +176,7 @@ export default function Thinker() {
                             />
                         )}
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} /> */}
-                        <Blinking opacity={true}>
+                        <Blinking opacity={true} enabled={state === 'waiting'}>
                             <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`${stateClassName['speaking']} scale-[1.15]`} />
                         </Blinking>
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_inputHead.png'} className={`scale-[1.15]`} />

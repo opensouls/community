@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import Badge, { Pulse } from '@/components/Badge';
 import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps, CharacterProps } from '@/hooks/useSoulRoom';
-import { InputForm, Input, InputTextArea } from '@/components/Messages';
+import { InputForm, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Components';
-
+import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
+
 import { Soul } from '@opensouls/soul';
 
 
@@ -21,7 +22,7 @@ const debug = process.env.NODE_ENV !== 'production';
 
 const playerSoulID = {
     organization: 'neilsonnn',
-    blueprint: 'thinking-meme-player',
+    blueprint: 'thinking-player',
     token: process.env.NEXT_PUBLIC_SOUL_APIKEY,
     debug: debug,
 }
@@ -52,37 +53,41 @@ const THINKING_BUBBLES = [
     '/thinking-meme/ThinkingMeme_0001s_0002_thought2.png',
 ]
 
-
-
 export default function ThinkerRoleplay() {
 
     return (
-        <div className='flex flex-col align-middle justify-center min-h-screen gap-4 '>
+        <>
+            <div className='flex flex-col align-middle justify-center mt-[5em] gap-4 lg:flex-row lg:w-screen lg:fixed lg:items-center lg:justify-center lg:min-h-screen lg:mt-0'>
 
-            <SpeakerRobot
-                soulID={playerSoulID}
-                character={PLAYER_CHARACTER}
-                isPlayer={true}
-            />
-            <SpeakerRobot
-                soulID={thinkingSoulID}
-                character={thinkingSoul}
-            />
+                <SpeakerRobot
+                    soulID={playerSoulID}
+                    character={PLAYER_CHARACTER}
+                    isPlayer={true}
+                    roleplay={'VC'}
+                />
+
+                <SpeakerRobot
+                    soulID={thinkingSoulID}
+                    character={thinkingSoul}
+                    roleplay={'founder'}
+                />
+
+            </div>
 
             {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
-            <div className='mx-auto flex flex-col align-middle'>
+            <div className='mx-auto mt-12 flex flex-col align-middle items-center lg:bottom lg:w-screen lg:flex-row lg:justify-between lg:px-8 lg:bottom-4 lg:absolute '>
 
-                <a href={'https://github.com/opensouls/community'} target='_blank'>
-                    <Badge className='mx-auto'>
+                <a href={'https://github.com/opensouls/community'} target='_blank' className=''>
+                    <Badge className=''>
                         <Pulse />
                         {'thinking-roleplay'}
                     </Badge>
                 </a>
-                <a href='https://www.opensouls.studio/' target='_blank' className="flex mx-auto w-[8em] mt-[-.25em]">
+                <a href='https://www.opensouls.studio/' target='_blank' className="w-[8em] mt-[-.5em]">
                     <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
                 </a>
             </div>
-        </div>
+        </>
     )
 }
 
@@ -91,38 +96,34 @@ type SpeakerProps = {
     character: CharacterProps,
     isPlayer?: boolean,
 }
-export function SpeakerRobot({ soulID, character, isPlayer = false }: SpeakerProps) {
+export function SpeakerRobot({ soulID, character, roleplay, isPlayer = false }: SpeakerProps & { roleplay: string }) {
 
     const { messages } = useSoulRoom();
-    const { localMessages, state, metadata } = useSoulSimple({ soulID: soulID, character: character });
+    const { localMessages, state, metadata, sendPerception } = useSoulSimple({ 
+        soulID: soulID, 
+        character: character,
+    });
 
     const [thought, setThought] = useState<string>(``);
     const [said, setSaid] = useState<string>(''); //hey, whats up
-    const [prompt, setPrompt] = useState<string>('');
-    const [emotion, setEmotion] = useState<string>('😐');
-    const [cycle, setCycle] = useState<string>('0');
 
-    //do some filtering
+    const [role, setRole] = useState<string>(roleplay); //idle, thinking, speaking, waiting
+
+    //checks the global messages chat and adds our chats to our text boxes
     useEffect(() => {
 
         if (messages.length === 0) return;
         const lastMessage = messages[messages.length - 1];
 
-        if(lastMessage?.character?.name !== character.name) return;
-
+        if (lastMessage?.character?.name !== character.name) return;
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
-            setPrompt(lastMessage.content)
             setThought('');
             setSaid('');
         } else if (lastMessage.type === 'thinks') {
             setThought(`${lastMessage.content}`) // ${emotion}
         } else if (lastMessage.type === 'says') {
             setSaid(lastMessage.content)
-        } else if (lastMessage.type === 'feels') {
-            setEmotion(lastMessage.content)
-        } else if (lastMessage.type === 'state') {
-            setCycle(lastMessage.content)
-        }
+        } 
 
     }, [messages])
 
@@ -143,10 +144,10 @@ export function SpeakerRobot({ soulID, character, isPlayer = false }: SpeakerPro
 
     const flip = isPlayer ? 'scale-x-[-1]' : '';
     const selectedStyle = 'underline';
-    const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
-    const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
-    const scale = 'duration-200 scale-[.75] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
-    const showBorder = 'border-[1px] border-red-500'
+    const width = 'min-w-[26em] w-[26em]' //md:min-w-[40em] md:w-[40em]
+    const height = 'min-h-[26em] h-[26em]' //md:min-h-[40em] md:h-[40em]
+    const scale = 'scale-[.75] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
+    const showBorder = ''//border-[1px] border-red-500'
     const characterVisible = `${metadata?.animation !== 'gone' ? 'opacity-100' : 'opacity-0'}`
     const speechBubbleVisible = `${metadata?.animation !== 'gone' && metadata?.animation !== 'angry' ? 'opacity-100' : 'opacity-0'}`
 
@@ -157,20 +158,12 @@ export function SpeakerRobot({ soulID, character, isPlayer = false }: SpeakerPro
         'speaking': `${state === 'speaking' ? 'opacity-100' : 'opacity-100'}`,
     }
 
-    const cycles = [
-        'I meet someone new',
-        'we talk',
-        'I fall in love',
-        'they leave',
-    ]
-
     return (
         <>
-            <div className={`w-screen flex justify-center ${scale} mt-[-2em]`}>
+            <div className={`w-screen flex justify-center ${scale} mt-[-5em]`}>
+
                 <Bentoish className={`relative ${width} ${height} ${flip}`}>
-
                     <div className=''>
-
                         {metadata?.animation === ANIMATIONS.angry && <Blinking rate={5800}>
                             <ImageAnimated
                                 className=''
@@ -195,6 +188,7 @@ export function SpeakerRobot({ soulID, character, isPlayer = false }: SpeakerPro
                                     <InputForm className={`text-sm text-black mx-auto w-full h-full z-[100] ${showBorder}`}>
                                         <InputTextArea
                                             className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
+                                            character={character}
                                             placeholder={'chat... '}
                                             maxLength={75}
                                         />
@@ -212,22 +206,55 @@ export function SpeakerRobot({ soulID, character, isPlayer = false }: SpeakerPro
 
                         )}
 
-
-
-
-                        {/* <div className='absolute bottom-8 left-20 flex flex-row gap-2'>
-                        <p className='text-black'>mood:</p>
-                        <p>{emotion}</p>
-                    </div> */}
-
                     </div>
-
-
                 </Bentoish>
+
+                <Input
+                    className='absolute mx-auto bottom-[0%]'
+                    value={role}
+                    setValue={setRole}
+                />
 
             </div>
 
         </>
+    )
+}
+
+
+function Input({ className, value, setValue }: any) {
+
+    const [v, setV] = useState<string>(value)
+
+    const cn = twMerge('duration-100 flex flex-row gap-1 overflow-x-clip', className)
+    const submit = v !== value ? 'w-[4em]' : 'w-[0px]'
+
+    const handleSubmit = (event: any) => {
+        event.preventDefault();
+        if (window.getSelection) { window?.getSelection()?.removeAllRanges(); }
+        setValue(v);
+    }
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setV(event.target.value);
+    }
+
+    const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
+        event.currentTarget.select();
+    };
+
+    return (
+        <form className={cn} onSubmit={handleSubmit}>
+            <input
+                className='border-[1px] w-[8em] text-center border-gray-400 px-2 focus:outline-none text-black rounded-md'
+                type='text'
+                value={v}
+                onChange={handleChange}
+                onClick={handleClick}
+                onSubmit={handleSubmit}
+            />
+            <button onClick={handleSubmit} className={`duration-100 ${submit}`}>Send</button>
+        </form>
     )
 }
 

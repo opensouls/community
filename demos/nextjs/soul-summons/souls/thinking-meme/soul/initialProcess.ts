@@ -65,16 +65,10 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
 
 
   log('thought', stageSpecificThought[cycle.current]);
-  [memory, stream] = await think(memory,
-    stageSpecificThought[cycle.current],
-    { stream: true, model: "quality" }
-  );
+  [memory, stream] = await think(memory, stageSpecificThought[cycle.current]);
 
   log('speech', stageSpecificSpeech[cycle.current]);
-  [memory, stream] = await talk(memory,
-    stageSpecificSpeech[cycle.current],
-    { stream: true, model: "quality" }
-  );
+  [memory, stream] = await talk(memory, stageSpecificSpeech[cycle.current]);
 
   //check if cycle should be added
   //TODO a metadata object that automatically gets attached to all dispatches? 
