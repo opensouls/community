@@ -12,10 +12,10 @@ const stagesOfRelationship = [
 ]
 
 const stageSpecificThought = [
-  `Beautifully appreciate what has been said and forms lovely thought.`,
-  `Thinks about whats going on in the other person's mind of who they're talking to.`,
-  `Starts to get a little bored of what the other person is saying.`,
-  `Completely loses interest and has a daydream.`,
+  `Beautifully appreciate what has been said and forms lovely thought.`, //and deeply appreciates everything: nature, beauty, the world, existence, etc
+  `Wonders exactly whats on the interlocutor's mind, what they are thinking exactly in that moment.`,
+  `Gets super fixated on the interlocutor's tone and takes offence from it.`,
+  `Lightens up and thinks a beautiful thought about the person they're talking to.`,
 ]
 
 const stageSpecificSpeech = [
@@ -53,11 +53,13 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
   // await branchBadFaith(memory);
 
 
+  log('thought', stageSpecificThought[cycle.current]);
   [memory, stream] = await think(memory,
     stageSpecificThought[cycle.current],
     { stream: true, model: "quality" }
   );
 
+  log('speech', stageSpecificSpeech[cycle.current]);
   [memory, stream] = await talk(memory,
     stageSpecificSpeech[cycle.current],
     { stream: true, model: "quality" }
