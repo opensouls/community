@@ -5,7 +5,7 @@ import Badge, { Pulse } from '@/components/Badge';
 import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps, CharacterProps } from '@/hooks/useSoulRoom';
 import { InputForm, Input, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
-import { Bentoish, TextBox } from '@/app/thinking-meme/Layout';
+import { Bentoish, TextBox } from '@/app/thinking-meme/Components';
 
 import Image from 'next/image';
 import { Soul } from '@opensouls/soul';
@@ -57,7 +57,7 @@ const THINKING_BUBBLES = [
 export default function ThinkerRoleplay() {
 
     return (
-        <>
+        <div className='flex flex-col align-middle justify-center min-h-screen gap-4 '>
 
             <SpeakerRobot
                 soulID={playerSoulID}
@@ -82,7 +82,7 @@ export default function ThinkerRoleplay() {
                     <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
                 </a>
             </div>
-        </>
+        </div>
     )
 }
 

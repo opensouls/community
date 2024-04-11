@@ -5,7 +5,7 @@ import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks
 import { MessageBox, InputForm, Input, InputTextArea } from '@/components/Messages';
 import Badge, { Pulse } from '@/components/Badge';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
-import { Bentoish, TextBox } from '@/app/thinking-meme/Layout';
+import { Bentoish, TextBox } from '@/app/thinking-meme/Components';
 
 import Image from 'next/image';
 
@@ -124,7 +124,7 @@ export default function Thinker() {
     ]
 
     return (
-        <>
+        <div className='flex flex-col align-middle justify-center min-h-screen gap-4 '>
             <div className={`w-screen flex justify-center ${scale} mt-[-2em]`}>
                 <Bentoish className={`relative ${width} ${height} `}>
 
@@ -209,6 +209,6 @@ export default function Thinker() {
                     <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
                 </a>
             </div>
-        </>
+        </div>
     )
 }
