@@ -138,7 +138,7 @@ export default function Thinker() {
         <div className='flex flex-col align-middle justify-center min-h-screen gap-4 '>
 
             <div className='flex flex-col align-middle items-center gap-2'>
-                <p className='text-lg'>
+                <p className='text-xl'>
                     {'millenial simulator'}
                 </p>
                 {/* <Badge className='mx-auto'>
@@ -146,10 +146,10 @@ export default function Thinker() {
                     {'gen-z-simulator'}
                 </Badge> */}
                 <InputLabel
-                    className='mx-auto text-sm w-[20em] z-[1000] opacity-50 hover:opacity-75'
+                    className='mx-auto text-md w-[20em] z-[1000] opacity-50 hover:opacity-75'
                     value={room?.scenario || ''}
                     setValue={(s) => setRoom({...room, scenario: s })}
-                    maxLength={25}
+                    maxLength={50}
                     placeholder={'enter a scenario...'}
                 />
             </div>
