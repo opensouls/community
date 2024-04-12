@@ -6,11 +6,13 @@ export default function useSoul({
   organization,
   blueprint,
   onNewMessage,
+  onMoodSwitch,
   onProcessStarted,
 }: {
   organization: string;
   blueprint: string;
   onNewMessage: (event: ActionEvent) => void;
+  onMoodSwitch: (mood: "cranky" | "not-cranky") => void;
   onProcessStarted: () => void;
 }) {
   const soulRef = useRef<Soul | undefined>(undefined);
@@ -23,6 +25,8 @@ export default function useSoul({
     const soulInstance = new Soul({
       organization,
       blueprint,
+      debug: process.env.NEXT_PUBLIC_SOUL_ENGINE_DEBUG === "true",
+      token: process.env.NEXT_PUBLIC_SOUL_ENGINE_TOKEN,
     });
 
     soulInstance.on("newSoulEvent", (event) => {
@@ -33,6 +37,11 @@ export default function useSoul({
 
     soulInstance.on("says", async (event) => {
       onNewMessage(event);
+    });
+
+    soulInstance.on("switchMood", async (event) => {
+      const content = await event.content();
+      onMoodSwitch(content as "cranky" | "not-cranky");
     });
 
     await soulInstance.connect();

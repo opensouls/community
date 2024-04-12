@@ -11,7 +11,7 @@ const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
     engineLog("[summarizes]", ...args);
   };
 
-  if (workingMemory.memories.length <= 15) {
+  if (workingMemory.memories.length <= 20) {
     return workingMemory;
   }
 
@@ -26,6 +26,7 @@ const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
   const [, updatedNotes] = await conversationNotes(memory, conversationModel.current);
   conversationModel.current = updatedNotes as string;
 
+  // retaining 14 memories: blueprint + summary + 12 memories (3 interactions with 4 memories each)
   return workingMemory
     .slice(0, 1)
     .withMemory({
@@ -38,7 +39,7 @@ const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
         conversationSummary: true,
       },
     })
-    .concat(workingMemory.slice(-8));
+    .concat(workingMemory.slice(1, 13));
 };
 
 export default summarizesConversation;

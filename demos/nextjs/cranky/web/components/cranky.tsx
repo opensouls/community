@@ -1,15 +1,15 @@
 "use client";
 
+import getAssetPath from "@/lib/assets";
 import { ActionEvent, said } from "@opensouls/engine";
-import Image from "next/image";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { renderText } from "../lib/render-text";
 import useSoul from "../lib/use-soul";
+import AsciiArrow from "./ascii-arrow";
+import MadeWithSoulEngine from "./made-with-soul-engine";
 import SendMessageForm from "./send-message-form";
 import SoulMessage from "./soul-message";
 import UserMessage from "./user-message";
-import MadeWithSoulEngine from "./made-with-soul-engine";
-import getAssetPath from "@/lib/assets";
 
 export type UserChatMessage = {
   type: "user";
@@ -27,6 +27,12 @@ export type ChatMessage = UserChatMessage | SoulChatMessage;
 export default function Cranky() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isThinking, setIsThinking] = useState(false);
+  const [isCranky, setIsCranky] = useState(true);
+  const scrollableDiv = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollableDiv.current?.scrollTo(0, document.body.scrollHeight);
+  }, [messages]);
 
   const { soul, isConnected } = useSoul({
     organization: process.env.NEXT_PUBLIC_SOUL_ENGINE_ORGANIZATION!,
@@ -49,6 +55,9 @@ export default function Cranky() {
         },
       ]);
     },
+    onMoodSwitch: (mood) => {
+      setIsCranky(mood === "cranky");
+    },
     onProcessStarted: () => {
       if (!isThinking) {
         setIsThinking(true);
@@ -69,42 +78,103 @@ export default function Cranky() {
       },
     ]);
 
-    await soul.dispatch(said("User", message));
+    await soul.dispatch(said("Interlocutor", message));
 
     window.scrollTo(0, document.body.scrollHeight);
   }
 
   return (
-    <div className="py-6">
-      {messages.length > 0 && (
-        <div className="pb-10 font-sans">
+    <div className="h-full py-6">
+      {messages.length === 0 && (
+        <div className="fixed w-full font-sans">
           <MadeWithSoulEngine />
         </div>
       )}
 
-      <div className="flex flex-col gap-6 pb-64 px-8">
+      <div className="h-full flex flex-col gap-6 px-8">
         {messages.length === 0 ? (
-          <div className="flex flex-col w-full min-h-screen items-center sm:justify-center gap-8 sm:gap-20">
-            <Image
-              loader={({ src }) => getAssetPath(src)}
-              src="/splash.png"
+          <div className="flex flex-col w-full h-full items-center sm:justify-center gap-8">
+            {/* eslint-disable @next/next/no-img-element */}
+            <img
+              src={getAssetPath("/splash.png")}
               width={512}
               height={512}
               alt="Cranky, the misanthropic ASCII artist"
-              priority
+              className="mt-14 sm:mt-0"
             />
-            <span className="text-center text-c-green sm:text-3xl">{`Use the text input below to send Cranky a message (at your own risk).`}</span>
+            <div className="py-4 text-center text-c-green sm:text-3xl">{`Use the text input below to send Cranky a message (at your own risk).`}</div>
           </div>
         ) : (
-          messages.map((message, i) => (
-            <Fragment key={i}>
-              {message.type === "user" ? (
-                <UserMessage>{message.content}</UserMessage>
-              ) : (
-                <SoulMessage message={message} />
-              )}
-            </Fragment>
-          ))
+          <>
+            <div className="fixed left-0 top-0 bg-black scale-75 sm:scale-100 flex w-screen sm:w-full justify-center items-center gap-4 sm:gap-10">
+              <div className="flex justify-center items-center gap-4">
+                {isCranky ? (
+                  <>
+                    <AsciiArrow className={"hidden sm:block"} />
+                    {/* eslint-disable @next/next/no-img-element */}
+                    <img
+                      className={"border-b-4 border-c-bright-red sm:border-b-0"}
+                      src={getAssetPath("/state-cranky.png")}
+                      width={160}
+                      height={80}
+                      alt="Cranky is cranky"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <AsciiArrow className="hidden sm:block text-c-bright-black" />
+                    {/* eslint-disable @next/next/no-img-element */}
+                    <img
+                      className={"grayscale opacity-40"}
+                      src={getAssetPath("/state-cranky.png")}
+                      width={160}
+                      height={80}
+                      alt="Cranky is cranky"
+                    />
+                  </>
+                )}
+              </div>
+              <div className="flex justify-center items-center gap-4">
+                {isCranky ? (
+                  <>
+                    <AsciiArrow className="hidden sm:block text-c-bright-black" />
+                    {/* eslint-disable @next/next/no-img-element */}
+                    <img
+                      className={"grayscale opacity-40"}
+                      src={getAssetPath("/state-not-cranky.png")}
+                      width={160}
+                      height={80}
+                      alt="Cranky is not cranky"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <AsciiArrow className="hidden sm:block text-c-bright-green" />
+                    {/* eslint-disable @next/next/no-img-element */}
+                    <img
+                      className={"border-b-4 border-c-bright-green sm:border-b-0"}
+                      src={getAssetPath("/state-not-cranky.png")}
+                      width={160}
+                      height={80}
+                      alt="Cranky is not cranky"
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div ref={scrollableDiv} className="flex flex-col mt-20 gap-10 pb-16 overflow-y-scroll">
+              {messages.map((message, i) => (
+                <Fragment key={i}>
+                  {message.type === "user" ? (
+                    <UserMessage>{message.content}</UserMessage>
+                  ) : (
+                    <SoulMessage message={message} />
+                  )}
+                </Fragment>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

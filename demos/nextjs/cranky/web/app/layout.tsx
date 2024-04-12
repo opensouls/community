@@ -1,8 +1,8 @@
+import getAssetPath from "@/lib/assets";
 import { fontCrankyTerminal, fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import "./globals.css";
-import getAssetPath from "@/lib/assets";
 
 export const metadata: Metadata = {
   title: "Cranky",
@@ -19,12 +19,12 @@ export default function Layout({
     <html lang="en">
       <body
         className={cn(
-          "relative w-full min-h-screen bg-black font-cranky-terminal text-2xl overflow-x-scroll",
+          "relative w-full h-screen bg-black font-cranky-terminal text-2xl overflow-x-scroll",
           fontCrankyTerminal.variable,
           fontSans.variable
         )}
       >
-        <main className="max-w-screen-2xl">{children}</main>
+        {children}
       </body>
     </html>
   );

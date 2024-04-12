@@ -4,7 +4,7 @@
 
 This is an example project to demonstrate how to connect a Next.js project to the Soul Engine.
 
-Cranky was sent to ASCII hell and as his punishment he's condemned to only speak in ASCII art. He's very cranky about it.
+Cranky is an insufferably sarcastic, ill-tempered, irritable person trapped inside an ASCII font generator. Being trapped didn't exactly improve Cranky's mood.
 
 <img src="web/public/splash.png" alt="drawing" width="400"/>
 

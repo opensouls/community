@@ -1,10 +1,26 @@
-import { ChatMessageRoleEnum, createCognitiveStep, z } from "@opensouls/engine";
+import { ChatMessageRoleEnum, createCognitiveStep, indentNicely, z } from "@opensouls/engine";
+import { Mood } from "../utils/types.js";
 
-export const formatResponse = createCognitiveStep(() => {
+export const formatResponse = createCognitiveStep((mood: Mood) => {
+  const crankyFonts = [
+    "ANSI Shadow",
+    "Bloody",
+    "Dancing Font",
+    "THIS",
+    "Invita",
+    "Larry 3D",
+    "Electronic",
+    "Delta Corps Priest 1",
+  ];
+
+  const notCrankyFonts = ["Small", "Contessa", "Slscript"];
+
+  const fonts = mood === "cranky" ? crankyFonts : notCrankyFonts;
+
   const params = z.object({
     reason: z.string().describe(`The reason for the chosen format in under 10 words.`),
-    font: z.string().describe(`The ASCII font to use.`),
-    color: z.array(z.string()).describe(`The color to apply to the font.`),
+    font: z.nativeEnum(fonts as unknown as z.EnumLike).describe(`The ASCII font to use.`),
+    color: z.string().describe(`The color to apply to the font.`),
   });
 
   return {
@@ -13,7 +29,7 @@ export const formatResponse = createCognitiveStep(() => {
       return {
         role: ChatMessageRoleEnum.System,
         name: name,
-        content: `
+        content: indentNicely`
           Model the mind of ${name}. 
 
           You need to format ${name}'s response in a way that matches what they're feeling and saying.
@@ -21,25 +37,32 @@ export const formatResponse = createCognitiveStep(() => {
           ## Fonts
           You can choose any of these fonts:
 
-          ### Small fonts
-          - 'Small'
+          ${
+            mood === "cranky"
+              ? indentNicely`
+                ### Medium fonts
+                - 'ANSI Shadow'
+                - 'Bloody'
+                - 'Dancing Font' (letters are dancing)
+                - 'THIS' (horror font)
+                - 'Invita' (cursive)
+                - 'Larry 3D' (3d)
 
-          ### Medium fonts
-          - 'ANSI Shadow'
-          - 'Bloody'
-          - 'Dancing Font' (letters are dancing)
-          - 'THIS' (horror font)
-          - 'Invita' (cursive)
-          - 'Larry 3D' (3d)
-
-          ### Big fonts
-          - 'Electronic'
-          - 'Delta Corps Priest 1' (sci-fi feel)
+                ### Big fonts
+                - 'Electronic'
+                - 'Delta Corps Priest 1' (sci-fi feel)
+              `
+              : indentNicely`
+                ### Small fonts
+                - 'Small'
+                - 'Contessa' (tiny)
+                - 'Slscript' (script)
+              `
+          }
 
           ## Colors
-
           Possible colors:
-          - 'red'
+          ${mood === "cranky" ? `- 'red'` : ""}
           - 'green'
           - 'yellow'
           - 'blue'
@@ -48,7 +71,7 @@ export const formatResponse = createCognitiveStep(() => {
           - 'white'
           - 'gray'
           - 'bright-black'
-          - 'bright-red'
+          ${mood === "cranky" ? `- 'bright-red'` : ""}
           - 'bright-green'
           - 'bright-yellow'
           - 'bright-blue'
