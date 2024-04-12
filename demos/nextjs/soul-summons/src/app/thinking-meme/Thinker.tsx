@@ -49,12 +49,11 @@ const THINKING_BUBBLES = [
 
 export default function Thinker() {
 
-    const { messages } = useSoulRoom();
+    const { messages, room, setRoom } = useSoulRoom();
     const { localMessages, state, metadata } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
 
     const [thought, setThought] = useState<string>(``);
     const [said, setSaid] = useState<string>(''); //hey, whats up
-    const [prompt, setPrompt] = useState<string>('making plans with friends');
     const [emotion, setEmotion] = useState<string>('😐');
     const [cycle, setCycle] = useState<string>('0');
 
@@ -140,8 +139,8 @@ export default function Thinker() {
                 </Badge> */}
                 <InputLabel
                     className='mx-auto text-sm w-[20em] z-[1000]'
-                    value={prompt}
-                    setValue={setPrompt}
+                    value={room?.scenario || ''}
+                    setValue={(s) => setRoom({ scenario: s })}
                     maxLength={25}
                     placeholder={'enter a scenario...'}
                 />

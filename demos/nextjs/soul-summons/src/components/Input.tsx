@@ -1,12 +1,18 @@
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-export function Input({ className, value, setValue, ...props }: any) {
+type InputProps = {
+    value: string,
+    setValue: (value: string) => void,
+    className?: string,
+    [propName: string]: any,
+}
+export function Input({ value, setValue, className, ...props }: InputProps) {
 
-    const [v, setV] = useState<string>(value)
+    const [localValue, setLocalValue] = useState<string>(value)
 
     const cn = twMerge('duration-100 flex flex-row gap-1 overflow-x-clip', className)
-    const submitStyle = v !== value ? 'w-[4em]' : 'w-[0px]'
+    const submitStyle = localValue !== value ? 'w-[4em]' : 'w-[0px]'
 
     const handleSubmit = (event: any) => {
         if (window.getSelection) { window?.getSelection()?.removeAllRanges(); }
@@ -14,11 +20,11 @@ export function Input({ className, value, setValue, ...props }: any) {
     }
 
     const handleBlur = (event: any) => {
-        setValue(v);
+        setValue(localValue);
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setV(event.target.value);
+        setLocalValue(event.target.value);
     }
 
     const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
@@ -28,13 +34,14 @@ export function Input({ className, value, setValue, ...props }: any) {
     const handleKeyDown = (event: any) => {
         if (event.key === 'Escape') {
             event.preventDefault();
-            setV(value);
+            setLocalValue(value);
         }
     };
 
     const submit = (event: any) => {
         event.preventDefault();
-        setValue(v);
+        console.log('submit', localValue, value);
+        setValue(localValue);
     }
 
     return (
@@ -42,7 +49,7 @@ export function Input({ className, value, setValue, ...props }: any) {
             <input
                 className='border-[1px] w-[100%] text-center border-gray-400 px-2 focus:outline-none text-black rounded-md'
                 type='text'
-                value={v}
+                value={localValue}
 
                 onKeyDown={handleKeyDown}
                 onChange={handleChange}

@@ -61,9 +61,10 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
   //process invocations/memory
   //return [memory, badFaithProcess, { executeNow: true, interruptable: true, returnTo: initialProcess }]
 
-
   //could we just jump straight into the process? (this will reset things like invocations, etc.)
   //do we even need this? why do we need this? 
+
+  log($$(`scenario {{scenario}}.`))
 
   //would be useful to have invocations/other things get tracked by other functions
   //we don't have access to those with cognitiveFunctions

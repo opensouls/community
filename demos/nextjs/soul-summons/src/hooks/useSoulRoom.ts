@@ -13,6 +13,7 @@ export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
 export type SoulProps = {
     organization: string,
     blueprint: string,
+    environment?: Record<string, any>,
 }
 
 export type CharacterProps = {
@@ -42,6 +43,8 @@ const startState: MessageProps[] = [];
 
 interface WorldState {
     messages: MessageProps[];
+    room: Record<string, any>;
+    setRoom: (newRoom:Record<string, any>) => void;
     addEvent: (newMessage: MessageProps) => void;
     setEvents: (newArray: MessageProps[]) => void;
     setEvent: (index: number, newMessage: MessageProps) => void;
@@ -59,6 +62,8 @@ const handleEvent = (newMessage: MessageProps) => {
 
 export const useSoulRoom = create<WorldState>()((set, get) => ({
     messages: startState,
+    room: {},
+    setRoom: (newRoom) => set((state) => ({ room: newRoom })),
     addEvent: (newMessage) => set((state) => {
         const messages = state.messages;
         if(newMessage.content === '') {console.error('no content'); return {...messages};}
@@ -84,16 +89,17 @@ export const useSoulRoom = create<WorldState>()((set, get) => ({
 type SoulSimpleProps = {
     soulID: SoulProps,
     character: CharacterProps,
+    environment?: Record<string, any>,
     settings?: SoulSettings,
 }
 
-export const useSoulSimple = ({ soulID, character,
+export const useSoulSimple = ({ soulID, character, environment,
     settings = {
         canHear: true,
         canSpeak: true,
     } }: SoulSimpleProps) => {
 
-    const { messages, addEvent, setEvent, getEvent } = useSoulRoom();
+    const { messages, room, addEvent, setEvent, getEvent } = useSoulRoom();
     const [state, setState] = useState<SoulState>('waiting');
     const [metadata, setMetadata] = useState<SoulEvent['_metadata']>({});
 
@@ -112,7 +118,10 @@ export const useSoulSimple = ({ soulID, character,
 
     useEffect(() => {
 
-        const initSoul = new Soul(soulID);
+        const initSoul = new Soul({
+            ...soulID,
+        });
+
         setSoul(initSoul);
 
         initSoul.connect().then(() => {
@@ -224,6 +233,19 @@ export const useSoulSimple = ({ soulID, character,
 
     }, [soulID, character])
 
+    useEffect(() => {
+        if(room && soul)  {
+           setRoomAndEnvironment(room);
+        }
+    }, [room, soul])
+
+    //takes the global environment (room and combined with the local souls environment)
+    function setRoomAndEnvironment(newEnvironment: Record<string, any>) {
+        if(!soul) { console.error('no soul!'); return; }
+        const combined = {...newEnvironment, ...environment};
+        console.log('setting env vars', JSON.stringify(combined,null,2))
+        soul.setEnvironment(combined);
+    }
 
     //routes new messages to each soul
     useEffect(() => {
