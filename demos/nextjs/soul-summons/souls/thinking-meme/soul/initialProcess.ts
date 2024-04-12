@@ -24,11 +24,10 @@ const stageSpecificSpeech = [
   `Give a lowkey response to what has last been said, disregarding they were thinking about.`,
 ]
 
-
-
 const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory: WorkingMemory }) => {
 
-  const { dispatch, log, scheduleEvent } = useActions();
+  const { dispatch, log } = useActions();
+  const { wait } = useProcessManager();
   const cycle = useProcessMemory(0);
 
   //TODO start using common folder for types shared with client (but in a way it doesn't break community library support?)
@@ -44,6 +43,14 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
   if (pendingPerceptions.current.length > 0) {
     return undefined;
   }
+
+  //reset state when entering the initial process
+  state(memory, {
+    canSpeak: true,
+    animation: 'idle',
+    state: 'thinking',
+  });
+
 
   //TODO move this to perceptionProcessor so it always runs no matter what
   const [, decision] = await isBadFaith(memory);
@@ -65,29 +72,17 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
 
 
   log('thought', stageSpecificThought[cycle.current]);
-  [memory, stream] = await think(memory,
-    stageSpecificThought[cycle.current],
-    { stream: true, model: "quality" }
-  );
+  [memory, stream] = await think(memory, stageSpecificThought[cycle.current]);
+
+  await wait(1000);
 
   log('speech', stageSpecificSpeech[cycle.current]);
-  [memory, stream] = await talk(memory,
-    stageSpecificSpeech[cycle.current],
-    { stream: true, model: "quality" }
-  );
+  [memory, stream] = await talk(memory, stageSpecificSpeech[cycle.current]);
 
   //check if cycle should be added
   //TODO a metadata object that automatically gets attached to all dispatches? 
   cycle.current = (cycle.current + 1) % 4;
   state(memory, { cycle: cycle.current });
-
-  dispatch({
-    name: workingMemory.soulName,
-    action: "state",
-    content: cycle.current.toString(),
-    _metadata: { state: 'error' }
-  });
-
 
   //schedule some extra bonus messages here 
   // return [memory, useMultiDialog, { executeNow: true }];

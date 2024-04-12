@@ -13,7 +13,7 @@ export type BuildingBlock = {
 const talk = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
 
     const { dispatch, log } = useActions();
-    const [memory, stream] = await externalDialog(workingMemory, description, params);
+    const [memory, stream] = await externalDialog(workingMemory, description, { ...params, model: 'quality'});
     dispatch({
         name: workingMemory.soulName,
         action: "says",
@@ -30,7 +30,7 @@ const talk = async (workingMemory: WorkingMemory, description: string, params?: 
 const think = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
 
     const { dispatch, log } = useActions();
-    const [memory, stream] = await internalMonologue(workingMemory, description, params);
+    const [memory, stream] = await internalMonologue(workingMemory, description, { ...params, model: 'quality'});
     dispatch({
         name: workingMemory.soulName,
         action: "thinks",
@@ -50,14 +50,12 @@ const state = (workingMemory: WorkingMemory, metadata: SoulEvent['_metadata']) =
 
     dispatch({
         name: workingMemory.soulName,
-        action: "state",
-        content: '',
+        action: "metadata",
+        content: JSON.stringify(metadata,null,2),
         _metadata: metadata
     });
 
 }
-
-
 
 const criteria = createCognitiveStep(({ description, criteria }: { description: string, criteria: string[] }) => {
 

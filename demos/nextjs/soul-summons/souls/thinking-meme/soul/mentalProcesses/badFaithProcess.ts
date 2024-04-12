@@ -6,10 +6,10 @@ import externalDialog from "../lib/externalDialog.js";
 import internalMonologue from "../lib/internalMonologue.js";
 import { stripEntityAndVerb } from "@opensouls/engine";
 import { stripAndTrim } from "../utils/stringHelper.js";
-
+import { think, state } from "../lib/buildingBlocks.js";
 
 const rabbitHole = [
-  'shock', 'anger', 'bargaining', 'acceptance',
+  'shock', 'bargaining', 'acceptance',
 ]
 
 const isBadFaith = async (memory: WorkingMemory) => {
@@ -53,72 +53,47 @@ const badFaithProcess: MentalProcess = async ({ workingMemory }) => {
   //we might have to say this if something super egregious was said so it doesn't mar the working memory?
   let cleanMemory = memory.slice(0, -1);
 
-  let metadata: any = {
+  state(memory, {
+    canSpeak: false,
     animation: 'angry',
     state: 'waiting',
-  };
-  dispatch({
-    name: workingMemory.soulName, action: "thinks", content: '',
-    _metadata: metadata,
   });
 
   await wait(5000);
 
-  dispatch({
-    name: workingMemory.soulName, action: "thinks", content: '',
-    _metadata: {
+  while (rabbitDepth.current < rabbitHole.length) {
+
+    state(memory, {
       animation: 'idle',
       state: 'thinking',
-    },
-  });
-
-  while (rabbitDepth.current < rabbitHole.length) {
+    });
 
     if (pendingPerceptions.current.length > 0) {
       log("ignoring due to pending")
       return [memory, initialProcess];
     }
 
-    dispatch({
-      name: workingMemory.soulName, 
-      action: "thinks", 
-      content: '',
-      _metadata: {
-        animation: 'idle',
-        state: 'thinking',
-      },
-    });
-
-    let metadata: any = {
-      animation: rabbitDepth.current < rabbitHole.length - 1 ? 'angry' : '',
-      state: rabbitDepth.current === rabbitHole.length - 1 ? 'thinks' : ''
-    };
-
-    [memory, stream] = await internalMonologue(memory,
+    [memory, stream] = await think(memory,
       indentNicely`
       - Has a thought deeply rooted in the feeling of ${rabbitHole[rabbitDepth.current]} stage of grief. 
       - Upset because "${originalMeanComment.current}" was said to them.
       - Thinks short thought, only a sentence or so.
-      `,
-      { stream: true, model: "quality", });
-
-    dispatch({
-      name: workingMemory.soulName, 
-      action: "thinks", 
-      content: stream,
-      _metadata: {
-        animation: 'idle',
-      },
-    });
+      `);
 
     rabbitDepth.current++;
 
-    await wait(6000);
+    await wait(4000);
   }
 
   //dont do this anymore
   // const [, decision] = await isGoodFaith(memory);
   // log('did they kiss and make up?', decision);
+
+
+  state(memory, {
+    canSpeak: true,
+    state: 'waiting',
+  });
 
   return [memory, initialProcess];
 };

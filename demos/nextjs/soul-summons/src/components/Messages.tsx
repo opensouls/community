@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useSoulRoom, MessageProps, PLAYER_CHARACTER, ActionType } from '@/hooks/useSoulRoom';
+import { useSoulRoom, PLAYER_CHARACTER, MessageProps, CharacterProps, ActionType } from '@/hooks/useSoulRoom';
 import Markdown from 'react-markdown';
 
 export type TextProps = {
@@ -18,7 +18,7 @@ export const ActionCaret: Record<ActionType, string> = {
     "does": "!",
     "ambience": "...",
     "feels": ">",
-    "state": ">",
+    "metadata": "ml-4",
 }
 
 export const Indentation: Record<ActionType, string> = {
@@ -27,7 +27,7 @@ export const Indentation: Record<ActionType, string> = {
     "does": "ml-4",
     "ambience": "ml-4",
     "feels": "ml-4",
-    "state": "ml-4",
+    "metadata": "ml-4",
 }
 
 export const ActionStyling: Record<ActionType, string> = {
@@ -36,7 +36,8 @@ export const ActionStyling: Record<ActionType, string> = {
     "does": "font-mono text-red-500",
     "ambience": "font-mono text-gray-400 italic bg-[#f5f5f5]",
     "feels": "font-mono text-black bg-[#f5f5f5]",
-    "state": "font-mono text-black bg-[#f5f5f5]",
+    "metadata": "ml-4",
+
 }
 
 export function InputForm({ children, className = '', ...props }: { children: React.ReactNode, className?: string }) {
@@ -67,7 +68,7 @@ export function InputForm({ children, className = '', ...props }: { children: Re
     )
 }
 
-export function Input({ className = '', ...props }: { className?: string }) {
+export function Input({ character = PLAYER_CHARACTER, className = '', ...props }: { character?: CharacterProps, className?: string }) {
 
     const { addEvent } = useSoulRoom();
     const cn = twMerge('border-[1px] border-black p-2 text-black', className)
@@ -82,7 +83,7 @@ export function Input({ className = '', ...props }: { className?: string }) {
                 addEvent({
                     content: inputElement.value,
                     type: 'thinks',
-                    character: PLAYER_CHARACTER,
+                    character: character,
                 });
                 inputElement.value = '';
             }}
@@ -98,7 +99,19 @@ export function Input({ className = '', ...props }: { className?: string }) {
     )
 }
 
-export function InputTextArea({ className = '', ...props }: { className?: string, [propName: string]: any }) {
+type TextAreaProps = {
+    character?: CharacterProps,
+    type?: ActionType,
+    className?: string,
+    [propName: string]: any
+}
+
+export function InputTextArea({
+    character = PLAYER_CHARACTER,
+    type = 'says',
+    className = '',
+    ...props
+}: TextAreaProps) {
 
     const { addEvent } = useSoulRoom();
     const [value, setValue] = React.useState('');
@@ -106,12 +119,15 @@ export function InputTextArea({ className = '', ...props }: { className?: string
     const cn = twMerge('border-[1px] border-black p-2 text-black', className);
 
     const handleKeyDown = (event: any) => {
+
+        if (value?.trim() === '') return;
         if (event.key === 'Enter') {
             event.preventDefault();
+            console.log('value', value);
             addEvent({
                 content: value,
-                type: 'thinks',
-                character: PLAYER_CHARACTER,
+                type: type,
+                character: character,
             });
             setValue('');
         }
@@ -120,7 +136,6 @@ export function InputTextArea({ className = '', ...props }: { className?: string
     const handleClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
         event.currentTarget.select();
     };
-
 
     return (
         <textarea
