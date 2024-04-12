@@ -119,19 +119,25 @@ export function InputTextArea({
     const cn = twMerge('border-[1px] border-black p-2 text-black', className);
 
     const handleKeyDown = (event: any) => {
-
-        if (value?.trim() === '') return;
         if (event.key === 'Enter') {
-            event.preventDefault();
-            console.log('value', value);
-            addEvent({
-                content: value,
-                type: type,
-                character: character,
-            });
-            setValue('');
+            submit(event);
         }
     };
+
+    const handleBlur = (event: any) => {
+        submit(event);
+    };
+    
+    const submit = (event: any) => {
+        event.preventDefault();
+        addEvent({
+            content: value,
+            type: type,
+            character: character,
+        });
+        setValue('');
+    }
+
 
     const handleClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
         event.currentTarget.select();
@@ -143,6 +149,7 @@ export function InputTextArea({
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             onClick={handleClick}
+            onBlur={handleBlur}
             style={{ resize: 'none' }}
             spellCheck='false'
             {...props}

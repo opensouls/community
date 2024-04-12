@@ -61,8 +61,10 @@ const handleEvent = (newMessage: MessageProps) => {
 export const useSoulRoom = create<WorldState>()((set, get) => ({
     messages: startState,
     addEvent: (newMessage) => set((state) => {
+        const messages = state.messages;
+        if(newMessage.content === '') {console.error('no content'); return {...messages};}
         const m = handleEvent(newMessage);
-        return { messages: [...state.messages, m] }
+        return { messages: [...messages, m] }
     }),
     setEvents: (newArray) => set((state) => ({ messages: newArray })),
     setEvent: (index: number, newMessage: MessageProps) => set((state) => {
