@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Badge, { Pulse } from '@/components/Badge';
 import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps, CharacterProps } from '@/hooks/useSoulRoom';
+import { Input } from '@/components/Input';
 import { InputForm, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Components';
@@ -10,8 +11,6 @@ import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
 
 import { Soul } from '@opensouls/soul';
-
-
 
 const thinkingSoul = {
     name: 'overthinker',
@@ -221,42 +220,6 @@ export function SpeakerRobot({ soulID, character, roleplay, isPlayer = false }: 
     )
 }
 
-
-function Input({ className, value, setValue }: any) {
-
-    const [v, setV] = useState<string>(value)
-
-    const cn = twMerge('duration-100 flex flex-row gap-1 overflow-x-clip', className)
-    const submit = v !== value ? 'w-[4em]' : 'w-[0px]'
-
-    const handleSubmit = (event: any) => {
-        event.preventDefault();
-        if (window.getSelection) { window?.getSelection()?.removeAllRanges(); }
-        setValue(v);
-    }
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setV(event.target.value);
-    }
-
-    const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
-        event.currentTarget.select();
-    };
-
-    return (
-        <form className={cn} onSubmit={handleSubmit}>
-            <input
-                className='border-[1px] w-[8em] text-center border-gray-400 px-2 focus:outline-none text-black rounded-md'
-                type='text'
-                value={v}
-                onChange={handleChange}
-                onClick={handleClick}
-                onSubmit={handleSubmit}
-            />
-            <button onClick={handleSubmit} className={`duration-100 ${submit}`}>Send</button>
-        </form>
-    )
-}
 
 export function SpeechHead() {
 

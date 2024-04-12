@@ -7,7 +7,7 @@ import { Soul, said, ActionEvent } from "@opensouls/soul"
 import { v4 as uuidv4 } from 'uuid';
 import { SoulEvent } from "@opensouls/engine"
 
-const ACTIONS = ["says", "thinks", "does", "ambience", "feels", "state"] as const;
+const ACTIONS = ["says", "thinks", "does", "ambience", "feels", "metadata"] as const;
 export type ActionType = typeof ACTIONS[number];
 export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
 
@@ -126,15 +126,20 @@ export const useSoulSimple = ({ soulID, character,
             let value = '';
 
             if (!stream) {
-                console.log(event.name, event.action, value, 'not streaming')
+                // console.log(event.name, event.action, value, 'not streaming')
                 value = await event.content();
             }
 
             setMetadata((last) => ({ ...last, ...event._metadata }));
 
-            if (event._metadata && event._metadata.state) {
+            if (event.action === 'metadata') {
+                if (event?._metadata === undefined) {
+                    console.error('metadata undefined');
+                    console.log(JSON.stringify(event, null, 2))
+                    return;
+                }
                 const state = event._metadata.state;
-                console.log('STATE_OVERRIDE', state)
+                // console.log('STATE_OVERRIDE', state)
                 if (state as SoulState !== state) { console.error('state mismatch') }
                 setState(state as SoulState);
             } else if (event.action === 'thinks') {
@@ -150,10 +155,11 @@ export const useSoulSimple = ({ soulID, character,
             let index = -1;
 
             //eventually add this as a `useSoulStore` that the room and the souls both use
-            //local messages are only added to our store
+            //local messages are only added to our store 
             //speaking and other actions get added to the room store
 
             if (local) {
+                //rework local soon
                 setLocalMessages(last => {
                     index = last.length;
                     return [...last, message]
@@ -169,17 +175,14 @@ export const useSoulSimple = ({ soulID, character,
                 console.log(event.name, event.action, value, 'streaming');
 
                 for await (const txt of event.stream()) {
+
+                    //undo this garbo soon
                     if (message._uuid === undefined) { return; }
                     const [m, index] = getEvent(message._uuid);
                     if (m === undefined) { console.error('could not find message in messages'); }
                     message.content = (message.content + txt).trim();
                     setEvent(index, message);
 
-                    // setLocalMessages(last => {
-                    //     last[index].content = (last[index].content + txt).trim()
-                    //     console.log(last[index].content);
-                    //     return last;
-                    // });
                 }
 
                 console.log(event.name, event.action, value, 'streaming done');
@@ -241,7 +244,7 @@ export const useSoulSimple = ({ soulID, character,
 
                     setLocalRoomState(newMessage);
                     sendPerception(newMessage?.character?.name ?? 'Interlocutor', newMessage.content);
-                    
+
                     setState('thinking');
 
                 }, 500);

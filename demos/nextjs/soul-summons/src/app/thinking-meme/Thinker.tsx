@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
+import { Input as InputLabel } from '@/components/Input';
 import { MessageBox, InputForm, Input, InputTextArea } from '@/components/Messages';
 import Badge, { Pulse } from '@/components/Badge';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
@@ -52,7 +53,7 @@ export default function Thinker() {
 
     const [thought, setThought] = useState<string>(``);
     const [said, setSaid] = useState<string>(''); //hey, whats up
-    const [prompt, setPrompt] = useState<string>('');
+    const [prompt, setPrompt] = useState<string>('making plans with friends');
     const [emotion, setEmotion] = useState<string>('😐');
     const [cycle, setCycle] = useState<string>('0');
 
@@ -63,18 +64,22 @@ export default function Thinker() {
         const lastMessage = messages[messages.length - 1];
 
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
-            setPrompt(lastMessage.content)
             setThought('');
             setSaid('');
-        } else if (lastMessage.type === 'thinks') {
-            setThought(`${lastMessage.content}`) // ${emotion}
-        } else if (lastMessage.type === 'says') {
-            setSaid(lastMessage.content)
-        } else if (lastMessage.type === 'feels') {
-            setEmotion(lastMessage.content)
-        } else if (lastMessage.type === 'state') {
-            setCycle(lastMessage.content)
+        } else {
+            if (lastMessage.type === 'thinks') {
+                setThought(`${lastMessage.content}`) // ${emotion}
+            } else if (lastMessage.type === 'says') {
+                setSaid(lastMessage.content)
+            } else if (lastMessage.type === 'feels') {
+                setEmotion(lastMessage.content)
+            }
+
+            if (lastMessage?.metadata?.cycle !== undefined) {
+                setCycle(lastMessage.metadata.cycle)
+            }
         }
+
 
     }, [messages])
 
@@ -89,25 +94,23 @@ export default function Thinker() {
         }
     }, [localMessages])
 
+    const canInput = (metadata?.canSpeak === undefined) || metadata.canSpeak === true;
 
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
     const speechStyle = 'text-lg text-black font-sans';
-    const thoughtStyle = 'text-sm text-gray-400';
+    const thoughtStyle = `${state === 'thinking' ? 'opacity-0' : 'opacity-100'} text-sm text-gray-400`;
+
+    const inputStyle = canInput ? 'opacity-100' : 'opacity-25';
+    const hiddenWhenInputDisabled = canInput ? 'opacity-100' : 'opacity-0';
 
     const selectedStyle = 'underline';
     const width = 'min-w-[30em] w-[30em]' //md:min-w-[40em] md:w-[40em]
     const height = 'min-h-[30em] h-[30em]' //md:min-h-[40em] md:h-[40em]
-    const scale = 'duration-200 scale-[.75] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
+    const scale = 'scale-[.75] md:scale-[1] md:translate-y-[0%] md:translate-x-[0%]'
     const showBorder = ''//border-[1px] border-red-500'
-    const characterVisible = `${metadata?.animation !== 'gone' ? 'opacity-100' : 'opacity-0'}`
-    const speechBubbleVisible = `${metadata?.animation !== 'gone' && metadata?.animation !== 'angry' ? 'opacity-100' : 'opacity-0'}`
 
-    const stateClassName = {
-        'waiting': `${state === 'waiting' ? 'opacity-100' : 'opacity-100'}`,
-        'processing': `${state === 'processing' ? 'opacity-100' : 'opacity-100'}`,
-        'thinking': `${state === 'thinking' ? 'opacity-100' : 'opacity-100'}`,
-        'speaking': `${state === 'speaking' ? 'opacity-100' : 'opacity-100'}`,
-    }
+
+    const characterVisible = `${metadata?.animation !== 'gone' ? 'opacity-100' : 'opacity-0'}`
 
     const cycles = [
         'I meet someone new',
@@ -125,7 +128,25 @@ export default function Thinker() {
 
     return (
         <div className='flex flex-col align-middle justify-center min-h-screen gap-4 '>
-            <div className={`w-screen flex justify-center ${scale} mt-[-2em]`}>
+
+            <div className='flex flex-col align-middle items-center gap-2'>
+                <p className='text-lg'>
+                    {'gen-z-simulator'}
+                </p>
+                {/* <Badge className='mx-auto'>
+                    <Pulse />
+                    {'gen-z-simulator'}
+                </Badge> */}
+                <InputLabel
+                    className='mx-auto text-sm w-[20em] z-[1000]'
+                    value={prompt}
+                    setValue={setPrompt}
+                    maxLength={25}
+                    placeholder={'enter a scenario...'}
+                />
+            </div>
+
+            <div className={`w-screen flex justify-center ${scale} mt-[-5em]`}>
                 <Bentoish className={`relative ${width} ${height} `}>
 
                     <div className=''>
@@ -138,19 +159,18 @@ export default function Thinker() {
                             />
                         </Blinking>}
 
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={`${stateClassName['thinking']} ${characterVisible}`} />
-                        <Blinking><ImageLayer src={THOUGHT_STATES[state]} /></Blinking>
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={`${characterVisible}`} />
+                        <Blinking><ImageLayer src={THOUGHT_STATES[state]} className={hiddenWhenInputDisabled} /></Blinking>
                         {state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={`${stateClassName['speaking']} `} />
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={`${inputStyle}`} />
 
                         <TextBox
                             text={`${thought}`}
-                            className={`absolute leading-[.1em] right-[10%] top-[42%] h-[50%] w-[30%] ${thoughtStyle} ${textStyle} ${showBorder} ${stateClassName['thinking']}`}
-                        />
+                            className={`absolute leading-[.1em] right-[10%] top-[42%] h-[50%] w-[30%] ${thoughtStyle} ${textStyle} ${showBorder}`} />
 
                         <TextBox
                             text={`${said}`}
-                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${stateClassName['speaking']} ${speechBubbleVisible}`}
+                            className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] ${speechStyle} ${textStyle} ${showBorder} ${inputStyle}`}
                         />
 
 
@@ -159,6 +179,13 @@ export default function Thinker() {
                         <p>{emotion}</p>
                     </div> */}
 
+                        {showBorder && <div className='absolute'>
+                            <ul>
+                                <li><b>METADATA:</b>{JSON.stringify(metadata, null, 2)}</li>
+                                <li><b>STATE:</b>{state}</li>
+                            </ul>
+                        </div>}
+
                     </div>
 
 
@@ -166,8 +193,8 @@ export default function Thinker() {
 
             </div>
 
-            <div className={`w-screen flex justify-center ${scale} mt-[-10em]`}>
-                <Bentoish className={`relative w-[22em] h-[22em] `}>
+            <div className={`w-screen flex justify-center ${scale} mt-[-15em] md:mt-[-10em]`}>
+                <Bentoish className={`relative w-[22em] h-[22em] ${inputStyle}`}>
                     <div className=''>
                         {/* {cycles.map((c, i) =>
                             <TextBox
@@ -176,19 +203,20 @@ export default function Thinker() {
                             />
                         )}
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} /> */}
-                        <Blinking opacity={true} enabled={state === 'waiting'}>
-                            <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`${stateClassName['speaking']} scale-[1.15]`} />
+                        <Blinking opacity={true} enabled={state === 'waiting' && canInput}>
+                            <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`scale-[1.15]`} />
                         </Blinking>
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_inputHead.png'} className={`scale-[1.15]`} />
 
                     </div>
 
-                    <Blinking enabled={state === 'waiting'} opacity={true} className={`absolute top-[32%] h-[40%] z-[1000] flex flex-col w-full scale-[1]`}>
+                    <Blinking enabled={state === 'waiting' && canInput} opacity={true} className={`absolute top-[32%] h-[40%] z-[1000] flex flex-col w-full scale-[1]`}>
                         <InputForm className={`w-[40%] text-sm text-black mx-auto h-full z-[100] ${showBorder}`}>
                             <InputTextArea
                                 className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
                                 placeholder={'chat... '}
                                 maxLength={75}
+                                disabled={!canInput}
                             />
                         </InputForm>
                     </Blinking>
