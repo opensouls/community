@@ -9,6 +9,7 @@ import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Components';
 
 import Image from 'next/image';
+import { Footer } from '../components/Elements';
 
 
 
@@ -225,18 +226,9 @@ export default function Thinker() {
             </div>
 
             {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
-            <div className='mx-auto flex flex-col align-middle'>
 
-                <a href={'https://github.com/opensouls/community'} target='_blank'>
-                    <Badge className='mx-auto'>
-                        <Pulse />
-                        {'thinking-meme'}
-                    </Badge>
-                </a>
-                <a href='https://www.opensouls.studio/' target='_blank' className="flex mx-auto w-[8em] mt-[-.25em]">
-                    <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
-                </a>
-            </div>
+            <Footer />
+
         </div>
     )
 }

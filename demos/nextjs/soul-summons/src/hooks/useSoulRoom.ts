@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
 import { Soul, said, ActionEvent } from "@opensouls/soul"
 import { v4 as uuidv4 } from 'uuid';
 import { SoulEvent } from "@opensouls/engine"

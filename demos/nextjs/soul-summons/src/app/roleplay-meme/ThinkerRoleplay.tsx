@@ -11,6 +11,7 @@ import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
 
 import { Soul } from '@opensouls/soul';
+import { Footer } from '../components/Elements';
 
 const thinkingSoul = {
     name: 'overthinker',

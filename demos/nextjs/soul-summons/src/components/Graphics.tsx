@@ -54,7 +54,7 @@ export function Sprite({ src = '', animate = false, onClick = () => { } }) {
 
 export function ImageLayer({ src = '', alt = '', className = '', width = 1024, height = 1024 }) {
 
-    const cn = twMerge('absolute m-auto select-none ', className)
+    const cn = twMerge('absolute m-auto select-none pointer-events-none', className)
     return (
         <>
             {src &&
