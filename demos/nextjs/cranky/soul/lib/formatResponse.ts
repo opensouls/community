@@ -13,7 +13,7 @@ export const formatResponse = createCognitiveStep((mood: Mood) => {
     "Delta Corps Priest 1",
   ];
 
-  const notCrankyFonts = ["Small", "Contessa", "Slscript"];
+  const notCrankyFonts = ["Small", "Contessa", "Rectangles"];
 
   const fonts = mood === "cranky" ? crankyFonts : notCrankyFonts;
 
@@ -55,8 +55,8 @@ export const formatResponse = createCognitiveStep((mood: Mood) => {
               : indentNicely`
                 ### Small fonts
                 - 'Small'
-                - 'Contessa' (tiny)
-                - 'Slscript' (script)
+                - 'Contessa' (smallest)
+                - 'Rectangles' (chubby)
               `
           }
 

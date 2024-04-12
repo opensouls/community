@@ -31,7 +31,10 @@ export default function Cranky() {
   const scrollableDiv = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollableDiv.current?.scrollTo(0, document.body.scrollHeight);
+    scrollableDiv.current?.scrollTo({
+      top: scrollableDiv.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   const { soul, isConnected } = useSoul({
