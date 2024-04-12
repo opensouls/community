@@ -46,6 +46,7 @@ const THINKING_BUBBLES = [
     '/thinking-meme/ThinkingMeme_0001s_0002_thought2.png',
 ]
 
+export const scenario = 'making plans with friends';
 
 export default function Thinker() {
 
@@ -56,6 +57,10 @@ export default function Thinker() {
     const [said, setSaid] = useState<string>(''); //hey, whats up
     const [emotion, setEmotion] = useState<string>('😐');
     const [cycle, setCycle] = useState<string>('0');
+
+    useEffect(() => {
+        setRoom({scenario:scenario});
+    }, [])
 
     //do some filtering
     useEffect(() => {

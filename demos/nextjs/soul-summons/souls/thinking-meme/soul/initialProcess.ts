@@ -10,6 +10,8 @@ const stagesOfRelationship = [
   'they leave',
 ]
 
+
+
 const stageSpecificThought = [
   `Beautifully appreciate what has been said and forms a lovely thought.`, //and deeply appreciates everything: nature, beauty, the world, existence, etc
   `Wonders exactly whats on the interlocutor's mind, what they are thinking exactly in that moment.`,
@@ -35,6 +37,8 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
 
   let memory = workingMemory;
   let stream;
+
+  log($$(`scenario: {{scenario}}.`))
 
   //TODO, discuss options to formalize this pattern
   //maybe add a param 'perceptionInterrupt' when it detects a pendingPerception after a cognitivestep
@@ -63,8 +67,6 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
 
   //could we just jump straight into the process? (this will reset things like invocations, etc.)
   //do we even need this? why do we need this? 
-
-  log($$(`scenario {{scenario}}.`))
 
   //would be useful to have invocations/other things get tracked by other functions
   //we don't have access to those with cognitiveFunctions

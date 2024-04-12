@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 type InputProps = {
@@ -8,6 +8,10 @@ type InputProps = {
     [propName: string]: any,
 }
 export function Input({ value, setValue, className, ...props }: InputProps) {
+
+    useEffect(() => {
+        setLocalValue(value);
+    }, [value]);
 
     const [localValue, setLocalValue] = useState<string>(value)
 
