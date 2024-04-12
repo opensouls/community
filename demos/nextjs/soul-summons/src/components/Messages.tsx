@@ -18,7 +18,7 @@ export const ActionCaret: Record<ActionType, string> = {
     "does": "!",
     "ambience": "...",
     "feels": ">",
-    "state": ">",
+    "metadata": "ml-4",
 }
 
 export const Indentation: Record<ActionType, string> = {
@@ -27,7 +27,7 @@ export const Indentation: Record<ActionType, string> = {
     "does": "ml-4",
     "ambience": "ml-4",
     "feels": "ml-4",
-    "state": "ml-4",
+    "metadata": "ml-4",
 }
 
 export const ActionStyling: Record<ActionType, string> = {
@@ -36,7 +36,8 @@ export const ActionStyling: Record<ActionType, string> = {
     "does": "font-mono text-red-500",
     "ambience": "font-mono text-gray-400 italic bg-[#f5f5f5]",
     "feels": "font-mono text-black bg-[#f5f5f5]",
-    "state": "font-mono text-black bg-[#f5f5f5]",
+    "metadata": "ml-4",
+
 }
 
 export function InputForm({ children, className = '', ...props }: { children: React.ReactNode, className?: string }) {
@@ -67,7 +68,7 @@ export function InputForm({ children, className = '', ...props }: { children: Re
     )
 }
 
-export function Input({ character = PLAYER_CHARACTER, className = '', ...props }: { character: CharacterProps, className?: string }) {
+export function Input({ character = PLAYER_CHARACTER, className = '', ...props }: { character?: CharacterProps, className?: string }) {
 
     const { addEvent } = useSoulRoom();
     const cn = twMerge('border-[1px] border-black p-2 text-black', className)

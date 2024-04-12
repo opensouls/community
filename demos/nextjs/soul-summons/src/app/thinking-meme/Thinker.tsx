@@ -131,7 +131,7 @@ export default function Thinker() {
 
             <div className='flex flex-col align-middle items-center gap-2'>
                 <p className='text-lg'>
-                    {'gen-z-simulator'}
+                    {'millenial simulator'}
                 </p>
                 {/* <Badge className='mx-auto'>
                     <Pulse />
