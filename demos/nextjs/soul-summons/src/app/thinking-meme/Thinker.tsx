@@ -46,7 +46,10 @@ const THINKING_BUBBLES = [
     '/thinking-meme/ThinkingMeme_0001s_0002_thought2.png',
 ]
 
-export const scenario = 'making plans with friends';
+export const defaultRoom = {
+    entityName: 'Johnathan',
+    scenario:'storming of the bastille',
+}
 
 export default function Thinker() {
 
@@ -59,7 +62,7 @@ export default function Thinker() {
     const [cycle, setCycle] = useState<string>('0');
 
     useEffect(() => {
-        setRoom({scenario:scenario});
+        setRoom(defaultRoom);
     }, [])
 
     //do some filtering
@@ -143,9 +146,9 @@ export default function Thinker() {
                     {'gen-z-simulator'}
                 </Badge> */}
                 <InputLabel
-                    className='mx-auto text-sm w-[20em] z-[1000]'
+                    className='mx-auto text-sm w-[20em] z-[1000] opacity-50 hover:opacity-75'
                     value={room?.scenario || ''}
-                    setValue={(s) => setRoom({ scenario: s })}
+                    setValue={(s) => setRoom({...room, scenario: s })}
                     maxLength={25}
                     placeholder={'enter a scenario...'}
                 />

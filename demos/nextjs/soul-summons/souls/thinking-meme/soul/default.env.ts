@@ -1,3 +1,4 @@
 {
+  entityName: 'Johnathan',
     scenario: ":^)",
   }

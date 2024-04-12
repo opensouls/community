@@ -24,7 +24,9 @@ export function Input({ value, setValue, className, ...props }: InputProps) {
     }
 
     const handleBlur = (event: any) => {
-        setValue(localValue);
+        if(localValue !== value) {
+            setValue(localValue);
+        }
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
