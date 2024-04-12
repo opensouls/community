@@ -6,7 +6,7 @@ import externalDialog from "../lib/externalDialog.js";
 import internalMonologue from "../lib/internalMonologue.js";
 import { stripEntityAndVerb } from "@opensouls/engine";
 import { stripAndTrim } from "../utils/stringHelper.js";
-import { think, state } from "../lib/buildingBlocks.js";
+import { think, state } from "../cognitiveFunctions/buildingBlocks.js";
 
 const rabbitHole = [
   'shock', 'bargaining', 'acceptance',

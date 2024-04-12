@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
 import { Input as InputLabel } from '@/components/Input';
-import { MessageBox, InputForm, Input, InputTextArea } from '@/components/Messages';
+import { MessageWaterfall, InputForm, Input, InputTextArea } from '@/components/Messages';
 import Badge, { Pulse } from '@/components/Badge';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Components';

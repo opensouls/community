@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react"
 import { Soul, said } from "@opensouls/soul"
-import { MessageBox } from "./Messages";
+import { MessageWaterfall } from "./Messages";
 import { useSoulRoom, useSoulSimple, PLAYER_CHARACTER, MessageProps } from "@/hooks/useSoulRoom";
 import { Sprite } from "@/components/Graphics";
 import { SoulProps, CharacterProps } from "@/hooks/useSoulRoom";
@@ -14,7 +14,7 @@ export default function SoulVoice({ soulID, character }: { soulID: SoulProps, ch
 
     return (
         <>
-            <MessageBox
+            <MessageWaterfall
                 messages={localMessages}
                 className={'flex grow-1 h-[50em] justify-start bg-[#d4d4d4] opacity-50'}
             />

@@ -99,7 +99,7 @@ export function Input({ character = PLAYER_CHARACTER, className = '', ...props }
     )
 }
 
-type TextAreaProps = {
+type SoulTextAreaProps = {
     character?: CharacterProps,
     type?: ActionType,
     className?: string,
@@ -111,11 +111,41 @@ export function InputTextArea({
     type = 'says',
     className = '',
     ...props
-}: TextAreaProps) {
+}: SoulTextAreaProps) {
 
     const { addEvent } = useSoulRoom();
-    const [value, setValue] = React.useState('');
 
+    const onSubmit = (text: string) => {
+        addEvent({
+            content: text,
+            type: type,
+            character: character,
+        });
+    }
+
+    return (
+        <TextArea
+            value={''}
+            onSubmit={onSubmit}
+            className={className}
+            {...props}
+        />
+    )
+}
+
+type TextAreaProps = {
+    value: string,
+    onSubmit: (value: string) => void,
+    setValue?: (value: string) => void,
+    className?: string,
+    clearOnSubmit?: boolean,
+    [propName: string]: any,
+}
+
+export function TextArea({ value = '', setValue = () => { }, onSubmit, className, clearOnSubmit, ...props }: TextAreaProps) {
+
+    const [localValue, setLocalValue] = React.useState(value);
+    const [lastSubmission, setLastSubmission] = React.useState<string>('');
     const cn = twMerge('border-[1px] border-black p-2 text-black', className);
 
     const handleKeyDown = (event: any) => {
@@ -124,20 +154,26 @@ export function InputTextArea({
         }
     };
 
-    const handleBlur = (event: any) => {
-        submit(event);
-    };
-    
-    const submit = (event: any) => {
-        event.preventDefault();
-        addEvent({
-            content: value,
-            type: type,
-            character: character,
-        });
-        setValue('');
-    }
+    const handleBlur = (event: any, fromSubmit = true) => {
+        //TODO make this mobile only
+        if (localValue !== lastSubmission && !fromSubmit) {
+            submit(event);
+        }
 
+    };
+
+    const submit = (event: any) => {
+
+        console.log('submitting');
+        event.preventDefault();
+        setValue(localValue);
+        setLastSubmission(localValue);
+        onSubmit(localValue);
+        //deselect
+        if (clearOnSubmit) {
+            setLocalValue('');
+        }
+    }
 
     const handleClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
         event.currentTarget.select();
@@ -146,10 +182,11 @@ export function InputTextArea({
     return (
         <textarea
             className={cn}
-            onChange={(e) => setValue(e.target.value)}
+            value={localValue}
+            onChange={(e) => setLocalValue(e.target.value)}
             onKeyDown={handleKeyDown}
             onClick={handleClick}
-            onBlur={handleBlur}
+            onBlur={(e) => {handleBlur(e, false);}}
             style={{ resize: 'none' }}
             spellCheck='false'
             {...props}
@@ -157,8 +194,8 @@ export function InputTextArea({
     );
 }
 
-
-export function MessageBox({ messages, className = '' }: { messages: MessageProps[], className?: string }) {
+//styles a list of messages
+export function MessageWaterfall({ messages, className = '' }: { messages: MessageProps[], className?: string }) {
 
     const ref = useRef<HTMLDivElement>(null);
     const cn = twMerge('relative border-black border-[1px] w-full h-24 flex flex-col overflow-y-scroll p-2', className);

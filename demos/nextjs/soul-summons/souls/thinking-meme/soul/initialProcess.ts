@@ -1,7 +1,7 @@
 import { MentalProcess, WorkingMemory, useSoulMemory, useActions, useProcessMemory, usePerceptions } from "@opensouls/engine";
 import { useBlueprintStore, useOrganizationStore, useProcessManager } from "@opensouls/engine";
 import badFaithProcess, { isBadFaith, branchBadFaith } from "./mentalProcesses/badFaithProcess.js";
-import { talk, think, state } from "./lib/buildingBlocks.js";
+import { talk, think, state } from "./cognitiveFunctions/buildingBlocks.js";
 
 const stagesOfRelationship = [
   'I meet someone new',

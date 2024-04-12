@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react"
 import SoulVoice from "@/components/Soul"
 import { Label, Sprite } from "@/components/Graphics"
 import { MessageProps, CharacterProps } from "@/hooks/useSoulRoom"
-import { Input, InputForm, MessageBox } from "../../components/Messages"
+import { Input, InputForm, MessageWaterfall } from "../../components/Messages"
 import { CharacterBox } from "./Layout"
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
@@ -73,7 +73,7 @@ export default function Desk({ }) {
 
                         <div className="flex flex-col gap-4">
 
-                            <MessageBox messages={messages} className={'flex grow-1 h-[50em]'} />
+                            <MessageWaterfall messages={messages} className={'flex grow-1 h-[50em]'} />
 
                             <hr className="border-gray-400" />
 

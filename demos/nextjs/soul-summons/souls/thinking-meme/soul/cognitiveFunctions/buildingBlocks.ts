@@ -1,6 +1,6 @@
 import { createCognitiveStep, WorkingMemory, ChatMessageRoleEnum, indentNicely, z, useActions } from "@opensouls/engine";
-import internalMonologue from "./internalMonologue.js";
-import externalDialog from "./externalDialog.js";
+import internalMonologue from "../lib/internalMonologue.js";
+import externalDialog from "../lib/externalDialog.js";
 import { RequestOptions } from "https";
 import { SoulEvent } from "@opensouls/engine";
 
