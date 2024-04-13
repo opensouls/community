@@ -62,6 +62,7 @@ export function Input({ value, setValue, className, ...props }: InputProps) {
                 onClick={handleClick}
                 onSubmit={handleSubmit}
                 onBlur={handleBlur}
+                spellCheck='false'
                 {...props}
             />
             <button onClick={handleSubmit} className={`duration-100 ${submitStyle}`}>enter</button>

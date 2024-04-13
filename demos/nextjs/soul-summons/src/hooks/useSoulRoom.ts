@@ -44,7 +44,7 @@ const startState: MessageProps[] = [];
 interface WorldState {
     messages: MessageProps[];
     room: Record<string, any>;
-    setRoom: (newRoom:Record<string, any>) => void;
+    setRoom: (newRoom: Record<string, any>) => void;
     addEvent: (newMessage: MessageProps) => void;
     setEvents: (newArray: MessageProps[]) => void;
     setEvent: (index: number, newMessage: MessageProps) => void;
@@ -66,7 +66,7 @@ export const useSoulRoom = create<WorldState>()((set, get) => ({
     setRoom: (newRoom) => set((state) => ({ room: newRoom })),
     addEvent: (newMessage) => set((state) => {
         const messages = state.messages;
-        if(newMessage.content === '') {console.error('no content'); return {...messages};}
+        if (newMessage.content === '') { console.error('no content'); return { ...messages }; }
         const m = handleEvent(newMessage);
         return { messages: [...messages, m] }
     }),
@@ -122,11 +122,12 @@ export const useSoulSimple = ({ soulID, character, environment,
             ...soulID,
         });
 
-        setSoul(initSoul);
+        console.log("initSoul", soulID.blueprint);
 
         initSoul.connect().then(() => {
             console.log("Connected to soul", soulID.blueprint);
             setConnected(true);
+            setSoul(initSoul);
         }).catch((error) => {
             console.error("Error connecting to soul", soulID, error);
         });
@@ -229,25 +230,38 @@ export const useSoulSimple = ({ soulID, character, environment,
                 initSoul.off(action, eventHandlers[action]);
             });
             console.log('disconnecting soul', soulID.blueprint);
+            initSoul.disconnect();
         };
 
     }, [soulID, character])
 
+    async function expireSoul() {
+        if (soul && soul.connected) {
+            console.log('expiring soul', soulID.blueprint);
+            await soul.disconnect();
+            console.log('reconnecting soul', soulID.blueprint);
+            await soul.connect();
+            console.log('rebooted soul', soulID.blueprint);
+        }
+    }
+
     useEffect(() => {
-        if(room && soul)  {
-           setRoomAndEnvironment(room);
+        if (soul && room) {
+            setRoomAndEnvironment(soul, room);
+            // expireSoul();
         }
     }, [room, soul])
 
     //takes the global environment (room and combined with the local souls environment)
-    function setRoomAndEnvironment(newEnvironment: Record<string, any>) {
-        if(!soul) { console.error('no soul!'); return; }
-        const combined = {...newEnvironment, ...environment};
-        console.log('setting env vars', JSON.stringify(combined,null,2))
+    function setRoomAndEnvironment(soul: Soul, newEnvironment: Record<string, any>) {
+        const combined = { ...newEnvironment, ...environment };
+        console.log('setting env vars', JSON.stringify(combined, null, 2))
         soul.setEnvironment(combined);
     }
 
+
     //routes new messages to each soul
+    //TODO move this out to its own hook?
     useEffect(() => {
 
         if (!soul || !settings.canHear) { return }

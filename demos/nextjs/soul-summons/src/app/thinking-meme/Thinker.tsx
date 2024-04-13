@@ -57,6 +57,8 @@ export const scenarios = [
     'losing at kings cup',
     'putting someone in the friendzone',
     'confronting your minecraft crush',
+    'getting denied entry to berghain',
+    'sports betting on lichess bullet games'
 ]
 
 export default function Thinker() {

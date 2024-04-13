@@ -21,7 +21,8 @@ const isBadFaith = async (memory: WorkingMemory) => {
 
   log('is bad faith?', lastComment);
   return await mentalQuery(memory,
-    `"${lastComment}" was said about me AND was also a really nasty, mean, or upsetting thing to say to me.`,
+    `"${lastComment}" was said about me AND was a really nasty, mean, upsetting, or unexpected thing.`,
+    { model: 'quality' }
   );
 }
 
