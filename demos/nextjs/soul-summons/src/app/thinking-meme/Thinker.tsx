@@ -51,6 +51,14 @@ export const defaultRoom = {
     scenario: 'storming of the bastille',
 }
 
+export const scenarios = [
+    'kidnapping dogs at the local park',
+    'storming the bastille',
+    'losing at kings cup',
+    'putting someone in the friendzone',
+    'confronting your minecraft crush',
+]
+
 export default function Thinker() {
 
     const { messages, room, setRoom } = useSoulRoom();
@@ -62,7 +70,10 @@ export default function Thinker() {
     const [cycle, setCycle] = useState<string>('0');
 
     useEffect(() => {
-        setRoom(defaultRoom);
+        setRoom({
+            ...defaultRoom,
+            scenario: scenarios[Math.floor(Math.random() * scenarios.length)],
+        });
     }, [])
 
     //do some filtering
