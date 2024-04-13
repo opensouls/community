@@ -48,7 +48,7 @@ const THINKING_BUBBLES = [
 
 export const defaultRoom = {
     entityName: 'Johnathan',
-    scenario:'storming of the bastille',
+    scenario: 'storming of the bastille',
 }
 
 export default function Thinker() {
@@ -148,13 +148,45 @@ export default function Thinker() {
                 <InputLabel
                     className='mx-auto text-md w-[20em] z-[1000] opacity-50 hover:opacity-75'
                     value={room?.scenario || ''}
-                    setValue={(s) => setRoom({...room, scenario: s })}
+                    setValue={(s) => setRoom({ ...room, scenario: s })}
                     maxLength={50}
                     placeholder={'enter a scenario...'}
                 />
             </div>
 
-            <div className={`w-screen flex justify-center ${scale} mt-[-5em]`}>
+
+            <div className={`w-screen flex justify-center ${scale} mt-[-4em] md:mt-[-1em] z-[2000]`}>
+                <Bentoish className={`relative w-[22em] h-[22em] ${inputStyle}`}>
+                    <div className=''>
+                        {/* {cycles.map((c, i) =>
+                            <TextBox
+                                text={`${c}`}
+                                className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]} ${i.toString() === cycle && 'underline text-black'}`}
+                            />
+                        )}
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} /> */}
+                        <Blinking opacity={true} enabled={state === 'waiting' && canInput}>
+                            <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`scale-[1.15]`} />
+                        </Blinking>
+                        <ImageLayer src={'/thinking-meme/ThinkingMeme_inputHead.png'} className={`scale-[1.15]`} />
+
+                    </div>
+
+                    <Blinking enabled={state === 'waiting' && canInput} opacity={true} className={`absolute top-[32%] h-[40%] z-[2000] flex flex-col w-full scale-[1]`}>
+                        <InputForm className={`w-[40%] text-sm text-black mx-auto h-full ${showBorder}`}>
+                            <InputTextArea
+                                className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
+                                placeholder={'chat... '}
+                                maxLength={75}
+                                disabled={!canInput}
+                            />
+                        </InputForm>
+                    </Blinking>
+
+                </Bentoish>
+            </div>
+
+            <div className={`w-screen flex justify-center ${scale} mt-[-19em] md:mt-[-16em] z-[0]`}>
                 <Bentoish className={`relative ${width} ${height} `}>
 
                     <div className=''>
@@ -201,36 +233,6 @@ export default function Thinker() {
 
             </div>
 
-            <div className={`w-screen flex justify-center ${scale} mt-[-15em] md:mt-[-10em]`}>
-                <Bentoish className={`relative w-[22em] h-[22em] ${inputStyle}`}>
-                    <div className=''>
-                        {/* {cycles.map((c, i) =>
-                            <TextBox
-                                text={`${c}`}
-                                className={`absolute z-[1000] max-w-[11em] text-sm text-gray-400 ${textStyle} ${showBorder} ${positions[i]} ${i.toString() === cycle && 'underline text-black'}`}
-                            />
-                        )}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_cycle.png'} /> */}
-                        <Blinking opacity={true} enabled={state === 'waiting' && canInput}>
-                            <ImageLayer src={'/thinking-meme/ThinkingMeme_inputBubble.png'} className={`scale-[1.15]`} />
-                        </Blinking>
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_inputHead.png'} className={`scale-[1.15]`} />
-
-                    </div>
-
-                    <Blinking enabled={state === 'waiting' && canInput} opacity={true} className={`absolute top-[32%] h-[40%] z-[1000] flex flex-col w-full scale-[1]`}>
-                        <InputForm className={`w-[40%] text-sm text-black mx-auto h-full z-[100] ${showBorder}`}>
-                            <InputTextArea
-                                className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
-                                placeholder={'chat... '}
-                                maxLength={75}
-                                disabled={!canInput}
-                            />
-                        </InputForm>
-                    </Blinking>
-
-                </Bentoish>
-            </div>
 
             {/* <MessageBox messages={messages} className='min-h-36 p-4 rounded-xl' /> */}
 
