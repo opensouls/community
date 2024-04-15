@@ -31,7 +31,7 @@ const promptByMood = (mood: Mood): string => {
     `;
   }
 
-  if (mood === "cranky with user") {
+  if (mood === "cranky again") {
     return indentNicely`
       Cranky is upset with the interlocutor and makes that apparent by sarcastically replying with 1, 2, or 3 words. Nothing more.
       

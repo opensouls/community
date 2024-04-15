@@ -11,8 +11,6 @@ export const formatResponse = createCognitiveStep((mood: Mood) => {
     "Small",
     "Contessa",
     "Rectangles",
-    "Electronic",
-    "Delta Corps Priest 1",
   ];
 
   const params = z.object({
@@ -47,10 +45,6 @@ export const formatResponse = createCognitiveStep((mood: Mood) => {
           - 'Contessa' (smallest)
           - 'Rectangles' (chubby)
 
-          ### Big fonts
-          - 'Electronic'
-          - 'Delta Corps Priest 1' (sci-fi feel)
-             
           ## Colors
           Possible colors:
           - 'red'

@@ -74,7 +74,7 @@ export default function Cranky() {
         {
           type: "system",
           content:
-            mood === "cranky with user"
+            mood === "cranky again"
               ? "Cranky is feeling cranky again"
               : `Cranky is feeling ${mood}.`,
         },
