@@ -80,6 +80,14 @@ async function reevaluateMood(workingMemory: WorkingMemory, currentMood: Mood) {
     return "less cranky";
   }
 
+  if (currentMood === "cranky again") {
+    const [, userApologized] = await mentalQuery(memoryOnlyWithMessages, "The interlocutor sincerely apologized for their previous behavior.", {
+      model: "quality",
+    });
+
+    return userApologized ? "less cranky" : currentMood;
+  }
+
   const [, isAntagonizing] = await mentalQuery(memoryOnlyWithMessages, "The interlocutor is being antagonistic.", {
     model: "quality",
   });
@@ -92,11 +100,6 @@ async function reevaluateMood(workingMemory: WorkingMemory, currentMood: Mood) {
   const trappedAgainByAntagonizing = currentMood === "less cranky" && isAntagonizing;
   if (trappedAgainByAntagonizing) {
     return "cranky again";
-  }
-
-  const brokeSpellAgainByBeingFriendly = currentMood === "cranky again" && !isAntagonizing;
-  if (brokeSpellAgainByBeingFriendly) {
-    return "less cranky";
   }
 
   return currentMood;
