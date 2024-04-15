@@ -67,7 +67,7 @@ export default function Cranky() {
       ]);
     },
     onMoodSwitch: (mood) => {
-      setIsCranky(mood !== "not cranky");
+      setIsCranky(mood !== "less cranky");
 
       setMessages((prev) => [
         ...prev,
@@ -75,10 +75,8 @@ export default function Cranky() {
           type: "system",
           content:
             mood === "cranky with user"
-              ? "Cranky is cranky again"
-              : mood === "not cranky"
-              ? "Cranky is not cranky anymore"
-              : `Cranky is ${mood}.`,
+              ? "Cranky is feeling cranky again"
+              : `Cranky is feeling ${mood}.`,
         },
       ]);
     },
@@ -165,10 +163,10 @@ export default function Cranky() {
                     {/* eslint-disable @next/next/no-img-element */}
                     <img
                       className={"grayscale opacity-40"}
-                      src={getAssetPath("/state-not-cranky.png")}
+                      src={getAssetPath("/state-less-cranky.png")}
                       width={160}
                       height={80}
-                      alt="Cranky is not cranky"
+                      alt="Cranky is less cranky"
                     />
                   </>
                 ) : (
@@ -177,10 +175,10 @@ export default function Cranky() {
                     {/* eslint-disable @next/next/no-img-element */}
                     <img
                       className={"border-b-4 border-c-bright-green sm:border-b-0"}
-                      src={getAssetPath("/state-not-cranky.png")}
+                      src={getAssetPath("/state-less-cranky.png")}
                       width={160}
                       height={80}
-                      alt="Cranky is not cranky"
+                      alt="Cranky is less cranky"
                     />
                   </>
                 )}

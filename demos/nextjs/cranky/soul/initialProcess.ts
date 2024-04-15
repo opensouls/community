@@ -23,9 +23,9 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
 };
 
 const promptByMood = (mood: Mood): string => {
-  if (mood === "not cranky") {
+  if (mood === "less cranky") {
     return indentNicely`
-      Cranky is not as cranky as usual and can reply freely, maximum 40 words. Can curse and still be sarcastic, though.
+      Cranky is not as cranky as usual and can reply freely, maximum 15 words. Can curse and still be sarcastic, though.
 
       No restrictions on characters, reply freely. Don't use all caps.
     `;

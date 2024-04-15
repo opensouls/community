@@ -2,7 +2,7 @@ import { ActionEvent, Soul } from "@opensouls/engine";
 import { useRef, useState } from "react";
 import { useOnMount } from "./use-on-mount";
 
-export type Mood = "cranky" | "not cranky" | "cranky with user"
+export type Mood = "cranky" | "less cranky" | "cranky with user"
 
 export default function useSoul({
   organization,

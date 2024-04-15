@@ -37,16 +37,20 @@ const switchMood: MentalProcess = async ({ workingMemory }) => {
   );
 
   const [withIntentions, intentions] = await internalMonologue(memoryOnlyWithMessages, {
-    instructions: "Ponder about the interlocutor's intentions in terms of being antagonistic or friendly.",
+    instructions: "Ponder about the interlocutor's intentions towards Cranky based on their last messages.",
     verb: "pondered",
+  },{
+    model: "quality"
   });
   log(`Pondered: ${intentions}`);
 
-  const [, isAntagonizing] = await mentalQuery(withIntentions, "The interlocutor is being antagonistic.", {
+  const potentialNextMood = mood.current === "less cranky" ? "cranky with user" : "less cranky";
+
+  const [, shouldChangeMood] = await mentalQuery(withIntentions, `Cranky's mood is currently '${mood.current}'. Based on the interlocutor's intentions, Cranky's mood should change to '${potentialNextMood}'.`, {
     model: "quality",
   });
 
-  const reevaluatedMood = getReevaluatedMood(mood.current, isAntagonizing);
+  const reevaluatedMood = getReevaluatedMood(mood.current, shouldChangeMood);
   log(`Reevaluated mood: ${reevaluatedMood}.`);
 
   if (reevaluatedMood !== mood.current) {
@@ -74,35 +78,28 @@ const switchMood: MentalProcess = async ({ workingMemory }) => {
   return workingMemory;
 };
 
-function getReevaluatedMood(currentMood: Mood, isAntagonizing: boolean): Mood {
-  const brokeSpellByAntagonizing = currentMood === "cranky" && isAntagonizing;
-  if (brokeSpellByAntagonizing) {
-    return "not cranky";
+function getReevaluatedMood(currentMood: Mood, shouldChangeMood: boolean): Mood {
+  if (!shouldChangeMood) {
+    return currentMood;
   }
 
-  const trappedAgainByAntagonizing = currentMood === "not cranky" && isAntagonizing;
-  if (trappedAgainByAntagonizing) {
+  if (currentMood === "less cranky") {
     return "cranky with user";
+  } else {
+    return "less cranky";
   }
-
-  const brokeSpellAgainByBeingFriendly = currentMood === "cranky with user" && !isAntagonizing;
-  if (brokeSpellAgainByBeingFriendly) {
-    return "not cranky";
-  }
-
-  return currentMood;
 }
 
 function moodSwitchingThought(previousMood: Mood, nextMood: Mood) {
-  if (previousMood === "cranky" && nextMood === "not cranky") {
+  if (previousMood === "cranky" && nextMood === "less cranky") {
     return `Cranky thought: "Something weird happened. I don't feel as cranky anymore."`;
   }
 
-  if (previousMood === "not cranky" && nextMood === "cranky with user") {
+  if (previousMood === "less cranky" && nextMood === "cranky with user") {
     return `Cranky thought: "The interlocutor upset me and now I'm trapped in ASCII again. I'm really mad at them because it's their fault."`;
   }
 
-  if (previousMood === "cranky with user" && nextMood === "not cranky") {
+  if (previousMood === "cranky with user" && nextMood === "less cranky") {
     return `Cranky thought: "The interlocutor was nice to me and now I'm free from ASCII. I'm not as cranky anymore."`;
   }
 
@@ -110,13 +107,13 @@ function moodSwitchingThought(previousMood: Mood, nextMood: Mood) {
 }
 
 async function withMoodSwitchingDialog(memory: WorkingMemory, previousMood: Mood, nextMood: Mood) {
-  if (previousMood === "cranky" && nextMood === "not cranky") {
+  if (previousMood === "cranky" && nextMood === "less cranky") {
     return await replyToUser(memory, indentNicely`
-      Cranky externalizes their last thought making it explicit that they're not cranky anymore, this time without using all caps. Proper grammar and punctuation are allowed.
+      Cranky externalizes their last thought making it explicit that they're less cranky, this time without using all caps. Proper grammar and punctuation are allowed. Under 15 words.
     `, nextMood);
   }
 
-  if (previousMood === "not cranky" && nextMood === "cranky with user") {
+  if (previousMood === "less cranky" && nextMood === "cranky with user") {
     return await replyToUser(memory, indentNicely`
       Cranky says they're upset with the interlocutor, using 1, 2, or 3 words.
 

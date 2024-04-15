@@ -1,1 +1,1 @@
-export type Mood = "cranky" | "not cranky" | "cranky with user"
+export type Mood = "cranky" | "less cranky" | "cranky with user"

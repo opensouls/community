@@ -38,7 +38,7 @@ const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
         conversationSummary: true,
       },
     })
-    .concat(workingMemory.slice(1, 15));
+    .concat(workingMemory.slice(-15));
 };
 
 export default summarizesConversation;

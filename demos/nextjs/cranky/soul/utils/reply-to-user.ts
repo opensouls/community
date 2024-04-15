@@ -14,7 +14,7 @@ export async function replyToUser(workingMemory: WorkingMemory, prompt: string, 
     model: "quality",
   });
 
-  const formatWithAscii = mood !== "not cranky";
+  const formatWithAscii = mood !== "less cranky";
 
   let format = {};
   if (formatWithAscii) {
