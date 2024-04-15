@@ -13,7 +13,7 @@ export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
 export type SoulProps = {
     organization: string,
     blueprint: string,
-    soulId: string,
+    soulId?: string,
     environment?: Record<string, any>,
 }
 
