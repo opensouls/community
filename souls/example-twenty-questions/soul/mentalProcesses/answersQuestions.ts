@@ -10,7 +10,7 @@ const answersGuesses: MentalProcess<{object: string}> = async ({ workingMemory, 
   log("questions attempted: ", questionsAttempted.current)
   log("object", object)
 
-  const [, hintOrWin] = await mentalQuery(workingMemory, `The interlocutor explicitly said "${object}" and has won the game.`);
+  const [, hintOrWin] = await mentalQuery(workingMemory, `The interlocutor explicitly said "${object}" and has won the game.`, { model: "quality" });
   if (hintOrWin) {
     log("hint or win", hintOrWin)
     const [nextStep, stream] = await externalDialog(workingMemory, "Congratulations! You've guessed the object! Say thank you and good bye. Do not ask to play again.", { stream: true });

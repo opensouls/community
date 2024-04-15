@@ -2,12 +2,12 @@
 import { ChatMessageRoleEnum, MentalProcess, WorkingMemory, useActions, useRag } from "@opensouls/engine";
 import mentalQuery from "../lib/mentalQuery";
 import externalDialog from "../lib/externalDialog";
+import withRagContext from "../cognitiveFunctions/withRagContext";
 
 const pitchesTheSoulEngine: MentalProcess = async ({ workingMemory }) => {
   const { speak, log  } = useActions()
-  const { withRagContext } = useRag("example-raggy-knows-open-souls")
 
-  const standardMessage = "Respond directly to any questions the user might have asked, or describe something interesting about the SOUL ENGINE."
+  const standardMessage = "Respond directly to any questions the user might have asked, or describe something interesting about the soul engine."
 
   const [, needsRag] = await mentalQuery(workingMemory, "The interlocutor has asked a question that Raggy can't answer with his current memories.", { model: "quality" })
   if (needsRag) {
@@ -32,7 +32,7 @@ const pitchesTheSoulEngine: MentalProcess = async ({ workingMemory }) => {
   const [nextStep, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "quality" });
   speak(stream);
 
-  return await withRagContext(nextStep)
+  return nextStep
 }
 
 export default pitchesTheSoulEngine

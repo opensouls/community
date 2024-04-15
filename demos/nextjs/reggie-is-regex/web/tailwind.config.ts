@@ -20,6 +20,7 @@ const config: Config = {
       },
       colors: {
         'reggie-purple': '#3b1d46', // Add this line
+        'background': '#111113',
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
