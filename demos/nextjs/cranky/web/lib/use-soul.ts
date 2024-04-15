@@ -2,6 +2,8 @@ import { ActionEvent, Soul } from "@opensouls/engine";
 import { useRef, useState } from "react";
 import { useOnMount } from "./use-on-mount";
 
+export type Mood = "cranky" | "not cranky" | "cranky with user"
+
 export default function useSoul({
   organization,
   blueprint,
@@ -12,7 +14,7 @@ export default function useSoul({
   organization: string;
   blueprint: string;
   onNewMessage: (event: ActionEvent) => void;
-  onMoodSwitch: (mood: "cranky" | "not-cranky") => void;
+  onMoodSwitch: (mood: Mood) => void;
   onProcessStarted: () => void;
 }) {
   const soulRef = useRef<Soul | undefined>(undefined);
@@ -41,7 +43,7 @@ export default function useSoul({
 
     soulInstance.on("switchMood", async (event) => {
       const content = await event.content();
-      onMoodSwitch(content as "cranky" | "not-cranky");
+      onMoodSwitch(content as Mood);
     });
 
     await soulInstance.connect();

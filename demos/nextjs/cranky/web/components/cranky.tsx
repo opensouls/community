@@ -9,6 +9,7 @@ import AsciiArrow from "./ascii-arrow";
 import MadeWithSoulEngine from "./made-with-soul-engine";
 import SendMessageForm from "./send-message-form";
 import SoulMessage from "./soul-message";
+import SystemMessage from "./system-message";
 import UserMessage from "./user-message";
 
 export type UserChatMessage = {
@@ -20,9 +21,15 @@ export type SoulChatMessage = {
   type: "soul";
   content: string;
   color: string;
+  formatted: boolean;
 };
 
-export type ChatMessage = UserChatMessage | SoulChatMessage;
+export type SystemChatMessage = {
+  type: "system";
+  content: string;
+};
+
+export type ChatMessage = UserChatMessage | SoulChatMessage | SystemChatMessage;
 
 export default function Cranky() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -41,7 +48,7 @@ export default function Cranky() {
     organization: process.env.NEXT_PUBLIC_SOUL_ENGINE_ORGANIZATION!,
     blueprint: process.env.NEXT_PUBLIC_SOUL_ENGINE_BLUEPRINT!,
     onNewMessage: async (event: ActionEvent) => {
-      const format = event._metadata?.format as {
+      const format = (event._metadata?.format ?? {}) as {
         font: string;
         color: string;
       };
@@ -54,12 +61,26 @@ export default function Cranky() {
         {
           type: "soul",
           content: rendered as string,
-          color: format.color,
+          color: format.color ?? "white",
+          formatted: !!format.font,
         },
       ]);
     },
     onMoodSwitch: (mood) => {
-      setIsCranky(mood === "cranky");
+      setIsCranky(mood !== "not cranky");
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "system",
+          content:
+            mood === "cranky with user"
+              ? "Cranky is cranky again"
+              : mood === "not cranky"
+              ? "Cranky is not cranky anymore"
+              : `Cranky is ${mood}.`,
+        },
+      ]);
     },
     onProcessStarted: () => {
       if (!isThinking) {
@@ -166,11 +187,13 @@ export default function Cranky() {
               </div>
             </div>
 
-            <div ref={scrollableDiv} className="flex flex-col mt-20 gap-10 pb-16 overflow-y-scroll">
+            <div ref={scrollableDiv} className="flex flex-col mt-20 gap-16 pb-16 overflow-y-scroll">
               {messages.map((message, i) => (
                 <Fragment key={i}>
                   {message.type === "user" ? (
                     <UserMessage>{message.content}</UserMessage>
+                  ) : message.type === "system" ? (
+                    <SystemMessage>{message.content}</SystemMessage>
                   ) : (
                     <SoulMessage message={message} />
                   )}

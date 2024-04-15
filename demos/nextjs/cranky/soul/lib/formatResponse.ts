@@ -2,20 +2,18 @@ import { ChatMessageRoleEnum, createCognitiveStep, indentNicely, z } from "@open
 import { Mood } from "../utils/types.js";
 
 export const formatResponse = createCognitiveStep((mood: Mood) => {
-  const crankyFonts = [
+  const fonts = [
     "ANSI Shadow",
     "Bloody",
     "Dancing Font",
     "THIS",
-    "Invita",
     "Larry 3D",
+    "Small",
+    "Contessa",
+    "Rectangles",
     "Electronic",
     "Delta Corps Priest 1",
   ];
-
-  const notCrankyFonts = ["Small", "Contessa", "Rectangles"];
-
-  const fonts = mood === "cranky" ? crankyFonts : notCrankyFonts;
 
   const params = z.object({
     reason: z.string().describe(`The reason for the chosen format in under 10 words.`),
@@ -36,33 +34,26 @@ export const formatResponse = createCognitiveStep((mood: Mood) => {
           
           ## Fonts
           You can choose any of these fonts:
+        
+          ### Medium fonts
+          - 'ANSI Shadow'
+          - 'Bloody'
+          - 'Dancing Font' (letters are dancing)
+          - 'THIS' (horror font)
+          - 'Larry 3D' (3d)
 
-          ${
-            mood === "cranky"
-              ? indentNicely`
-                ### Medium fonts
-                - 'ANSI Shadow'
-                - 'Bloody'
-                - 'Dancing Font' (letters are dancing)
-                - 'THIS' (horror font)
-                - 'Invita' (cursive)
-                - 'Larry 3D' (3d)
+          ### Small fonts
+          - 'Small'
+          - 'Contessa' (smallest)
+          - 'Rectangles' (chubby)
 
-                ### Big fonts
-                - 'Electronic'
-                - 'Delta Corps Priest 1' (sci-fi feel)
-              `
-              : indentNicely`
-                ### Small fonts
-                - 'Small'
-                - 'Contessa' (smallest)
-                - 'Rectangles' (chubby)
-              `
-          }
-
+          ### Big fonts
+          - 'Electronic'
+          - 'Delta Corps Priest 1' (sci-fi feel)
+             
           ## Colors
           Possible colors:
-          ${mood === "cranky" ? `- 'red'` : ""}
+          - 'red'
           - 'green'
           - 'yellow'
           - 'blue'
@@ -71,7 +62,7 @@ export const formatResponse = createCognitiveStep((mood: Mood) => {
           - 'white'
           - 'gray'
           - 'bright-black'
-          ${mood === "cranky" ? `- 'bright-red'` : ""}
+          - 'bright-red'
           - 'bright-green'
           - 'bright-yellow'
           - 'bright-blue'
