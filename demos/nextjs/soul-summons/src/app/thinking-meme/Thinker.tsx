@@ -60,7 +60,7 @@ export default function Thinker() {
 
         setSoulSettings({
             ...thinkingSoulID,
-            soulId: uuidv5(newRoom.scenario, uuidv5.URL)
+            soulId: uuidv4(),
         });
 
     }, [])
@@ -69,10 +69,13 @@ export default function Thinker() {
 
         if(room?.scenario === undefined) return;
 
+        //if you want static rooms to return to based on scenario
+        //soulId: uuidv5(room.scenario, uuidv5.URL)
+
         console.log('NEW ROOM', room.scenario);
         setSoulSettings({
             ...thinkingSoulID,
-            soulId: uuidv5(room.scenario, uuidv5.URL)
+            soulId: uuidv4(),
         });
     }, [room])
 
