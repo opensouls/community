@@ -211,7 +211,7 @@ function SoulThinker({ soulSettings }: { soulSettings: SoulProps }) {
                         <InputForm className={`w-[40%] text-sm text-black mx-auto h-full ${showBorder}`}>
                             <InputTextArea
                                 className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
-                                placeholder={'chat... '}
+                                placeholder={'roleplay... '}
                                 maxLength={75}
                                 disabled={!canInput}
                             />
@@ -299,9 +299,8 @@ const THINKING_BUBBLES = [
 export const scenarios = [
     'kidnapping dogs at the local park',
     'storming the bastille',
-    'losing at kings cup',
     'putting someone in the friendzone',
-    'confronting your minecraft crush',
+    'confessing to your minecraft crush',
     'getting denied entry to berghain',
     'sports betting on lichess bullet games'
 ]
