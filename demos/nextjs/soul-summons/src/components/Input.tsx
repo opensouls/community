@@ -46,7 +46,7 @@ export function Input({ value, setValue, className, ...props }: InputProps) {
 
     const submit = (event: any) => {
         event.preventDefault();
-        console.log('submit', localValue, value);
+        // console.log('submit', localValue, value);
         setValue(localValue);
     }
 

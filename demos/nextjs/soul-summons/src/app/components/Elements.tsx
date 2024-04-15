@@ -12,7 +12,7 @@ export function Footer({}) {
                     {'thinking-meme'}
                 </Badge>
             </a>
-            <a href='https://www.opensouls.studio/' target='_blank' className="flex mx-auto w-[8em] mt-[-.25em]">
+            <a href='https://discord.gg/opensouls' target='_blank' className="flex mx-auto w-[8em] mt-[-.25em]">
                 <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
             </a>
         </div>

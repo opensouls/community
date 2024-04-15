@@ -100,7 +100,7 @@ export function SpeakerRobot({ soulID, character, roleplay, isPlayer = false }: 
 
     const { messages } = useSoulRoom();
     const { localMessages, state, metadata, sendPerception } = useSoulSimple({ 
-        soulID: soulID, 
+        soulSettings: soulID, 
         character: character,
     });
 

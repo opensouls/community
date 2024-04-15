@@ -1,82 +1,101 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER } from '@/hooks/useSoulRoom';
+import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps } from '@/hooks/useSoulRoom';
 import { Input as InputLabel } from '@/components/Input';
-import { MessageWaterfall, InputForm, Input, InputTextArea } from '@/components/Messages';
-import Badge, { Pulse } from '@/components/Badge';
+import { InputForm, Input, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Components';
+import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
-import Image from 'next/image';
 import { Footer } from '../components/Elements';
 
-
-
-const thinkingSoul = {
-    name: 'overthinker',
-}
-
 console.log("API", process.env.NEXT_PUBLIC_SOUL_APIKEY);
-
 const debug = process.env.NODE_ENV !== 'production';
+
 const thinkingSoulID = {
     organization: 'neilsonnn',
     blueprint: 'thinking-meme',
+    soulId: uuidv4(),
     token: process.env.NEXT_PUBLIC_SOUL_APIKEY,
     debug: debug,
 }
 
-export enum ANIMATIONS {
-    idle = 'idle',
-    gone = 'gone',
-    angry = 'angry'
-}
-export type AnimationType = keyof typeof ANIMATIONS;
-
-const THOUGHT_STATES: Record<SoulState, string> = {
-    'waiting': '/thinking-meme/ThinkingMeme_reply.png',
-    'processing': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
-    'thinking': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
-    'speaking': '/thinking-meme/ThinkingMeme_0000s_0001_exitHead.png',
-}
-const THINKING_BUBBLES = [
-    '/thinking-meme/ThinkingMeme_0001s_0000_thought1.png',
-    '/thinking-meme/ThinkingMeme_0001s_0001_thought3.png',
-    '/thinking-meme/ThinkingMeme_0001s_0002_thought2.png',
-]
-
-export const defaultRoom = {
-    entityName: 'Johnathan',
+export const roomVar = {
     scenario: 'storming of the bastille',
 }
 
-export const scenarios = [
-    'kidnapping dogs at the local park',
-    'storming the bastille',
-    'losing at kings cup',
-    'putting someone in the friendzone',
-    'confronting your minecraft crush',
-    'getting denied entry to berghain',
-    'sports betting on lichess bullet games'
-]
+export const soulVar = {
+    entityName: 'Johnathan',
+}
+
+const character = {
+    name: 'overthinker',
+}
+
 
 export default function Thinker() {
 
-    const { messages, room, setRoom } = useSoulRoom();
-    const { localMessages, state, metadata } = useSoulSimple({ soulID: thinkingSoulID, character: thinkingSoul });
+    const [soulSettings, setSoulSettings] = useState<SoulProps>(thinkingSoulID);
+    const { room, setRoom } = useSoulRoom();
+
+    // TODO set soulVar somewhere else
+    useEffect(() => {
+
+        let newRoom = room;
+
+        if (room?.scenario === undefined) {
+
+            newRoom = {
+                ...roomVar,
+                ...soulVar,
+                scenario: scenarios[Math.floor(Math.random() * scenarios.length)],
+            };
+
+            setRoom(newRoom);
+        }
+
+        console.log('INIT ROOM:', room.scenario);
+
+        setSoulSettings({
+            ...thinkingSoulID,
+            soulId: uuidv5(newRoom.scenario, uuidv5.URL)
+        });
+
+    }, [])
+
+    useEffect(() => {
+
+        if(room?.scenario === undefined) return;
+
+        console.log('NEW ROOM', room.scenario);
+        setSoulSettings({
+            ...thinkingSoulID,
+            soulId: uuidv5(room.scenario, uuidv5.URL)
+        });
+    }, [room])
+
+
+    return (
+        <>
+            {room?.scenario !== undefined && <SoulThinker
+                soulSettings={soulSettings}
+                // key={soulSettings.soulId}
+            />}
+        </>
+    )
+}
+
+function SoulThinker({ soulSettings }: { soulSettings: SoulProps }) {
 
     const [thought, setThought] = useState<string>(``);
     const [said, setSaid] = useState<string>(''); //hey, whats up
     const [emotion, setEmotion] = useState<string>('😐');
     const [cycle, setCycle] = useState<string>('0');
 
-    useEffect(() => {
-        setRoom({
-            ...defaultRoom,
-            scenario: scenarios[Math.floor(Math.random() * scenarios.length)],
-        });
-    }, [])
+    const { messages, room, setRoom } = useSoulRoom();
+    const { localMessages, state, metadata, } = useSoulSimple({ soulSettings: soulSettings, character: character });
 
     //do some filtering
     useEffect(() => {
@@ -254,3 +273,32 @@ export default function Thinker() {
         </div>
     )
 }
+
+export enum ANIMATIONS {
+    idle = 'idle',
+    gone = 'gone',
+    angry = 'angry'
+}
+export type AnimationType = keyof typeof ANIMATIONS;
+
+const THOUGHT_STATES: Record<SoulState, string> = {
+    'waiting': '/thinking-meme/ThinkingMeme_reply.png',
+    'processing': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
+    'thinking': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
+    'speaking': '/thinking-meme/ThinkingMeme_0000s_0001_exitHead.png',
+}
+const THINKING_BUBBLES = [
+    '/thinking-meme/ThinkingMeme_0001s_0000_thought1.png',
+    '/thinking-meme/ThinkingMeme_0001s_0001_thought3.png',
+    '/thinking-meme/ThinkingMeme_0001s_0002_thought2.png',
+]
+
+export const scenarios = [
+    'kidnapping dogs at the local park',
+    'storming the bastille',
+    'losing at kings cup',
+    'putting someone in the friendzone',
+    'confronting your minecraft crush',
+    'getting denied entry to berghain',
+    'sports betting on lichess bullet games'
+]

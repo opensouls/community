@@ -10,7 +10,7 @@ import { SoulProps, CharacterProps } from "@/hooks/useSoulRoom";
 export default function SoulVoice({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) {
 
     const { messages, addEvent } = useSoulRoom();
-    const { localMessages, state } = useSoulSimple({ soulID, character });
+    const { localMessages, state } = useSoulSimple({ soulSettings: soulID, character });
 
     return (
         <>

@@ -13,6 +13,7 @@ export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
 export type SoulProps = {
     organization: string,
     blueprint: string,
+    soulId: string,
     environment?: Record<string, any>,
 }
 
@@ -39,8 +40,6 @@ export type SoulSettings = {
 export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor', color: 'bg-gray-400' }
 export const EXAMPLE_MESSAGE: MessageProps = { content: 'HONKKKK!!', type: 'ambience', character: PLAYER_CHARACTER };
 
-const startState: MessageProps[] = [];
-
 interface WorldState {
     messages: MessageProps[];
     room: Record<string, any>;
@@ -61,7 +60,7 @@ const handleEvent = (newMessage: MessageProps) => {
 }
 
 export const useSoulRoom = create<WorldState>()((set, get) => ({
-    messages: startState,
+    messages: [],
     room: {},
     setRoom: (newRoom) => set((state) => ({ room: newRoom })),
     addEvent: (newMessage) => set((state) => {
@@ -87,17 +86,21 @@ export const useSoulRoom = create<WorldState>()((set, get) => ({
 }))
 
 type SoulSimpleProps = {
-    soulID: SoulProps,
+    soulSettings: SoulProps,
     character: CharacterProps,
     environment?: Record<string, any>,
     settings?: SoulSettings,
 }
 
-export const useSoulSimple = ({ soulID, character, environment,
+export const useSoulSimple = ({
+    soulSettings,
+    character,
+    environment,
     settings = {
         canHear: true,
         canSpeak: true,
-    } }: SoulSimpleProps) => {
+    }
+}: SoulSimpleProps) => {
 
     const { messages, room, addEvent, setEvent, getEvent } = useSoulRoom();
     const [state, setState] = useState<SoulState>('waiting');
@@ -108,7 +111,7 @@ export const useSoulSimple = ({ soulID, character, environment,
         type: "says",
         character: character,
         timestamp: Date.now(),
-    }), [soulID]);
+    }), [soulSettings]);
 
     const [soul, setSoul] = useState<Soul>();
 
@@ -118,18 +121,16 @@ export const useSoulSimple = ({ soulID, character, environment,
 
     useEffect(() => {
 
-        const initSoul = new Soul({
-            ...soulID,
-        });
+        const initSoul = new Soul(soulSettings);
 
-        console.log("initSoul", soulID.blueprint);
+        console.log("initSoul", soulSettings.blueprint, soulSettings.soulId);
 
         initSoul.connect().then(() => {
-            console.log("Connected to soul", soulID.blueprint);
+            console.log("Connected to soul", soulSettings.blueprint);
             setConnected(true);
             setSoul(initSoul);
         }).catch((error) => {
-            console.error("Error connecting to soul", soulID, error);
+            console.error("Error connecting to soul", soulSettings, error);
         });
 
         const onEvent = (stream = false, local = false) => async (event: ActionEvent) => {
@@ -229,24 +230,16 @@ export const useSoulSimple = ({ soulID, character, environment,
             ACTIONS.forEach(action => {
                 initSoul.off(action, eventHandlers[action]);
             });
-            console.log('disconnecting soul', soulID.blueprint);
+            console.log('disconnecting soul', soulSettings.blueprint);
             initSoul.disconnect();
         };
 
-    }, [soulID, character])
+    }, [soulSettings, character])
 
-    async function expireSoul() {
-        if (soul && soul.connected) {
-            console.log('expiring soul', soulID.blueprint);
-            await soul.disconnect();
-            console.log('reconnecting soul', soulID.blueprint);
-            await soul.connect();
-            console.log('rebooted soul', soulID.blueprint);
-        }
-    }
+
 
     useEffect(() => {
-        if (soul && room) {
+        if (soul && soul.connected && room) {
             setRoomAndEnvironment(soul, room);
             // expireSoul();
         }
