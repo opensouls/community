@@ -58,7 +58,7 @@ export function ImageLayer({ src = '', alt = '', className = '', width = 1024, h
     return (
         <>
             {src &&
-                <Image
+                <img
                     className={cn}
                     src={src}
                     alt={alt}
