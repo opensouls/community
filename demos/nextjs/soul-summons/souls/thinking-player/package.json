@@ -1,0 +1,21 @@
+{
+    "name": "thinking-player",
+    "version": "0.0.1",
+    "type": "module",
+    "private": true,
+    "description": "A default open-soul subroutine",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "UNLICENSED",
+    "devDependencies": {
+      "typescript": "^5.3.3"
+    },
+    "dependencies": {
+      "@opensouls/engine": "^0.1.13"
+    }
+  }
+  
