@@ -1,5 +1,6 @@
 import Badge, { Pulse } from '@/components/Badge';
 import Image from 'next/image';
+import getAssetPath from "@/lib/assets";
 
 export function Footer({}) {
 
@@ -13,7 +14,7 @@ export function Footer({}) {
                 </Badge>
             </a>
             <a href='https://discord.gg/opensouls' target='_blank' className="flex mx-auto w-[8em] mt-[-.25em]">
-                <Image src='/logo.png' alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
+                <Image src={getAssetPath('/logo.png')} alt='OpenSouls logo' width={100} height={100} className='color-black text-black mx-auto opacity-50' />
             </a>
         </div>
     )

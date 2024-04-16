@@ -8,7 +8,7 @@ import { SoulEvent } from "@opensouls/engine"
 
 const ACTIONS = ["says", "thinks", "does", "ambience", "feels", "metadata"] as const;
 export type ActionType = typeof ACTIONS[number];
-export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
+export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking' ;
 
 export type SoulProps = {
     organization: string,
