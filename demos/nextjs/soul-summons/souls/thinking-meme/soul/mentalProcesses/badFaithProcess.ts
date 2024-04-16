@@ -51,7 +51,7 @@ const badFaithProcess: MentalProcess = async ({ workingMemory }) => {
   log('mean comment', originalMeanComment.current);
 
   //discard the offending message (we forget it)
-  //we might have to say this if something super egregious was said so it doesn't mar the working memory?
+  //we might have to say this so it doesnt cause lingering refusals?
   let cleanMemory = memory.slice(0, -1);
 
   state(memory, {
@@ -86,11 +86,6 @@ const badFaithProcess: MentalProcess = async ({ workingMemory }) => {
     await wait(4000);
   }
 
-  //dont do this anymore
-  // const [, decision] = await isGoodFaith(memory);
-  // log('did they kiss and make up?', decision);
-
-
   state(memory, {
     canSpeak: true,
     state: 'waiting',
@@ -99,14 +94,5 @@ const badFaithProcess: MentalProcess = async ({ workingMemory }) => {
   return [memory, initialProcess];
 };
 
-const branchBadFaith = async (memory: WorkingMemory) => {
-  const { speak, dispatch, log } = useActions();
-  log("branching bad faith");
-  const [, decision] = await isBadFaith(memory);
-  log('are we in bad faith?', decision);
-  if (decision) { return [memory, badFaithProcess, { executeNow: true }] }
-
-};
-
 export default badFaithProcess;
-export { isBadFaith, isGoodFaith, branchBadFaith }
+export { isBadFaith, isGoodFaith }
