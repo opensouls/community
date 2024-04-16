@@ -6,6 +6,8 @@
 
 The open source library offers WorkingMemory and cognitiveSteps for managing context. Each cognitiveStep operates on WorkingMemory, treating every interaction as a distinct transformation. This method ensures a structured and coherent progression of context, allowing for a more predictable and streamlined way to navigate an AI soul's thought process. The result is a more consistent and intuitive interaction flow.
 
+The `speak` action in the soul engine is a helper function which dispatches an InteractionRequest with the action `says`.
+
 The core concepts of the library are:
 * [`WorkingMemory`](./core/working-memory) - a collection of [Memory](working-memory#the-memory-interface) objects that provides [lots of ways](core/list-manipulation) to immutably transform memory.
 * [`cognitiveStep`](./core/cognitive-step) - a function that transforms a WorkingMemory, adds to its memories, and returns a response. You can think of these functions as thinking, speaking, noticing, etc.
