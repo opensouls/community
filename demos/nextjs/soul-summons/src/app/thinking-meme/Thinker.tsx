@@ -11,28 +11,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Footer } from '../components/Elements';
 
-console.log("API", process.env.NEXT_PUBLIC_SOUL_APIKEY);
 const debug = process.env.NODE_ENV !== 'production';
 
 const thinkingSoulID = {
-    organization: 'neilsonnn',
-    blueprint: 'thinking-meme',
+    organization: process.env.NEXT_PUBLIC_SOUL_ENGINE_ORGANIZATION as string,
+    blueprint: process.env.NEXT_PUBLIC_SOUL_ENGINE_BLUEPRINT as string,
     soulId: uuidv4(),
-    token: process.env.NEXT_PUBLIC_SOUL_APIKEY,
+    token: process.env.NEXT_PUBLIC_SOUL_ENGINE_APIKEY,
     debug: debug,
 }
 
-export const roomVar = {
-    scenario: 'storming of the bastille',
-}
-
-export const soulVar = {
-    entityName: 'Johnathan',
-}
-
-const character = {
-    name: 'overthinker',
-}
+const roomVar = {scenario: 'storming of the bastille',}
+const soulVar = { entityName: 'Johnathan',}
+const character = {name: 'overthinker',}
 
 
 export default function Thinker() {
