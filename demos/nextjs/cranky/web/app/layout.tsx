@@ -5,8 +5,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Cranky",
-  description: "The misanthropic ASCII artist",
+  title: "Cranky, the misanthropic ASCII artist",
+  description: "Try making Cranky less cranky about being trapped in an ASCII font generator.",
   icons: getAssetPath("/favicon.ico"),
 };
 

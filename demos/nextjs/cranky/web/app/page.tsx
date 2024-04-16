@@ -17,6 +17,7 @@ export type ChatMessage = UserChatMessage | SoulChatMessage;
 
 export const metadata: Metadata = {
   title: "Cranky, the misanthropic ASCII artist",
+  description: "Try making Cranky less cranky about being trapped in an ASCII font generator.",
   openGraph: {
     images: [
       {
