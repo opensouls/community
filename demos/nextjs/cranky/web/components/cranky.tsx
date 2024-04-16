@@ -4,7 +4,7 @@ import getAssetPath from "@/lib/assets";
 import { ActionEvent, said } from "@opensouls/engine";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { renderText } from "../lib/render-text";
-import useSoul from "../lib/use-soul";
+import useSoul, { Mood } from "../lib/use-soul";
 import AsciiArrow from "./ascii-arrow";
 import MadeWithSoulEngine from "./made-with-soul-engine";
 import SendMessageForm from "./send-message-form";
@@ -27,6 +27,13 @@ export type SoulChatMessage = {
 export type SystemChatMessage = {
   type: "system";
   content: string;
+  color?: string;
+};
+
+const Achievements = {
+  crankyToLessCranky: "Shake it off (1/3)",
+  lessCrankyToCrankyAgain: "Oops I'm cranky again (2/3)",
+  crankyAgainToLessCranky: "Is it too late now to say sorry? (3/3)",
 };
 
 export type ChatMessage = UserChatMessage | SoulChatMessage | SystemChatMessage;
@@ -34,15 +41,12 @@ export type ChatMessage = UserChatMessage | SoulChatMessage | SystemChatMessage;
 export default function Cranky() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isThinking, setIsThinking] = useState(false);
-  const [isCranky, setIsCranky] = useState(true);
+  const [currentMood, setCurrentMood] = useState<Mood>("cranky");
+  const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
+  const prevMood = useRef<Mood>("cranky");
   const scrollableDiv = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    scrollableDiv.current?.scrollTo({
-      top: scrollableDiv.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages]);
+  const isCranky = currentMood !== "less cranky";
 
   const { soul, isConnected } = useSoul({
     organization: process.env.NEXT_PUBLIC_SOUL_ENGINE_ORGANIZATION!,
@@ -66,17 +70,14 @@ export default function Cranky() {
         },
       ]);
     },
-    onMoodSwitch: (mood) => {
-      setIsCranky(mood !== "less cranky");
+    onMoodSwitch: (mood: Mood) => {
+      setCurrentMood(mood);
 
       setMessages((prev) => [
         ...prev,
         {
           type: "system",
-          content:
-            mood === "cranky again"
-              ? "Cranky is feeling cranky again"
-              : `Cranky is feeling ${mood}.`,
+          content: mood === "cranky again" ? "Cranky is feeling cranky again" : `Cranky is feeling ${mood}.`,
         },
       ]);
     },
@@ -86,6 +87,39 @@ export default function Cranky() {
       }
     },
   });
+
+  useEffect(() => {
+    scrollableDiv.current?.scrollTo({
+      top: scrollableDiv.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages]);
+
+  useEffect(() => {
+    let achievement = null;
+    if (prevMood.current === "cranky" && currentMood === "less cranky") {
+      achievement = Achievements.crankyToLessCranky;
+    } else if (prevMood.current === "less cranky" && currentMood === "cranky again") {
+      achievement = Achievements.lessCrankyToCrankyAgain;
+    } else if (prevMood.current === "cranky again" && currentMood === "less cranky") {
+      achievement = Achievements.crankyAgainToLessCranky;
+    }
+
+    if (achievement && !unlockedAchievements.includes(achievement)) {
+      setUnlockedAchievements((prev) => [...prev, achievement]);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "system",
+          content: `Achievement unlocked: ${achievement}`,
+          color: "bright-white",
+        },
+      ]);
+    }
+
+    prevMood.current = currentMood;
+  }, [currentMood, unlockedAchievements]);
 
   async function handleSendMessage(message: string) {
     if (!soul || !isConnected) {
@@ -191,7 +225,7 @@ export default function Cranky() {
                   {message.type === "user" ? (
                     <UserMessage>{message.content}</UserMessage>
                   ) : message.type === "system" ? (
-                    <SystemMessage>{message.content}</SystemMessage>
+                    <SystemMessage message={message} />
                   ) : (
                     <SoulMessage message={message} />
                   )}

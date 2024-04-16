@@ -64,7 +64,7 @@ export const formatResponse = createCognitiveStep((mood: Mood) => {
           - 'bright-cyan'
           - 'bright-white'
 
-          Reply with the font and colors you want to use.
+          Reply with the font and colors you want to use. Try not repeating your choices too much.
         `,
       };
     },

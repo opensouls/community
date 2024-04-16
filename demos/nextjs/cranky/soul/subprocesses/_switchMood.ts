@@ -81,7 +81,7 @@ async function reevaluateMood(workingMemory: WorkingMemory, currentMood: Mood) {
   }
 
   if (currentMood === "cranky again") {
-    const [, userApologized] = await mentalQuery(memoryOnlyWithMessages, "The interlocutor sincerely apologized for their previous behavior.", {
+    const [, userApologized] = await mentalQuery(memoryOnlyWithMessages, "The interlocutor sincerely apologized in this conversation.", {
       model: "quality",
     });
 

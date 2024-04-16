@@ -1,7 +1,10 @@
-export default function SystemMessage({ children }: { children: string }) {
+import { cn } from "@/lib/utils";
+import { SystemChatMessage } from "./cranky";
+
+  export default function SystemMessage({ message }: { message: SystemChatMessage }) {
   return (
-    <div className="text-c-bright-yellow uppercase font-cranky-terminal">
-      <span>&gt; {children}</span>
+    <div className={cn("uppercase font-cranky-terminal", `text-c-${message.color ?? "bright-yellow"}`)}>
+      <span>&gt; {message.content}</span>
     </div>
   );
 }
