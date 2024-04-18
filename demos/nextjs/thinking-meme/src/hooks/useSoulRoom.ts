@@ -123,10 +123,10 @@ export const useSoulSimple = ({
 
         const initSoul = new Soul(soulSettings);
 
-        console.log("initSoul", soulSettings.blueprint, soulSettings.soulId);
+        // console.log("initSoul", soulSettings.blueprint, soulSettings.soulId);
 
         initSoul.connect().then(() => {
-            console.log("Connected to soul", soulSettings.blueprint);
+            // console.log("Connected to soul", soulSettings.blueprint);
             setConnected(true);
             setSoul(initSoul);
         }).catch((error) => {
@@ -146,8 +146,7 @@ export const useSoulSimple = ({
 
             if (event.action === 'metadata') {
                 if (event?._metadata === undefined) {
-                    console.error('metadata undefined');
-                    console.log(JSON.stringify(event, null, 2))
+                    console.error('metadata undefined', JSON.stringify(event, null, 2))
                     return;
                 }
                 const state = event._metadata.state;
@@ -184,7 +183,7 @@ export const useSoulSimple = ({
 
             if (stream) {
 
-                console.log(event.name, event.action, value, 'streaming');
+                // console.log(event.name, event.action, value, 'streaming');
 
                 for await (const txt of event.stream()) {
 
@@ -197,7 +196,7 @@ export const useSoulSimple = ({
 
                 }
 
-                console.log(event.name, event.action, value, 'streaming done');
+                // console.log(event.name, event.action, value, 'streaming done');
             }
         }
 
@@ -230,7 +229,7 @@ export const useSoulSimple = ({
             ACTIONS.forEach(action => {
                 initSoul.off(action, eventHandlers[action]);
             });
-            console.log('disconnecting soul', soulSettings.blueprint);
+            // console.log('disconnecting soul', soulSettings.blueprint);
             initSoul.disconnect();
         };
 
@@ -248,7 +247,7 @@ export const useSoulSimple = ({
     //takes the global environment (room and combined with the local souls environment)
     function setRoomAndEnvironment(soul: Soul, newEnvironment: Record<string, any>) {
         const combined = { ...newEnvironment, ...environment };
-        console.log('setting env vars', JSON.stringify(combined, null, 2))
+        // console.log('setting env vars', JSON.stringify(combined, null, 2))
         soul.setEnvironment(combined);
     }
 
@@ -289,7 +288,7 @@ export const useSoulSimple = ({
 
     function sendPerception(name: string, content: string) {
         if (!soul) { console.error('no soul!'); return; }
-        console.log(`${character.name.toUpperCase()} percepting ${content.slice(0, 10)}`);
+        // console.log(`${character.name.toUpperCase()} percepting ${content.slice(0, 10)}`);
         soul.dispatch(said(name, content));
     }
 

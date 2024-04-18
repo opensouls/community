@@ -48,7 +48,7 @@ export default function Thinker() {
             setRoom(newRoom);
         }
 
-        console.log('INIT ROOM:', room.scenario);
+        // console.log('INIT ROOM:', room.scenario);
 
         setSoulSettings({
             ...thinkingSoulID,
@@ -64,7 +64,7 @@ export default function Thinker() {
         //if you want static rooms to return to based on scenario
         //soulId: uuidv5(room.scenario, uuidv5.URL)
 
-        console.log('NEW ROOM', room.scenario);
+        // console.log('NEW ROOM', room.scenario);
         setSoulSettings({
             ...thinkingSoulID,
             soulId: uuidv4(),

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { useHover } from '@uidotdev/usehooks'
 import { twMerge } from 'tailwind-merge'
+import getAssetPath from '@/lib/assets'
 
 export function Label({ children, className = '' }: { children: React.ReactNode, className?: string }) {
 
@@ -57,7 +58,7 @@ export function ImageLayer({ src = '', alt = '', className = '', width = 1024, h
     const cn = twMerge('absolute m-auto select-none pointer-events-none', className)
     return (
         <>
-            {src &&
+            {src && src !== getAssetPath('') &&
                 <img
                     className={cn}
                     src={src}
