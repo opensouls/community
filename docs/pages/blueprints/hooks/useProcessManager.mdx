@@ -3,19 +3,35 @@
 The `useProcessManager` hook provides access to an API for managing the current `MentalProcess` of the soul.
 
 ```typescript filename="exampleProcess.ts" {1,5}
-import { useProcessManager } from "@opensouls/engine"
+import { useProcessManager } from "@opensouls/engine";
 
-const exampleProcess: MentalProcess = async ({ workingMemory }) => {
-  // access the internal MentalProcess API
-  const { invocationCount, wait } = useProcessManager()
+const manageProcess: MentalProcess = async ({ workingMemory }) => {
+  const { previousMentalProcess, invocationCount, wait } = useProcessManager();
 
-  // rest of the mental process
+  console.log(`Previous Mental Process: ${previousMentalProcess.name}`);
+  console.log(`Invocation Count: ${invocationCount}`);
+
+  await wait(500); // wait for 500 ms
+
+  // Continue with the rest of the mental process logic
   // ...
-  return workingMemory
-}
 
-export default exampleProcess
+  return workingMemory;
+};
+
+export default manageProcess;
 ```
+
+## async wait(numberOfMiliseconds: number)
+
+`wait` is an asynchronous function that pauses the execution of the current mental process
+for the specified number of milliseconds.
+
+## previousMentalProcess
+
+`previousMentalProcess` holds a _reference_ to the mental process that was executed before the current one. This is particularly useful for managing state transitions and understanding the flow of mental processes within a soul. By accessing `previousMentalProcess`, developers can make decisions based on what the soul was previously thinking or doing, allowing for more nuanced and context-aware mental process management.
+
+If the current mental process has been invoked more than once the previousMentalProcess will continue to hold a reference to the older (different) mental process. If this mental process is the initialProcess then previousMentalProcess is `undefined`.
 
 ## invocationCount
 
