@@ -1,7 +1,8 @@
 {
-  "index": "Manifesto",
-  "core": "Open Souls Core",
+  "index": "Welcome",
+  "manifesto": "Manifesto",
   "getting-started": "Getting Started",
+  "core": "Open Souls Core",
   "souls": "Souls",
   "blueprints": "Blueprints",
   "learn-by-example": "Learn By Example"
