@@ -28,19 +28,15 @@ export default manageProcess;
 `wait` is an asynchronous function that pauses the execution of the current mental process
 for the specified number of milliseconds.
 
+```javascript
+await wait(1000) // wait 1 second
+```
+
 ## previousMentalProcess
 
 `previousMentalProcess` holds a _reference_ to the mental process that was executed before the current one. This is particularly useful for managing state transitions and understanding the flow of mental processes within a soul. By accessing `previousMentalProcess`, developers can make decisions based on what the soul was previously thinking or doing, allowing for more nuanced and context-aware mental process management.
 
 If the current mental process has been invoked more than once the previousMentalProcess will continue to hold a reference to the older (different) mental process. If this mental process is the initialProcess then previousMentalProcess is `undefined`.
-
-## wait
-
-`wait` simply waits the process some specified number of ms.
-
-```javascript
-await wait(1000) // wait 1 second
-```
 
 ## invocationCount
 
