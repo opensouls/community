@@ -43,4 +43,4 @@ Scan through our [existing issues](https://github.com/opensouls/community/issues
   - Once Desktop is set up, you can use it to [fork the repo](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/cloning-and-forking-repositories-from-github-desktop)!
 
 - Using the command line:
-  - [Fork the repo](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#
+  - [Fork the repo](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo)
