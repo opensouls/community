@@ -19,7 +19,8 @@ You can contribute to opensouls/community in several ways:
 
 - Reporting bugs
 - Suggesting enhancements 
-- Writing code
+- Submitting new example souls
+- Contributing cognitive steps and other code to the library
 - Improving documentation
 - Providing feedback
 
