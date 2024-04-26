@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Badge, { Pulse } from '@/components/Badge';
-import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps, CharacterProps } from '@/hooks/useSoulRoom';
+import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps, CharacterProps } from '@/hooks/useSoul';
 import { Input } from '@/components/Input';
 import { InputForm, InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
@@ -119,9 +119,9 @@ export function SpeakerRobot({ soulID, character, roleplay, isPlayer = false }: 
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
             setThought('');
             setSaid('');
-        } else if (lastMessage.type === 'thinks') {
+        } else if (lastMessage.action === 'thinks') {
             setThought(`${lastMessage.content}`) // ${emotion}
-        } else if (lastMessage.type === 'says') {
+        } else if (lastMessage.action === 'says') {
             setSaid(lastMessage.content)
         } 
 
@@ -133,7 +133,7 @@ export function SpeakerRobot({ soulID, character, roleplay, isPlayer = false }: 
         const lastMessage = localMessages[localMessages.length - 1];
         // console.log('lastMessage', lastMessage);
 
-        if (lastMessage.type === 'thinks') {
+        if (lastMessage.action === 'thinks') {
             setThought(lastMessage.content)
         }
     }, [localMessages])

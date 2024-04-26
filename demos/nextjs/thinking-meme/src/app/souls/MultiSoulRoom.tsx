@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import SoulVoice from "@/components/Soul"
 import { Label, Sprite } from "@/components/Graphics"
-import { MessageProps, CharacterProps } from "@/hooks/useSoulRoom"
+import { MessageProps, CharacterProps } from "@/hooks/useSoul"
 import { Input, InputForm, MessageWaterfall } from "../../components/Messages"
 import { CharacterBox } from "./Layout"
 import { create } from 'zustand'

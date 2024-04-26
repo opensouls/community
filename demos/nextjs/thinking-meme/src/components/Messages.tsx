@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, forwardRef, Fragment } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useSoulRoom, PLAYER_CHARACTER, MessageProps, CharacterProps, ActionType } from '@/hooks/useSoulRoom';
+import { useSoulRoom, PLAYER_CHARACTER, MessageProps, CharacterProps, ActionType } from '@/hooks/useSoul';
+import { v4 as uuid4 } from 'uuid';
 import Markdown from 'react-markdown';
 
 export type TextProps = {
@@ -16,7 +17,7 @@ export const ActionCaret: Record<ActionType, string> = {
     "says": "→",
     "thinks": "~",
     "does": "!",
-    "ambience": "...",
+    "ambience": "",
     "feels": ">",
     "metadata": "ml-4",
 }
@@ -25,259 +26,223 @@ export const Indentation: Record<ActionType, string> = {
     "says": "",
     "thinks": "ml-4",
     "does": "ml-4",
-    "ambience": "ml-4",
+    "ambience": "",
     "feels": "ml-4",
     "metadata": "ml-4",
 }
 
 export const ActionStyling: Record<ActionType, string> = {
-    "says": "font-mono text-black bg-white",
-    "thinks": "font-mono text-gray-600 bg-[#c5c5c5]",
+    "says": "font-mono text-secondary",
+    "thinks": "font-mono text-secondary ",
     "does": "font-mono text-red-500",
-    "ambience": "font-mono text-gray-400 italic bg-[#f5f5f5]",
-    "feels": "font-mono text-black bg-[#f5f5f5]",
-    "metadata": "ml-4",
-
-}
-
-export function InputForm({ children, className = '', ...props }: { children: React.ReactNode, className?: string }) {
-
-    const { addEvent } = useSoulRoom();
-    const cn = twMerge('flex flex-row w-min gap-2', className)
-
-    return (
-        <>
-            <form
-                className={cn}
-                onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-                    e.preventDefault();
-                    const inputElement = e.currentTarget.elements[0] as HTMLInputElement;
-                    if (inputElement.value === '') return console.log('no content');
-                    addEvent({
-                        content: inputElement.value,
-                        type: 'thinks',
-                        character: PLAYER_CHARACTER,
-                    });
-                    inputElement.value = '';
-                }}
-                {...props}
-            >
-                {children}
-            </form>
-        </>
-    )
-}
-
-export function Input({ character = PLAYER_CHARACTER, className = '', ...props }: { character?: CharacterProps, className?: string }) {
-
-    const { addEvent } = useSoulRoom();
-    const cn = twMerge('border-[1px] border-black p-2 text-black', className)
-
-    return (
-        <form
-            className={cn}
-            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-                e.preventDefault();
-                const inputElement = e.currentTarget.elements[0] as HTMLInputElement;
-                if (inputElement.value === '') return console.log('no content');
-                addEvent({
-                    content: inputElement.value,
-                    type: 'thinks',
-                    character: character,
-                });
-                inputElement.value = '';
-            }}
-            {...props}
-        >
-            <input
-                type="text"
-                placeholder="chat"
-                className={cn}
-                {...props}
-            />
-        </form>
-    )
+    "ambience": "font-mono text-secondary",
+    "feels": "font-mono text-secondary",
+    "metadata": "ml-4 text-secondary",
 }
 
 type SoulTextAreaProps = {
     character?: CharacterProps,
+    textAreaProps: TextAreaProps,
     type?: ActionType,
     className?: string,
     [propName: string]: any
 }
 
-export function InputTextArea({
+export const InputTextArea = forwardRef<HTMLTextAreaElement, SoulTextAreaProps>(({
     character = PLAYER_CHARACTER,
     type = 'says',
     className = '',
-    ...props
-}: SoulTextAreaProps) {
+    onEnter = () => { },
+    ...props }: SoulTextAreaProps, ref) => {
 
+    const cn = twMerge('text-primary bg-primary-bg', className);
     const { addEvent } = useSoulRoom();
 
     const onSubmit = (text: string) => {
         addEvent({
             content: text,
-            type: type,
+            action: type,
             character: character,
+            _timestamp: Date.now(),
+            _uuid: uuid4(),
         });
     }
 
     return (
         <TextArea
+            ref={ref}
             value={''}
             onSubmit={onSubmit}
-            className={className}
+            className={cn}
             {...props}
         />
     )
-}
+});
+
+InputTextArea.displayName = 'InputTextArea';
 
 type TextAreaProps = {
     value: string,
-    onSubmit: (value: string) => void,
     setValue?: (value: string) => void,
+    onSubmit: (value: string) => void,
     className?: string,
     clearOnSubmit?: boolean,
     [propName: string]: any,
 }
 
-export function TextArea({ value = '', setValue = () => { }, onSubmit, className, clearOnSubmit, ...props }: TextAreaProps) {
+export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
+    ({ value = '', setValue = () => { }, onSubmit, className, clearOnSubmit, ...props }, ref) => {
 
-    const [localValue, setLocalValue] = React.useState(value);
-    const [lastSubmission, setLastSubmission] = React.useState<string>('');
-    const cn = twMerge('border-[1px] border-black p-2 text-black', className);
+        const [localValue, setLocalValue] = React.useState(value);
+        const [lastSubmission, setLastSubmission] = React.useState<string>('');
+        const cn = twMerge('p-2', className);
 
-    const handleKeyDown = (event: any) => {
-        if (event.key === 'Enter') {
-            submit(event);
+        const handleKeyDown = (event: any) => {
+            if (event.key === 'Enter') {
+                submit(event);
+            }
+        };
+
+        const handleBlur = (event: any, fromSubmit = true) => {
+            //TODO make this mobile only
+            if (localValue !== lastSubmission && !fromSubmit) {
+                submit(event);
+            }
+
+        };
+
+        const submit = (event: any) => {
+
+            console.log('submitting');
+            event.preventDefault();
+            setValue(localValue);
+            setLastSubmission(localValue);
+            onSubmit(localValue);
+            //deselect
+            if (clearOnSubmit) {
+                setLocalValue('');
+            }
         }
-    };
 
-    const handleBlur = (event: any, fromSubmit = true) => {
-        //TODO make this mobile only
-        if (localValue !== lastSubmission && !fromSubmit) {
-            submit(event);
-        }
+        const handleClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
+            event.currentTarget.select();
+        };
 
-    };
+        return (
+            <textarea
+                ref={ref}
+                className={cn}
+                value={localValue}
+                onChange={(e) => setLocalValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onClick={handleClick}
+                onBlur={(e) => { handleBlur(e, false); }}
+                style={{ resize: 'none' }}
+                spellCheck='false'
+                {...props}
+            />
+        );
+    });
 
-    const submit = (event: any) => {
-
-        console.log('submitting');
-        event.preventDefault();
-        setValue(localValue);
-        setLastSubmission(localValue);
-        onSubmit(localValue);
-        //deselect
-        if (clearOnSubmit) {
-            setLocalValue('');
-        }
-    }
-
-    const handleClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
-        event.currentTarget.select();
-    };
-
-    return (
-        <textarea
-            className={cn}
-            value={localValue}
-            onChange={(e) => setLocalValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onClick={handleClick}
-            onBlur={(e) => {handleBlur(e, false);}}
-            style={{ resize: 'none' }}
-            spellCheck='false'
-            {...props}
-        />
-    );
-}
+TextArea.displayName = 'TextArea';
 
 //styles a list of messages
-export function MessageWaterfall({ messages, className = '' }: { messages: MessageProps[], className?: string }) {
+type MessageWaterfallProps = {
+    messages: MessageProps[],
+    className?: string,
+    messageClass?: string,
+    textClass?: string,
+    nameClassName?: string,
+    children?: React.ReactNode
+}
 
+export function MessageWaterfall({ messages, className = '', messageClass = '', textClass = '', nameClassName = '', children }: MessageWaterfallProps) {
     const ref = useRef<HTMLDivElement>(null);
-    const cn = twMerge('relative border-black border-[1px] w-full h-24 flex flex-col overflow-y-scroll p-2', className);
-
+    const cn = twMerge('relative w-full h-24 flex flex-col overflow-y-auto p-2', className);
 
     useEffect(() => {
-        if (ref.current) ref.current.scrollTop = ref.current.scrollHeight;
-    }, [messages])
+        const scrollSmoothly = () => {
+            if (ref.current) {
+                ref.current.scrollTo({
+                    top: ref.current.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        };
+
+        window.addEventListener('resize', scrollSmoothly);
+        scrollSmoothly();
+
+        return () => window.removeEventListener('resize', scrollSmoothly);
+    }, [messages]);
+
 
     return (
         <div
             ref={ref}
-            className={cn}>
+            className={cn}
+        >
             {messages.map((message, index) => {
 
                 const lastMessage = index > 0 ? messages[index - 1] : undefined;
                 const showName = message?.character && lastMessage?.character?.name !== message.character.name;
-                const nameClassName = `flex w-min text-black underline p-1 mt-1 ${message?.character?.color}`
+
+                const messageCN = twMerge('flex flex-row items-start gap-2 text-sm leading-4 tracking-tight', messageClass, message.character.messageStyle);
+                const nameCN = twMerge(`mt-2 first:mt-0 mb-1 w-min whitespace-nowrap shrink leading-4 tracking-tight`, nameClassName, message.character.nameStyle)
+                const textCN = twMerge('', textClass, message.character.textStyle)
 
                 return (
-                    <div key={message?._uuid}>
+                    <Fragment key={message._uuid}>
                         {showName &&
                             <Name
-                                text={message?.character?.name}
-                                className={nameClassName} //
-                            // style={{ backgroundColor: message.character.color }}
+                                name={message.character.displayName ?? message.character.name}
+                                className={nameCN}
                             />
                         }
                         <Message
                             message={message}
-                            className={''}
+                            className={messageCN}
+                            textStyle={textCN}
                         />
 
-                    </div>
+                    </Fragment>
                 )
 
             })}
+            {children}
         </div>
     )
 }
 
-export function MessageSlug({ message }: { message: MessageProps }) {
-
-    return (
-        <div className='flex flex-row text-sm leading-4 tracking-tight'>
-            <div className={`p-1 flex ${ActionStyling[message.type]} ${Indentation[message.type]}`}>
-                {ActionCaret[message.type]}
-            </div>
-            <div className={`p-1 ${ActionStyling[message.type]}`}>
-                <Markdown>
-                    {message.content}
-                </Markdown>
-            </div>
-        </div>
-    )
-}
-
-
-
-export function Name({ text = '', className = '', style = {} }) {
+export function Name({ name = '', className = '', style = {} }) {
     return (
         <div
-            className={twMerge('flex leading-4 tracking-tight', className)}
-        >
-            {text}
+            className={twMerge('', className)}>
+            {name}
         </div>
     )
 }
 
-export function Message({ message, className = '' }: { message: MessageProps, className?: string }) {
+export function Message({ message, className = '', textStyle = '' }: { message: MessageProps, className?: string, textStyle?: string }) {
+
+    const caret = ActionCaret[message.action as ActionType] || '';
+    const indentation = Indentation[message.action as ActionType];
+    const actionStyle = ActionStyling[message.action as ActionType];
+
+    const cn = twMerge('', className);
+    const textCN = twMerge('', actionStyle, textStyle);
 
     return (
-        <div className={twMerge(className, 'flex flex-row text-sm leading-4 tracking-tight')}>
-            <div className={`p-1 flex ${ActionStyling[message.type]} ${Indentation[message.type]}`}>
-                {ActionCaret[message.type]}
-            </div>
 
-            <div className={`p-1 ${ActionStyling[message.type]}`} >
-                <Markdown>
-                    {message.content}
-                </Markdown>
-            </div>
+        <div className={cn}>
+            {caret &&
+                <div className={`flex ${textStyle} ${indentation}`}>
+                    {caret}
+                </div>}
+
+            <Markdown className={textCN}>
+                {message.content}
+            </Markdown>
         </div>
     )
 }

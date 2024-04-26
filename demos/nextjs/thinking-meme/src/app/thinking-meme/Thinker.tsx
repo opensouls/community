@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps } from '@/hooks/useSoulRoom';
+import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulProps } from '@/hooks/useSoul';
 import { Input as InputLabel } from '@/components/Input';
-import { InputForm, Input, InputTextArea } from '@/components/Messages';
+import { InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Components';
 import { v5 as uuidv5 } from 'uuid';
@@ -22,9 +22,9 @@ const thinkingSoulID = {
     debug: debug,
 }
 
-const roomVar = {scenario: 'storming of the bastille',}
-const soulVar = { entityName: 'Johnathan',}
-const character = {name: 'overthinker',}
+const character = { name: 'overthinker', }
+const roomVar = { scenario: 'storming of the bastille', }
+const soulVar = { entityName: 'Johnathan', }
 
 
 export default function Thinker() {
@@ -59,7 +59,7 @@ export default function Thinker() {
 
     useEffect(() => {
 
-        if(room?.scenario === undefined) return;
+        if (room?.scenario === undefined) return;
 
         //if you want static rooms to return to based on scenario
         //soulId: uuidv5(room.scenario, uuidv5.URL)
@@ -76,7 +76,7 @@ export default function Thinker() {
         <>
             {room?.scenario !== undefined && <SoulThinker
                 soulSettings={soulSettings}
-                // key={soulSettings.soulId}
+            // key={soulSettings.soulId}
             />}
         </>
     )
@@ -90,7 +90,11 @@ function SoulThinker({ soulSettings }: { soulSettings: SoulProps }) {
     const [cycle, setCycle] = useState<string>('0');
 
     const { messages, room, setRoom } = useSoulRoom();
-    const { localMessages, state, metadata, } = useSoulSimple({ soulSettings: soulSettings, character: character });
+
+    const { localMessages, state, metadata } = useSoulSimple({
+        soulSettings: soulSettings,
+        character: character
+    });
 
     //do some filtering
     useEffect(() => {
@@ -99,14 +103,17 @@ function SoulThinker({ soulSettings }: { soulSettings: SoulProps }) {
         const lastMessage = messages[messages.length - 1];
 
         if (lastMessage?.character?.name === PLAYER_CHARACTER.name) {
+            // console.log('player sent', lastMessage.content);
             setThought('');
             setSaid('');
         } else {
-            if (lastMessage.type === 'thinks') {
+
+            // console.log('thinker sent', lastMessage.content);
+            if (lastMessage.action === 'thinks') {
                 setThought(`${lastMessage.content}`) // ${emotion}
-            } else if (lastMessage.type === 'says') {
+            } else if (lastMessage.action === 'says') {
                 setSaid(lastMessage.content)
-            } else if (lastMessage.type === 'feels') {
+            } else if (lastMessage.action === 'feels') {
                 setEmotion(lastMessage.content)
             }
 
@@ -124,7 +131,7 @@ function SoulThinker({ soulSettings }: { soulSettings: SoulProps }) {
         const lastMessage = localMessages[localMessages.length - 1];
         // console.log('lastMessage', lastMessage);
 
-        if (lastMessage.type === 'thinks') {
+        if (lastMessage.action === 'thinks') {
             setThought(lastMessage.content)
         }
     }, [localMessages])
@@ -175,14 +182,14 @@ function SoulThinker({ soulSettings }: { soulSettings: SoulProps }) {
                     </div>
 
                     <Blinking enabled={state === 'waiting' && canInput} opacity={true} className={`absolute top-[32%] h-[40%] z-[2000] flex flex-col w-full scale-[1]`}>
-                        <InputForm className={`w-[40%] text-sm text-black mx-auto h-full ${showDebug}`}>
+                        <div className={`w-[40%] text-sm text-black mx-auto h-full ${showDebug}`}>
                             <InputTextArea
-                                className={`relative w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
+                                className={`relative h-full w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}
                                 placeholder={'roleplay... '}
                                 maxLength={75}
                                 disabled={!canInput}
                             />
-                        </InputForm>
+                        </div>
                     </Blinking>
 
                 </Bentoish>

@@ -3,9 +3,9 @@
 import React, { useEffect, useState, useMemo } from "react"
 import { Soul, said } from "@opensouls/soul"
 import { MessageWaterfall } from "./Messages";
-import { useSoulRoom, useSoulSimple, PLAYER_CHARACTER, MessageProps } from "@/hooks/useSoulRoom";
+import { useSoulRoom, useSoulSimple, PLAYER_CHARACTER, MessageProps } from "@/hooks/useSoul";
 import { Sprite } from "@/components/Graphics";
-import { SoulProps, CharacterProps } from "@/hooks/useSoulRoom";
+import { SoulProps, CharacterProps } from "@/hooks/useSoul";
 
 export default function SoulVoice({ soulID, character }: { soulID: SoulProps, character: CharacterProps }) {
 
