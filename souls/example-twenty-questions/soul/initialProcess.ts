@@ -1,15 +1,15 @@
 import { ChatMessageRoleEnum, z } from "@opensouls/engine";
-import brainstorm from "./lib/brainstorm.js";
-import decision from "./lib/decision.js";
-import externalDialog from "./lib/externalDialog.js";
-import mentalQuery from "./lib/mentalQuery.js";
+import brainstorm from "./cognitiveSteps/brainstorm.js";
+import decision from "./cognitiveSteps/decision.js";
+import externalDialog from "./cognitiveSteps/externalDialog.js";
+import mentalQuery from "./cognitiveSteps/mentalQuery.js";
 import answersGuesses from "./mentalProcesses/answersQuestions.js";
 import { MentalProcess, useProcessManager, useProcessMemory, useActions } from "@opensouls/engine";
 
 const introduction: MentalProcess = async ({ workingMemory }) => {
   const didPick = useProcessMemory("")
   const { speak, log } = useActions()
-  const { invocationCount, setNextProcess } = useProcessManager()
+  const { invocationCount } = useProcessManager()
 
   let step = workingMemory
 
@@ -47,7 +47,7 @@ const introduction: MentalProcess = async ({ workingMemory }) => {
 
   const [, playingDecision] = await mentalQuery(workingMemory, "The user has indicated they are ready to play.");
   if (playingDecision) {
-    setNextProcess(answersGuesses, { object: didPick.current })
+    return [step, answersGuesses, { object: didPick.current }]
   }
 
   return step
