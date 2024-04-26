@@ -20,6 +20,9 @@ export type CharacterProps = {
     messageStyle?: string,
 }
 
+export type EnvVarProps = Record<string, string>;
+export type HookProps = Record<string, (evt: ActionEvent) => Promise<void>>;
+
 export type PerceptionOptions = {
     sendSilently: boolean,
 }
@@ -35,8 +38,9 @@ export type MessageProps = {
 }
 
 export type SoulSettings = {
-    canHear: boolean,
-    canSpeak: boolean,
+    canHear?: boolean,
+    canSpeak?: boolean,
+    streamPerception?: boolean,
 }
 
 export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor' }
@@ -44,8 +48,8 @@ export const EXAMPLE_MESSAGE: MessageProps = { content: 'HONKKKK!!', action: 'am
 
 interface WorldState {
     messages: MessageProps[];
-    room: Record<string, any>;
-    setRoom: (newRoom: Record<string, any>) => void;
+    room: EnvVarProps;
+    setRoom: (newRoom: EnvVarProps) => void;
     addEvent: (newMessage: MessageProps) => void;
     setEvents: (newArray: MessageProps[]) => void;
     setEvent: (index: number, newMessage: MessageProps) => void;
@@ -89,15 +93,16 @@ export const useSoulRoom = create<WorldState>()((set, get) => ({
 export type SoulSimpleProps = {
     soulSettings: SoulProps,
     character: CharacterProps,
-    environment?: Record<string, any>,
+    initEnv?: EnvVarProps,
     settings?: SoulSettings,
-    initHooks?: Record<string, (evt: ActionEvent) => Promise<void>>,
+    initHooks?: HookProps,
 }
 
 
 export const DEFAULT_SOUL_SETTINGS: SoulSettings = {
     canHear: true,
     canSpeak: true,
+    streamPerception: false,
 }
 
 export const DEFAULT_PERCEPTION: PerceptionOptions = {
@@ -107,7 +112,7 @@ export const DEFAULT_PERCEPTION: PerceptionOptions = {
 export const useSoulSimple = ({
     soulSettings,
     character: characterSettings,
-    environment,
+    initEnv = {},
     initHooks = {},
     settings = DEFAULT_SOUL_SETTINGS,
 }: SoulSimpleProps) => {
@@ -115,6 +120,7 @@ export const useSoulSimple = ({
     const { messages, room, addEvent, setEvent, getEvent } = useSoulRoom();
     const [state, setState] = useState<SoulState>('waiting');
     const [hooks, setHooks] = useState(initHooks);
+    const [env, setEnv] = useState(initEnv);
     const [metadata, setMetadata] = useState<SoulEvent['_metadata']>({});
     const [character, setCharacter] = useState<CharacterProps>(characterSettings);
     const [soul, setSoul] = useState<Soul>();
@@ -136,7 +142,7 @@ export const useSoulSimple = ({
         // console.log("initSoul", soulSettings.blueprint, soulSettings.soulId);
 
         initSoul.connect().then(() => {
-            // console.log(soulSettings.blueprint, soulSettings.soulId, 'CONNECTED');
+            console.log(character.name, `(${soulSettings.blueprint}) [soulID:${soulSettings.soulId}]`, 'CONNECTED');
             setSoul(initSoul);
 
         }).catch((error) => {
@@ -150,7 +156,7 @@ export const useSoulSimple = ({
 
     }, [soulSettings])
 
-    const onEvent = (stream = true, local = false) => async (event: ActionEvent) => {
+    const onEvent = (stream:boolean, local:boolean) => async (event: ActionEvent) => {
 
         let value = '';
 
@@ -258,11 +264,11 @@ export const useSoulSimple = ({
     }
 
     useEffect(() => {
-        if (soul && soul.connected && room) {
-            setRoomAndEnvironment(soul, room);
+        if (soul && soul?.connected) {
+            updateEnv(soul, room, env);
             // expireSoul();
         }
-    }, [room, soul]);
+    }, [room, soul, env]);
 
     useEffect(() => {
 
@@ -270,9 +276,9 @@ export const useSoulSimple = ({
 
         //TODO remove these default hooks eventually
         const eventHandlers = ACTIONS.reduce((acc, action) => {
-            acc[action] = async (evt) => await onEvent()(evt);
+            acc[action] = async (evt) => await onEvent(settings.streamPerception === true, false)(evt);
             return acc;
-        }, {} as Record<ActionType, (evt: ActionEvent) => Promise<void>>);
+        }, {} as HookProps);
 
         ACTIONS.forEach(action => { soul.on(action, eventHandlers[action]); });
         for (const [hookName, hook] of Object.entries(hooks)) { soul.on(hookName, hook); }
@@ -285,9 +291,11 @@ export const useSoulSimple = ({
     }, [soul, hooks, character, room]);
 
     //takes the global environment (room and combined with the local souls environment)
-    function setRoomAndEnvironment(soul: Soul, newEnvironment: Record<string, any>) {
-        const combined = { ...newEnvironment, ...environment };
-        // console.log('setting env vars', JSON.stringify(combined, null, 2))
+    function updateEnv(soul: Soul, room: EnvVarProps, env: EnvVarProps) {
+
+        const combined = { ...room, ...env };
+        // console.log(character.name, 'ENV', JSON.stringify(combined, null, 2))
+        // send the new env to the soul engine
         soul.setEnvironment(combined);
     }
 
@@ -304,7 +312,7 @@ export const useSoulSimple = ({
             // console.log('newMessage', JSON.stringify(newMessage, null, 2))
 
             if (newMessage.action === 'says' && newMessage !== lastMessage && newMessage?.character?.name !== character.name) {
-              
+
                 // console.log('create perception for message');
                 setState('processing');
 
@@ -351,7 +359,19 @@ export const useSoulSimple = ({
         setHooks((last) => ({ ...last, ...newHooks }));
     }
 
-    return { localMessages, addLocalEvent, state, metadata, soul, sendPerception, addHooks, setCharacter } as SoulProperties;
+    return {
+        soul,
+        state,
+        metadata,
+        localMessages,
+        character,
+        environment: env,
+        addLocalEvent,
+        sendPerception,
+        addHooks,
+        setCharacter,
+        setEnvironment: setEnv
+    } as SoulProperties;
 }
 
 export type SoulProperties = {
@@ -359,8 +379,12 @@ export type SoulProperties = {
     state: SoulState,
     metadata: SoulEvent['_metadata'],
     localMessages: MessageProps[],
+    character: CharacterProps,
+    environment: EnvVarProps,
     addLocalEvent: (newMessage: MessageProps) => void,
     sendPerception: (message: MessageProps, sendingOptions?: PerceptionOptions) => void,
     addHooks: (newHooks: Record<string, (evt: ActionEvent) => Promise<void>>) => void,
     setCharacter: (newCharacter: CharacterProps) => void,
+    setEnvironment: (updater: (last: EnvVarProps) => EnvVarProps) => void;
+
 }
