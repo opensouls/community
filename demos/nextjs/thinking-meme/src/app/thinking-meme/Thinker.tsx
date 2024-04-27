@@ -71,13 +71,13 @@ export default function Thinker() {
         });
     }, [room])
 
+    // key={soulSettings.soulId}
 
     return (
         <>
-            {room?.scenario !== undefined && <SoulThinker
-                soulSettings={soulSettings}
-            // key={soulSettings.soulId}
-            />}
+            {room?.scenario !== undefined &&
+                <SoulThinker soulSettings={soulSettings} />
+            }
         </>
     )
 }

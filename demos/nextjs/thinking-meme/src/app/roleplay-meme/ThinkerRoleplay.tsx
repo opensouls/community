@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Badge, { Pulse } from '@/components/Badge';
 import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulSimpleProps, SoulProperties, EnvVarProps } from '@/hooks/useSoul';
 import { Input } from '@/components/Input';
@@ -29,20 +29,10 @@ export default function ThinkerRoleplay() {
 
     const [roleplay, setRoleplay] = useState(ROLEPLAYS[Math.floor(Math.random() * ROLEPLAYS.length)]);
 
-    return (
-        <Thinker roleplay={roleplay} />
-    )
-}
-
-export function Thinker({ roleplay }: { roleplay: string[] }) {
-
-    const [subordinateName, setSubordinateName] = useState<string>(roleplay[0]);
-    const [dominantName, setDominantName] = useState<string>(roleplay[1]);
-
     const [subordinate, setSubordinate] = useState<SoulSimpleProps>({
         soulSettings: SOUL_SETTINGS,
         character: {
-            name: subordinateName,
+            name: roleplay[0],
         },
         settings: {
             canSpeak: true,
@@ -52,8 +42,29 @@ export function Thinker({ roleplay }: { roleplay: string[] }) {
 
     const [dominant, setDominant] = useState<SoulSimpleProps>({
         soulSettings: SOUL_SETTINGS,
-        character: { name: dominantName },
+        character: { name: roleplay[1] },
     });
+
+    useEffect(() => {
+        console.log('Thinking Roleplay');
+        setRoleplay(ROLEPLAYS[Math.floor(Math.random() * ROLEPLAYS.length)]);
+    }, [])
+
+    return (
+        <Thinker
+            roleplay={roleplay}
+            dominant={dominant}
+            subordinate={subordinate}
+            setDominant={setDominant}
+            setSubordinate={setSubordinate}
+            key={subordinate.character.name + dominant.character.name}
+        />
+    )
+}
+
+
+
+export function Thinker({ roleplay, dominant, setDominant, subordinate, setSubordinate }: any) {
 
     const subordinateSoul = useSoulSimple(subordinate);
     const dominantSoul = useSoulSimple(dominant);
@@ -63,13 +74,13 @@ export function Thinker({ roleplay }: { roleplay: string[] }) {
         //update souls with new environment variables
         if (!subordinateSoul || !dominantSoul || !subordinateSoul.soul?.connected || !dominantSoul.soul?.connected) return;
 
-        console.log('subordinate', subordinateName);
-        console.log('dominant', dominantName);
+        console.log('subordinate', subordinate.character.name);
+        console.log('dominant', dominant.character.name);
 
-        subordinateSoul.setEnvironment((last: EnvVarProps) => ({ ...last, entityName: subordinateName, otherEntityName: dominantName }));
-        dominantSoul.setEnvironment((last: EnvVarProps) => ({ ...last, entityName: dominantName, otherEntityName: subordinateName }));
+        subordinateSoul.setEnvironment((last: EnvVarProps) => ({ ...last, entityName: subordinate.character.name, otherEntityName: dominant.character.name }));
+        dominantSoul.setEnvironment((last: EnvVarProps) => ({ ...last, entityName: dominant.character.name, otherEntityName: subordinate.character.name }));
 
-    }, [subordinateSoul?.soul, dominantSoul?.soul, subordinateName, dominantName])
+    }, [subordinateSoul?.soul, dominantSoul?.soul, subordinate, dominant])
 
     return (
         <>
@@ -80,7 +91,7 @@ export function Thinker({ roleplay }: { roleplay: string[] }) {
                     otherSoul={dominantSoul}
                     isPlayer={true}
                     role={subordinate.character.name}
-                    setRole={setSubordinateName}
+                    setRole={(newRole) => setSubordinate(last => ({ ...last, character: { name: newRole } }))}
                 />
 
                 <SpeakerRobot
@@ -88,7 +99,7 @@ export function Thinker({ roleplay }: { roleplay: string[] }) {
                     otherSoul={subordinateSoul}
                     isPlayer={false}
                     role={dominant.character.name}
-                    setRole={setDominantName}
+                    setRole={(newRole) => setDominant(last => ({ ...last, character: { name: newRole } }))}
                 />
 
             </div>
@@ -112,11 +123,6 @@ export function SpeakerRobot({ soul, otherSoul, role, isPlayer = false, setRole 
 
     const [thought, setThought] = useState<string>(``);
     const [said, setSaid] = useState<string>(''); //hey, whats up
-
-    function changeRole(newRole: string) {
-        console.log('newRole', newRole);
-        setRole(newRole);
-    }
 
     //checks the global messages chat and adds our chats to our text boxes
     useEffect(() => {
@@ -151,7 +157,7 @@ export function SpeakerRobot({ soul, otherSoul, role, isPlayer = false, setRole 
     const connecting = soul?.soul?.connected ? 'opacity-100' : 'opacity-50 translate-y-[.5em]';
 
     const textStyle = 'p-2 tracking-tight bg-opacity-100' // border-black border-[1px]
-    const speechStyle = 'text-lg text-black font-sans';
+    const speechStyle = 'text-lg tracking-tight text-black font-sans';
     const thoughtStyle = 'text-sm text-gray-400';
 
     const flip = isPlayer ? 'scale-x-[-1]' : '';
@@ -227,9 +233,9 @@ export function SpeakerRobot({ soul, otherSoul, role, isPlayer = false, setRole 
                 </Bentoish>
 
                 <Input
-                    className='absolute mx-auto bottom-[0%]'
+                    className='absolute mx-auto bottom-[0%] z-[10000]'
                     value={role}
-                    setValue={changeRole}
+                    setValue={setRole}
                 />
 
             </div>
@@ -273,7 +279,7 @@ const THINKING_BUBBLES = [
 const ROLEPLAYS = [
     ['founder', 'VC'],
     ['peon', 'barista'],
-    ['empty stomach', 'in-n-out drive thru'],
+    ['empty stomach', 'in n out'],
     ['designer', 'figma'],
     ['gamer', 'twitch chat'],
     ['programmer', 'vscode'],
