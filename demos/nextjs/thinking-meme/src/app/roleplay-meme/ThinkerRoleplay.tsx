@@ -8,6 +8,7 @@ import { InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
 import { Bentoish, TextBox } from '@/app/thinking-meme/Components';
 import Image from 'next/image';
+import getAssetPath from '@/lib/assets';
 
 const debug = process.env.NODE_ENV !== 'production';
 
@@ -189,14 +190,14 @@ export function SpeakerRobot({ soul, otherSoul, role, isPlayer = false, setRole 
                             <Blinking rate={5800}>
                                 <ImageAnimated
                                     className=''
-                                    srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']}
+                                    srcs={[getAssetPath('/thinking-meme/ThinkingMeme_eyes.png'), getAssetPath('/thinking-meme/ThinkingMeme_eyes_star.png')]}
                                     rate={3200}
                                 />
                             </Blinking>}
 
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={`${stateClassName['thinking']} ${characterVisible}`} />
+                        <ImageLayer src={getAssetPath('/thinking-meme/ThinkingMeme_0002s_0001_head.png')} className={`${stateClassName['thinking']} ${characterVisible}`} />
                         {soul.state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
-                        <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0000_speech.png'} className={`${stateClassName['speaking']} `} />
+                        <ImageLayer src={getAssetPath('/thinking-meme/ThinkingMeme_0002s_0000_speech.png')} className={`${stateClassName['speaking']} `} />
 
                         <div
                             className={`absolute leading-[.1em] right-[13%] top-[44%] h-[50%] w-[26%] ${showBorder} ${stateClassName['thinking']} ${flip}`}>
@@ -268,16 +269,16 @@ export function BadgeFooter() {
 
 
 const THOUGHT_STATES: Record<SoulState, string> = {
-    'waiting': '/thinking-meme/ThinkingMeme_reply.png',
-    'processing': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
-    'thinking': '/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png',
-    'speaking': '/thinking-meme/ThinkingMeme_0000s_0001_exitHead.png',
+    'waiting': getAssetPath('/thinking-meme/ThinkingMeme_reply.png'),
+    'processing': getAssetPath('/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png'),
+    'thinking': getAssetPath('/thinking-meme/ThinkingMeme_0000s_0000_enterHead.png'),
+    'speaking': getAssetPath('/thinking-meme/ThinkingMeme_0000s_0001_exitHead.png'),
 }
 
 const THINKING_BUBBLES = [
-    '/thinking-meme/ThinkingMeme_0001s_0000_thought1.png',
-    '/thinking-meme/ThinkingMeme_0001s_0001_thought3.png',
-    '/thinking-meme/ThinkingMeme_0001s_0002_thought2.png',
+    getAssetPath('/thinking-meme/ThinkingMeme_0001s_0000_thought1.png'),
+    getAssetPath('/thinking-meme/ThinkingMeme_0001s_0001_thought3.png'),
+    getAssetPath('/thinking-meme/ThinkingMeme_0001s_0002_thought2.png'),
 ]
 
 const ROLEPLAYS = [
