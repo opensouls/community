@@ -2,7 +2,7 @@
 
 import React, { use, useEffect, useState } from 'react';
 import Badge, { Pulse } from '@/components/Badge';
-import { SoulState, useSoulRoom, useSoulSimple, PLAYER_CHARACTER, SoulSimpleProps, SoulProperties, EnvVarProps } from '@/hooks/useSoul';
+import { SoulState, useSoulRoom, useSoulSimple, DEFAULT_SOUL_SETTINGS, SoulSimpleProps, SoulProperties, EnvVarProps } from '@/hooks/useSoul';
 import { Input } from '@/components/Input';
 import { InputTextArea } from '@/components/Messages';
 import { ImageLayer, Blinking, ImageAnimated } from '@/components/Graphics';
@@ -43,6 +43,9 @@ export default function ThinkerRoleplay() {
     const [dominant, setDominant] = useState<SoulSimpleProps>({
         soulSettings: SOUL_SETTINGS,
         character: { name: roleplay[1] },
+        settings: {
+            openInNewTab: false,
+        },
     });
 
     useEffect(() => {
@@ -91,7 +94,7 @@ export function Thinker({ roleplay, dominant, setDominant, subordinate, setSubor
                     otherSoul={dominantSoul}
                     isPlayer={true}
                     role={subordinate.character.name}
-                    setRole={(newRole) => setSubordinate(last => ({ ...last, character: { name: newRole } }))}
+                    setRole={(newRole) => setSubordinate((last: any) => ({ ...last, character: { name: newRole } }))}
                 />
 
                 <SpeakerRobot
@@ -99,7 +102,7 @@ export function Thinker({ roleplay, dominant, setDominant, subordinate, setSubor
                     otherSoul={subordinateSoul}
                     isPlayer={false}
                     role={dominant.character.name}
-                    setRole={(newRole) => setDominant(last => ({ ...last, character: { name: newRole } }))}
+                    setRole={(newRole) => setDominant((last: any) => ({ ...last, character: { name: newRole } }))}
                 />
 
             </div>
@@ -182,13 +185,14 @@ export function SpeakerRobot({ soul, otherSoul, role, isPlayer = false, setRole 
 
                 <Bentoish className={`relative ${width} ${height} ${flip}`}>
                     <div className=''>
-                        {soul.metadata?.animation === ANIMATIONS.angry && <Blinking rate={5800}>
-                            <ImageAnimated
-                                className=''
-                                srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']}
-                                rate={3200}
-                            />
-                        </Blinking>}
+                        {soul.metadata?.animation === ANIMATIONS.angry &&
+                            <Blinking rate={5800}>
+                                <ImageAnimated
+                                    className=''
+                                    srcs={['/thinking-meme/ThinkingMeme_eyes.png', '/thinking-meme/ThinkingMeme_eyes_star.png']}
+                                    rate={3200}
+                                />
+                            </Blinking>}
 
                         <ImageLayer src={'/thinking-meme/ThinkingMeme_0002s_0001_head.png'} className={`${stateClassName['thinking']} ${characterVisible}`} />
                         {soul.state === 'thinking' && <ImageAnimated srcs={THINKING_BUBBLES} />}
@@ -207,7 +211,7 @@ export function SpeakerRobot({ soul, otherSoul, role, isPlayer = false, setRole 
 
                         {isPlayer ? (
                             <>
-                                <Blinking enabled={soul.state === 'waiting'} opacity={true} className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] z-[1000] flex flex-col scale-[1] ${flip}`}>
+                                <Blinking enabled={false && soul.state === 'waiting'} opacity={true} className={`absolute left-[14%] top-[45%] h-[30%] w-[30%] z-[1000] flex flex-col scale-[1] ${flip}`}>
                                     <div className={`text-sm text-black mx-auto w-full h-full z-[100] ${showBorder}`}>
                                         <InputTextArea
                                             className={`relative h-full w-full bg-transparent outline-0 border-gray-400 border-none ${speechStyle}`}

@@ -41,6 +41,7 @@ export type SoulSettings = {
     canHear?: boolean,
     canSpeak?: boolean,
     streamPerception?: boolean,
+    openInNewTab?: boolean,
 }
 
 export const PLAYER_CHARACTER: CharacterProps = { name: 'Interlocutor' }
@@ -109,6 +110,11 @@ export const DEFAULT_PERCEPTION: PerceptionOptions = {
     sendSilently: false,
 }
 
+const soulToUIURL = (soul: Soul, soulProps: SoulProps) => {
+    //https://souls.chat/chats/neilsonnn/thinking-meme/4ee86bd0-d0eb-4f2f-808e-7ed9bf492925
+    return `https://souls.chat/chats/${soulProps.soulSettings.organization}/${soulProps.soulSettings.blueprint}/${soul.soulId}`;
+}
+
 export const useSoulSimple = ({
     soulSettings,
     character: characterSettings,
@@ -139,11 +145,18 @@ export const useSoulSimple = ({
             ...soulSettings,
         });
 
-        // console.log("initSoul", soulSettings.blueprint, soulSettings.soulId);
-
         initSoul.connect().then(() => {
+            
             console.log(character.name, `(${soulSettings.blueprint}) [soulID:${soulSettings.soulId}]`, 'CONNECTED');
             setSoul(initSoul);
+
+            console.log('settings', JSON.stringify(settings,null,2));
+
+            if(settings.openInNewTab === true) {
+                const URI = soulToUIURL(initSoul, soulSettings);
+                console.log('opening debug', URI);
+                window.open(URI, '_blank');
+            }
 
         }).catch((error) => {
             console.error("Error connecting to soul", soulSettings, error);
@@ -212,7 +225,7 @@ export const useSoulSimple = ({
         } else {
 
             //add message to the global room
-            if (settings.canSpeak) {
+            if (settings.canSpeak !== false) {
                 addEvent(message);
             }
         }
@@ -303,7 +316,7 @@ export const useSoulSimple = ({
     //TODO move this out to its own hook?
     useEffect(() => {
 
-        if (!soul || !soul.connected || !settings.canHear) { return; }
+        if (!soul || !soul.connected || settings.canHear === false) { return; }
         let timer = null;
 
         if (messages && messages.length > 0) {

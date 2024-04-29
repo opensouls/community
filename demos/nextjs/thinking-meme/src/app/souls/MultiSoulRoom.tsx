@@ -4,21 +4,21 @@ import React, { useState, useEffect } from "react"
 import SoulVoice from "@/components/Soul"
 import { Label, Sprite } from "@/components/Graphics"
 import { MessageProps, CharacterProps } from "@/hooks/useSoul"
-import { Input, InputForm, MessageWaterfall } from "../../components/Messages"
+import { MessageWaterfall, InputTextArea } from "../../components/Messages"
 import { CharacterBox } from "./Layout"
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 
 
-const hornCharacter: CharacterProps = { name: 'horn', color: 'bg-red-500' }
-const worldCharacter: CharacterProps = { name: 'world', color: 'bg-black' }
-const clockCharacter: CharacterProps = { name: 'clock', color: 'bg-yellow-500' }
-const diceCharacter: CharacterProps = { name: 'dice', color: 'bg-blue-500' }
-const puddleCharacter: CharacterProps = { name: 'puddle', color: 'bg-green-500' }
+const hornCharacter: CharacterProps = { name: 'horn' }
+const worldCharacter: CharacterProps = { name: 'world' }
+const clockCharacter: CharacterProps = { name: 'clock' }
+const diceCharacter: CharacterProps = { name: 'dice' }
+const puddleCharacter: CharacterProps = { name: 'puddle' }
 
 const startState: MessageProps[] = [{
     content: 'A windy knoll. The room hums. Dice, clock, and puddle are in a meeting.',
-    type: 'thinks',
+    action: 'thinks',
     character: worldCharacter,
 }];
 
@@ -57,7 +57,7 @@ export default function Desk({ }) {
     const { messages, addEvent } = useUniverseStore();
 
     function onClick() {
-        addEvent({ content: 'Honk.', type: 'ambience', character: hornCharacter});
+        addEvent({ content: 'Honk.', action: 'ambience', character: hornCharacter });
     }
 
     return (
@@ -77,9 +77,7 @@ export default function Desk({ }) {
 
                             <hr className="border-gray-400" />
 
-                            <InputForm>
-                                <Input />
-                            </InputForm>
+                            <InputTextArea/>
 
                             <button
                                 className="border-[1px] bg-white border-black w-min px-4 hover:bg-black hover:text-white"

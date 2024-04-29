@@ -113,7 +113,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
         const submit = (event: any) => {
 
-            console.log('submitting');
+            // console.log('submitting');
             event.preventDefault();
             setValue(localValue);
             setLastSubmission(localValue);
