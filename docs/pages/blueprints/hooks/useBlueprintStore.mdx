@@ -4,7 +4,7 @@ The `useBlueprintStore` hook provides a blueprint-wide persistent memory store w
 
 Here is a basic usage of the store.
 
-```typescript filename="exampleProcess.ts" {1,5-12}
+```typescript filename="exampleProcess.ts"
 import { useBlueprintStore } from "@opensouls/engine"
 
 const exampleProcess: MentalProcess = async ({ workingMemory }) => {
@@ -28,7 +28,7 @@ export default exampleProcess
 
 Whenever a piece of content is added to the blueprint store, it is lazily embedded afterwards. This content can be searched by any soul in the blueprint. Here's an example demonstrating trivial vector search post embedding:
 
-```typescript filename="vectorIntro.ts" {4-29}
+```typescript filename="vectorIntro.ts"
 import { externalDialog } from "./lib/cognitiveSteps.js"
 import { useActions, useProcessManager, useBlueprintStore } from "@opensouls/engine"
 
