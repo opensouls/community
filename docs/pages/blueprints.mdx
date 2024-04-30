@@ -14,12 +14,8 @@ package.json
     [process1].ts
     ...
 
-  /subprocesses          ----> (optional) all mental processes that will run in the background
+  /subprocesses          ----> (optional) all subprocesses that will run in the background
     [process1].ts
-    ...
-
-/rag                     ----> (optional) files to be chunked and stored for rag context
-    [context1].md
     ...
 ```
 
@@ -58,7 +54,7 @@ import { MdPsychology, MdSettingsSystemDaydream } from "react-icons/md";
   />
   <Card
     icon={<FaExchangeAlt />}
-    title="RAG"
-    href="/blueprints/hooks/useRag"
+    title="Vector Search"
+    href="/blueprints/stores"
   />
 </Cards>

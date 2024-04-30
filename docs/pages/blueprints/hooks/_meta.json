@@ -6,8 +6,7 @@
   "useSoulMemory": "useSoulMemory",
   "useSoulStore": "useSoulStore",
   "useBlueprintStore": "useBlueprintStore",
-  "useOrganizationStore": "useOrganizationStore",
-  "useRag": "useRag"
+  "useOrganizationStore": "useOrganizationStore"
 }
 
 
