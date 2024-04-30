@@ -1,6 +1,6 @@
 import { MentalProcess, useActions, useProcessMemory, usePerceptions, useProcessManager, indentNicely } from "@opensouls/engine";
-import externalDialog from "./lib/externalDialog";
-import decision from "./lib/decision"
+import externalDialog from "./cognitiveSteps/externalDialog";
+import decision from "./cognitiveSteps/decision"
 
 const multiTexts: MentalProcess = async ({ workingMemory }) => {
   const { speak, scheduleEvent, log } = useActions()

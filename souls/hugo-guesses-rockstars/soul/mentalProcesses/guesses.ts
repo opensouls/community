@@ -1,8 +1,8 @@
 import { indentNicely } from "@opensouls/engine";
-import externalDialog from "../lib/externalDialog.js";
-import mentalQuery from "../lib/mentalQuery.js";
+import externalDialog from "../cognitiveSteps/externalDialog.js";
+import mentalQuery from "../cognitiveSteps/mentalQuery.js";
 import { MentalProcess, useProcessMemory, useActions } from "@opensouls/engine";
-import brainstorm from "../lib/brainstorm.js";
+import brainstorm from "../cognitiveSteps/brainstorm.js";
 
 const guesses: MentalProcess<{ object: string }> = async ({
   workingMemory,

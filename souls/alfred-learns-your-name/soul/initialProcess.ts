@@ -1,6 +1,6 @@
 
 import { MentalProcess, createCognitiveStep, indentNicely, useActions, useProcessManager, useSoulMemory, z } from "@opensouls/engine";
-import externalDialog from "./lib/externalDialog.js";
+import externalDialog from "./cognitiveSteps/externalDialog.js";
 import mentalQuery from "./lib/mentalQuery.js";
 
 const extractName = createCognitiveStep(() => {

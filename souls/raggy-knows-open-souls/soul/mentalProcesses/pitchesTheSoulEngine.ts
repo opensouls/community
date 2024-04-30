@@ -1,7 +1,7 @@
 
 import { ChatMessageRoleEnum, MentalProcess, WorkingMemory, useActions, useRag } from "@opensouls/engine";
-import mentalQuery from "../lib/mentalQuery";
-import externalDialog from "../lib/externalDialog";
+import mentalQuery from "../cognitiveSteps/mentalQuery";
+import externalDialog from "../cognitiveSteps/externalDialog";
 import withRagContext from "../cognitiveFunctions/withRagContext";
 
 const pitchesTheSoulEngine: MentalProcess = async ({ workingMemory }) => {

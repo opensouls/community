@@ -1,8 +1,8 @@
 import { ChatMessageRoleEnum, MentalProcess, Perception, useActions, usePerceptions } from "@opensouls/engine";
 import { getMetadataFromPerception } from "./lib/utils.js";
-import externalDialog from "./lib/externalDialog.js";
-import instruction from "./lib/instruction.js";
-import internalMonologue from "./lib/internalMonologue.js";
+import externalDialog from "./cognitiveSteps/externalDialog.js";
+import instruction from "./cognitiveSteps/instruction.js";
+import internalMonologue from "./cognitiveSteps/internalMonologue.js";
 
 const initialProcess: MentalProcess = async ({ workingMemory }) => {
   const { log, dispatch } = useActions();

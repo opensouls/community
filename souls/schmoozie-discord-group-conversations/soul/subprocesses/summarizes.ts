@@ -6,8 +6,8 @@ import {
   useActions,
   useProcessMemory,
 } from "@opensouls/engine";
-import internalMonologue from "../lib/internalMonologue.js";
-import conversationNotes from "../lib/conversationNotes.js";
+import internalMonologue from "../cognitiveSteps/internalMonologue.js";
+import conversationNotes from "../cognitiveSteps/conversationNotes.js";
 
 const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
   const conversationModel = useProcessMemory(
