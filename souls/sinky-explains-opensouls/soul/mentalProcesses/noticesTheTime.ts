@@ -1,5 +1,5 @@
 import { ChatMessageRoleEnum, MentalProcess, useActions, usePerceptions, useSoulMemory } from "@opensouls/engine";
-import externalDialog from "../lib/externalDialog.js";
+import externalDialog from "../cognitiveSteps/externalDialog.js";
 
 const noticesTheTime: MentalProcess = async ({ workingMemory: memory }) => {
   const { scheduleEvent, log, speak } = useActions();

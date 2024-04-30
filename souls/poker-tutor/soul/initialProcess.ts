@@ -1,6 +1,6 @@
 import { MentalProcess, useActions, useProcessManager } from "@opensouls/engine";
 import assists from "./mentalProcesses/assists.js";
-import externalDialog from "./lib/externalDialog.js";
+import externalDialog from "./cognitiveSteps/externalDialog.js";
 
 const playsPokerWithUser: MentalProcess = async ({ workingMemory: memory }) => {
   const { speak } = useActions();

@@ -9,8 +9,8 @@ import {
   z,
 } from "@opensouls/engine";
 import { DiscordEventData } from "../../discord/soulGateway.js";
-import internalMonologue from "../lib/internalMonologue.js";
-import mentalQuery from "../lib/mentalQuery.js";
+import internalMonologue from "../cognitiveSteps/internalMonologue.js";
+import mentalQuery from "../cognitiveSteps/mentalQuery.js";
 
 const userNotes = createCognitiveStep((userName: string) => {
   const params = z.object({

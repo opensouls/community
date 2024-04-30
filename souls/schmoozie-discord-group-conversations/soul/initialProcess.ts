@@ -1,7 +1,7 @@
 import { MentalProcess, Perception, WorkingMemory, useActions, usePerceptions, useSoulMemory } from "@opensouls/engine";
 import { DiscordEventData } from "../discord/soulGateway.js";
-import decision from "./lib/decision.js";
-import externalDialog from "./lib/externalDialog.js";
+import decision from "./cognitiveSteps/decision.js";
+import externalDialog from "./cognitiveSteps/externalDialog.js";
 import { getMetadataFromPerception, getUserDataFromDiscordEvent } from "./lib/utils/discord.js";
 import { newMemory } from "./lib/utils/memory.js";
 

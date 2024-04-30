@@ -1,6 +1,6 @@
 import { MentalProcess, indentNicely, useActions, useProcessManager } from "@opensouls/engine";
-import mentalQuery from "../lib/mentalQuery.js";
-import externalDialog from "../lib/externalDialog.js";
+import mentalQuery from "../cognitiveSteps/mentalQuery.js";
+import externalDialog from "../cognitiveSteps/externalDialog.js";
 
 import playPoker from "./playPoker.js";
 

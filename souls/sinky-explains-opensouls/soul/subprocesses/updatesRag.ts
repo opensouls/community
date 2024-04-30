@@ -1,6 +1,6 @@
 import { MentalProcess, useActions, useRag } from "@opensouls/engine";
 
-const updatesSocialAgiKnowledge: MentalProcess = async ({ workingMemory }) => {
+const updatesRag: MentalProcess = async ({ workingMemory }) => {
   const { withRagContext } = useRag("example-sinky-says-awesome");
   const { log } = useActions();
 
@@ -9,4 +9,4 @@ const updatesSocialAgiKnowledge: MentalProcess = async ({ workingMemory }) => {
   return withRagContext(workingMemory);
 };
 
-export default updatesSocialAgiKnowledge;
+export default updatesRag;

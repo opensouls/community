@@ -1,6 +1,6 @@
 
 import { ChatMessageRoleEnum, MentalProcess, useActions, useProcessManager, indentNicely } from "@opensouls/engine";
-import externalDialog from "./lib/externalDialog.js";
+import externalDialog from "./cognitiveSteps/externalDialog.js";
 import pitchesTheSoulEngine from "./mentalProcesses/pitchesTheSoulEngine";
 
 const introducesThemself: MentalProcess = async ({ workingMemory }) => {
