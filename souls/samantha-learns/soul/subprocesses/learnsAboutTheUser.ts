@@ -37,44 +37,40 @@ const userNotes = createCognitiveStep(() => {
 })
 
 const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
+  // create a hook that persists the model of the user
   const userModel = useProcessMemory("Unkown User")
   const { log } = useActions()
 
-  const mem = workingMemory.withMemory({
-    role: ChatMessageRoleEnum.Assistant,
-    content: indentNicely`
+  // remember the model of the user
+  const mem = workingMemory.withMonologue(
+    indentNicely`
       ${workingMemory.soulName} remembers:
 
       # User model
 
       ${userModel.current}
     `
-  })
+  )
 
-  const [withLearnings,learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last message?", { model: "quality" })
+  // reflect on the message from the user and what it says about them
+  const [withLearnings, learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last message?", { model: "quality" })
   log("Learnings:", learnings)
+
+  // use that reflection to help update the user model
   const [, notes] = await userNotes(withLearnings, undefined, { model: "quality"})
   log("Notes:", notes)
   userModel.current = notes
 
-  const [,shouldUpdateBehavior] = await mentalQuery(mem, `${mem.soulName} needs to make changes to their behavior.`);
-  log("Internal voice?", shouldUpdateBehavior)
-  if (shouldUpdateBehavior) {
-    const [,thought] = await internalMonologue(
-      mem, 
-      {
-        instructions: "What should I think to myself to change my behavior? Start with 'I need...'", 
-        verb: "thinks",
-      },
-      { model: "quality" }
-    );
-    return mem.withMemory({
-      role: ChatMessageRoleEnum.Assistant,
-      content: `${mem.soulName} thinks to themself: ${thought}`
-    })
-  }
-
-  return mem
+  // provide feedback to the soul for how its behavior should change
+  const [,thought] = await internalMonologue(
+    mem, 
+    {
+      instructions: "Reflect on the recent learnings about the user and my behavior", 
+      verb: "thinks",
+    },
+    { model: "quality" }
+  );
+  return mem.withMonologue(`${mem.soulName} thinks to themself: ${thought}`)
 }
 
 export default learnsAboutTheUser
