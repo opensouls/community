@@ -1,5 +1,6 @@
 #!/usr/bin/env npx tsx
-
-import run from "../src/pipeline/run.js"
+import { $ } from "execa"
+import run from "../src/markdownPipeline/run.js"
 
 await run()
+await $`npx soul-engine stores push default`

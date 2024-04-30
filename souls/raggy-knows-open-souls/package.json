@@ -18,7 +18,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@opensouls/engine": "^0.1.18",
+    "@opensouls/engine": "^0.1.23",
+    "@opensouls/pipeline": "^0.1.23",
     "glob": "^10.3.12",
     "gpt-tokenizer": "^2.1.2",
     "tsx": "^4.7.2"
