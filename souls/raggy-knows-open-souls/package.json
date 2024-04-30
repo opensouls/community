@@ -6,8 +6,9 @@
   "description": "A default OpenSoul subroutine",
   "main": "index.js",
   "scripts": {
+    "docs:update": "tsx scripts/updateDocs.ts",
     "docs:chunk": "tsx scripts/pipeline.ts",
-    "docs:push": "soul-engine stores push docs",
+    "docs:push": "soul-engine stores push default",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,7 +19,10 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@opensouls/engine": "^0.1.18",
+    "@opensouls/engine": "^0.1.23",
+    "@opensouls/pipeline": "^0.1.23",
+    "@types/fs-extra": "^11.0.4",
+    "fs-extra": "^11.2.0",
     "glob": "^10.3.12",
     "gpt-tokenizer": "^2.1.2",
     "tsx": "^4.7.2"

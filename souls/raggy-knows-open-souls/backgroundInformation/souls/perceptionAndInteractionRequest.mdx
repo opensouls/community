@@ -23,7 +23,7 @@ soul.dispatch({
 
 ```
 
-And that metadata is useable from your `MentalProcess` as part of both the step's memory _metadata *and* the invokingPerception metadata.
+And that metadata is useable from your `MentalProcess` as part of both the step's memory _metadata *and* the [invokingPerception](../blueprints/hooks/usePerceptions.mdx) metadata.
 
 ```typescript filename="exampleProcess.ts"
 import { usePerceptions, useActions } from "@opensouls/engine"
@@ -45,7 +45,7 @@ export default exampleProcess
 
 ## Example Mental Process Dispatch
 
-Your `MentalProcess` can dispatch _metadata as well..
+Your `MentalProcess` can dispatch _metadata as well. `dispatch` is available from the `useActions` hook.
 
 
 ```typescript filename="heartReactor.ts"
@@ -85,7 +85,6 @@ soul.on("emojiReacts", (evt: ActionEvent) => {
   this.message.react(await evt.content()) 
 })
 ```
-
 
 ## Reference
 

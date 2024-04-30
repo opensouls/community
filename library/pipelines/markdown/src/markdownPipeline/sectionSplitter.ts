@@ -1,6 +1,6 @@
 import {
   isWithinTokenLimit,
-} from "gpt-tokenizer/model/gpt-4"
+} from "gpt-tokenizer/esm/model/gpt-4"
 
 const PUNCTUATION = /[.?!]\s/g
 
@@ -46,7 +46,7 @@ const countHeaders = (text: string) => {
 
 const splitTextByHeaders = (text: string) => {
   const lines = text.split('\n');
-  const sections = [];
+  const sections:string[] = [];
   let currentSection = '';
 
   for (let i = 0; i < lines.length; i++) {

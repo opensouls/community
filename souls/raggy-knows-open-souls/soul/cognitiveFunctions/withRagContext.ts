@@ -5,7 +5,7 @@ const MAX_QA_MEMORY_LENGTH = 700
 const withRagContext = async (workingMemory: WorkingMemory) => {
   const name = workingMemory.soulName
   const { log } = useActions()
-  const { search } = useBlueprintStore("docs")
+  const { search } = useBlueprintStore("default")
 
   const [,questions] = await brainstorm(
     workingMemory,
