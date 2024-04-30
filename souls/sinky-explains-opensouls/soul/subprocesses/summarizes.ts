@@ -1,7 +1,7 @@
 
 import { ChatMessageRoleEnum, MentalProcess, indentNicely, useActions, useProcessMemory } from "@opensouls/engine";
-import conversationNotes from "../lib/conversationNotes.js";
-import internalMonologue from "../lib/internalMonologue.js";
+import conversationNotes from "../cognitiveSteps/conversationNotes.js";
+import internalMonologue from "../cognitiveSteps/internalMonologue.js";
 
 const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
   const conversationModel = useProcessMemory(indentNicely`
@@ -18,7 +18,7 @@ const summarizesConversation: MentalProcess = async ({ workingMemory }) => {
       `,
       verb: "noted"
     });
-    
+
     const [, updatedNotes] = await conversationNotes(withMemoryThoughts, conversationModel.current)
 
     conversationModel.current = updatedNotes as string
