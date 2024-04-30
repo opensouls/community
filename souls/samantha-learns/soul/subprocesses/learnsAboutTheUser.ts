@@ -51,15 +51,11 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
     `
   })
 
-  const [, shouldUpdateModel] = await mentalQuery(mem, `${mem.soulName} has learned something new and they need to update the mental model of the user.`);
-  log("Update model?", shouldUpdateModel)
-  if (shouldUpdateModel) {
-    const [withLearnings,learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last few messages?", { model: "quality" })
-    log("Learnings:", learnings)
-    const [, notes] = await userNotes(withLearnings, undefined, { model: "quality"})
-    log("Notes:", notes)
-    userModel.current = notes
-  }
+  const [withLearnings,learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last message?", { model: "quality" })
+  log("Learnings:", learnings)
+  const [, notes] = await userNotes(withLearnings, undefined, { model: "quality"})
+  log("Notes:", notes)
+  userModel.current = notes
 
   const [,shouldUpdateBehavior] = await mentalQuery(mem, `${mem.soulName} needs to make changes to their behavior.`);
   log("Internal voice?", shouldUpdateBehavior)
