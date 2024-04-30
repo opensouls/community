@@ -36,49 +36,47 @@ const userNotes = createCognitiveStep(() => {
   }
 })
 
+/* This subprocess models the idea that a subconscious portion of our brain would be tracking 
+how we are thinking about a person and then surfacing thoughts into our conscious experience guiding what we say next
+but the model of the person and the conversation is not explicitly in memory */
 const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
+  // create a hook that persists the model of the user
   const userModel = useProcessMemory("Unkown User")
   const { log } = useActions()
 
-  const mem = workingMemory.withMemory({
-    role: ChatMessageRoleEnum.Assistant,
-    content: indentNicely`
+  // remember the model of the user
+  const mem = workingMemory.withMonologue(
+    indentNicely`
       ${workingMemory.soulName} remembers:
 
       # User model
 
       ${userModel.current}
     `
-  })
+  )
 
-  const [, shouldUpdateModel] = await mentalQuery(mem, `${mem.soulName} has learned something new and they need to update the mental model of the user.`);
-  log("Update model?", shouldUpdateModel)
-  if (shouldUpdateModel) {
-    const [withLearnings,learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last few messages?", { model: "quality" })
-    log("Learnings:", learnings)
-    const [, notes] = await userNotes(withLearnings, undefined, { model: "quality"})
-    log("Notes:", notes)
-    userModel.current = notes
-  }
+  // reflect on the message from the user and what it says about them
+  const [withLearnings, learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last message?", { model: "quality" })
+  log("Learnings:", learnings)
 
-  const [,shouldUpdateBehavior] = await mentalQuery(mem, `${mem.soulName} needs to make changes to their behavior.`);
-  log("Internal voice?", shouldUpdateBehavior)
-  if (shouldUpdateBehavior) {
-    const [,thought] = await internalMonologue(
-      mem, 
-      {
-        instructions: "What should I think to myself to change my behavior? Start with 'I need...'", 
-        verb: "thinks",
-      },
-      { model: "quality" }
-    );
-    return mem.withMemory({
-      role: ChatMessageRoleEnum.Assistant,
-      content: `${mem.soulName} thinks to themself: ${thought}`
-    })
-  }
+  // use that reflection to help update the user model
+  const [, notes] = await userNotes(withLearnings, undefined, { model: "quality"})
+  log("Notes:", notes)
+  userModel.current = notes
 
-  return mem
+  // generate feedback to the soul for how its behavior should change
+  const [,thought] = await internalMonologue(
+    mem, 
+    {
+      instructions: "Reflect on the recent learnings about the user and my behavior", 
+      verb: "thinks",
+    },
+    { model: "quality" }
+  );
+  log("Thought:", thought)
+
+  // add the feedback to the initial working memory
+  return workingMemory.withMonologue(`${mem.soulName} thinks to themself: ${thought}`)
 }
 
 export default learnsAboutTheUser
