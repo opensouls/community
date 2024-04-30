@@ -1,10 +1,9 @@
 {
-  "index": "Welcome",
+  "index": "Welcome & Quick Start",
   "manifesto": "Manifesto",
-  "getting-started": "Getting Started",
-  "core": "Open Souls Core",
-  "souls": "Souls",
   "blueprints": "Blueprints",
+  "souls": "Souls",
+  "core": "Open Souls Core",
   "learn-by-example": "Learn By Example"
 }
 
