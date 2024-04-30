@@ -36,6 +36,9 @@ const userNotes = createCognitiveStep(() => {
   }
 })
 
+/* This subprocess models the idea that a subconscious portion of our brain would be tracking 
+how we are thinking about a person and then surfacing thoughts into our conscious experience guiding what we say next
+but the model of the person and the conversation is not explicitly in memory */
 const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
   // create a hook that persists the model of the user
   const userModel = useProcessMemory("Unkown User")
@@ -61,7 +64,7 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
   log("Notes:", notes)
   userModel.current = notes
 
-  // provide feedback to the soul for how its behavior should change
+  // generate feedback to the soul for how its behavior should change
   const [,thought] = await internalMonologue(
     mem, 
     {
@@ -70,7 +73,10 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
     },
     { model: "quality" }
   );
-  return mem.withMonologue(`${mem.soulName} thinks to themself: ${thought}`)
+  log("Thought:", thought)
+
+  // add the feedback to the initial working memory
+  return workingMemory.withMonologue(`${mem.soulName} thinks to themself: ${thought}`)
 }
 
 export default learnsAboutTheUser
