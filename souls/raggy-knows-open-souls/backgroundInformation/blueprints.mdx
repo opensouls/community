@@ -5,19 +5,20 @@ A Soul's Blueprint specifies its underlying cognitive architecture and data mode
 ```
 package.json
 /soul
-  [soul-name].md        ----> define the context of the soul
-  initialProcess.ts     ----> the mental process the soul begins executing after creation
-  default.env.ts        ----> (optional) specify any default environment variables
+  [soul-name].md         ----> define the context of the soul
+  initialProcess.ts      ----> the mental process the soul begins executing after creation
+  default.env.ts         ----> (optional) specify any default environment variables
+  perceptionProcessor.ts ----> (optional) specify your own PerceptionProcessor
   
-  /mentalProcesses      ----> mental processes to run in foreground after initialProcess
+  /mentalProcesses       ----> mental processes to run in foreground after initialProcess
     [process1].ts
     ...
 
-  /subprocesses         ----> (optional) all mental processes that will run in the background
+  /subprocesses          ----> (optional) all mental processes that will run in the background
     [process1].ts
     ...
 
-/rag                    ----> (optional) files to be chunked and stored for rag context
+/rag                     ----> (optional) files to be chunked and stored for rag context
     [context1].md
     ...
 ```
