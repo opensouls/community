@@ -1,6 +1,6 @@
 import {
   isWithinTokenLimit,
-} from "gpt-tokenizer/model/gpt-4"
+} from "gpt-tokenizer/esm/model/gpt-4"
 
 const PUNCTUATION = /[.?!]\s/g
 

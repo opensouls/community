@@ -1,5 +1,5 @@
 import { splitSections } from './sectionSplitter.js';
-import { FilePipeline } from '@opensouls/engine';
+import { FilePipeline } from '@opensouls/pipeline';
 
 const run = async () => {
   const pipeline = new FilePipeline("backgroundInformation", "stores/default", { replace: true })
