@@ -5,8 +5,8 @@ import {
   useActions,
   useProcessMemory
 } from "@opensouls/engine";
-import internalMonologue from "../lib/internalMonologue.js";
-import userNotes from "../lib/userNotes.js";
+import internalMonologue from "../cognitiveSteps/internalMonologue.js";
+import userNotes from "../cognitiveSteps/userNotes.js";
 
 const learnsAboutTheUser: MentalProcess = async ({ workingMemory: memory }) => {
   const userModel = useProcessMemory("Unkown User");
