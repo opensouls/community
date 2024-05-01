@@ -47,7 +47,7 @@ const introduction: MentalProcess = async ({ workingMemory }) => {
 
   const [, playingDecision] = await mentalQuery(workingMemory, "The user has indicated they are ready to play.");
   if (playingDecision) {
-    return [step, answersGuesses, { object: didPick.current }]
+    return [step, answersGuesses, { params: { object: didPick.current } }]
   }
 
   return step
