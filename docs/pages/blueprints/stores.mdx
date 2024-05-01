@@ -37,7 +37,7 @@ npx soul-engine stores pull organization/myBucket
 
 ## Pipelines
 
-The [`@opensouls/pipeline`](https://github.com/opensouls/soul-engine/tree/main/packages/pipeline) project makes it simple to get started creating your own pipelines. Currently there's filesystem pipeline that supports text. Other formats will be supported later.
+The [`@opensouls/pipeline`](https://github.com/opensouls/soul-engine/tree/main/packages/pipeline) project makes it simple to get started creating your own pipelines. Currently there's only a filesystem pipeline that supports text. Other formats will be supported later.
 
 The easiest way to get started with a pipeline is to install the [markdown pipeline](https://github.com/opensouls/community/tree/main/library/pipelines/markdown) from the community library into your own soul.
 
@@ -49,4 +49,21 @@ Running that command will create a script to run your pipeline, a `backgroundInf
 
 As with all `soul-engine` installs, this code will now be in your repo and editable.
 
+After adding your markdown files to the `backgroundInformation` directory, you can run the pipeline with:
 
+```bash
+npx tsx ./scripts/pipeline.ts
+```
+
+For convenience, you can also add this to your `package.json` scripts if you want to execute it with `npm run pipeline`:
+
+```js filename="package.json"
+{
+  // ...
+  "scripts": {
+    // ...
+    "pipeline": "npx tsx ./scripts/pipeline.ts"
+  }
+  // ...
+}
+```
