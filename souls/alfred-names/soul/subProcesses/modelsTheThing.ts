@@ -1,7 +1,7 @@
 
 import { MentalProcess, useActions, useProcessMemory, createCognitiveStep, indentNicely, ChatMessageRoleEnum, WorkingMemory } from "@opensouls/engine";
-import internalMonologue from "../lib/internalMonologue";
-import externalDialog from "../lib/externalDialog";
+import internalMonologue from "../cognitiveSteps/internalMonologue";
+import externalDialog from "../cognitiveSteps/externalDialog";
 
 const thingNotes = createCognitiveStep(() => {
   return {

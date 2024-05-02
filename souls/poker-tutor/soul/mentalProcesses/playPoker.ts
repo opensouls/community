@@ -1,9 +1,9 @@
 import { MentalProcess, indentNicely, useActions, useProcessManager } from "@opensouls/engine";
 import assists from "./assists.js";
-import brainstorm from "../lib/brainstorm.js";
-import decision from "../lib/decision.js";
-import mentalQuery from "../lib/mentalQuery.js";
-import externalDialog from "../lib/externalDialog.js";
+import brainstorm from "../cognitiveSteps/brainstorm.js";
+import decision from "../cognitiveSteps/decision.js";
+import mentalQuery from "../cognitiveSteps/mentalQuery.js";
+import externalDialog from "../cognitiveSteps/externalDialog.js";
 
 const playPoker: MentalProcess = async ({ workingMemory: memory }) => {
   const { speak } = useActions();

@@ -1,6 +1,6 @@
-import decision from "../lib/decision";
-import internalMonologue from "../lib/internalMonologue";
-import externalDialog from "../lib/externalDialog";
+import decision from "../cognitiveSteps/decision";
+import internalMonologue from "../cognitiveSteps/internalMonologue";
+import externalDialog from "../cognitiveSteps/externalDialog";
 import { MentalProcess, indentNicely, useActions, useProcessMemory } from "@opensouls/engine";
 
 /*
