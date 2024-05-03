@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "devDependencies": {
     "@types/common-tags": "^1.8.4",
     "typescript": "^5.3.3"
