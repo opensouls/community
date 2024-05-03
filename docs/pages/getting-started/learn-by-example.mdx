@@ -1,6 +1,5 @@
-import { Cards, Card } from "nextra/components";
-
-import { FaHandPointer, FaCog, FaLightbulb, FaBook, FaUser, FaMusic, FaDiscord, FaGlobe } from "react-icons/fa";
+import { Cards } from "nextra/components";
+import ImageCard from "/components/image-card";
 
 # Learn by example
 
@@ -8,34 +7,34 @@ import { FaHandPointer, FaCog, FaLightbulb, FaBook, FaUser, FaMusic, FaDiscord, 
 
 Learn by example how to create AI souls by running these souls and checking their code. Each one is a self-contained example that demonstrates a specific feature or concept of the Soul Engine.
 
+
+
 <Cards>
-  <Card
-    icon={<FaHandPointer />}
-    title="Samantha sends pokes"
+  <ImageCard
+    title="Samantha pokes"
     href="https://github.com/opensouls/community/tree/main/souls/schedule-interact"
   />
-  <Card
-    icon={<FaLightbulb />}
+  <ImageCard
     title="A game of 20 questions"
+    src="/images/guide/learn-by-example/example-twenty-questions.webp"
     href="https://github.com/opensouls/community/tree/main/souls/example-twenty-questions"
   />
-  <Card
-    icon={<FaMusic />}
+  <ImageCard
     title="A musical guessing game"
+    src="/images/guide/learn-by-example/hugo-guesses-rockstars.webp"
     href="https://github.com/opensouls/community/tree/main/souls/hugo-guesses-rockstars"
   />
-  <Card
-    icon={<FaBook />}
+  <ImageCard
     title="Learning about oneself"
+    src="/images/guide/learn-by-example/metatention.webp"
     href="https://github.com/opensouls/community/tree/main/souls/metatention"
   />
-  <Card
-    icon={<FaUser />}
-    title="Modeling a user"
+  <ImageCard
+    title="Samantha models a user"
+    src="/images/guide/learn-by-example/samantha-learns.webp"
     href="https://github.com/opensouls/community/tree/main/souls/samantha-learns"
   />
-  <Card
-    icon={<FaCog />}
+  <ImageCard
     title="Template env vars"
     href="https://github.com/opensouls/community/tree/main/souls/env-vars"
   />
@@ -45,35 +44,42 @@ Learn by example how to create AI souls by running these souls and checking thei
 
 Check out these example applications to see how to connect the Soul Engine to external services and applications.
 
+### Discord
+
 <Cards>
-  <Card
-    icon={<FaDiscord />}
-    title="Food Critic reviews food images on Discord"
+  <ImageCard
+    title="Food Critic reviews food photos"
+    src="/images/guide/learn-by-example/food-critic.webp"
     href="https://github.com/opensouls/community/tree/main/demos/discord/food-critic"
   />
-  <Card
-    icon={<FaDiscord />}
-    title="Schmoozie in Discord group conversations"
+  <ImageCard
+    title="Schmoozie in a group chat"
+    src="/images/guide/learn-by-example/schmoozie-discord-group-conversations.webp"
     href="https://github.com/opensouls/community/tree/main/demos/discord/schmoozie-discord-group-conversations"
   />
-  <Card
-    icon={<FaGlobe />}
-    title="Code Monkey helps write code (Next.js)"
+</Cards>
+
+### Next.js
+
+<Cards>
+  <ImageCard
+    title="Code Monkey helps write code"
+    src="/images/guide/learn-by-example/code-monkey.webp"
     href="https://github.com/opensouls/community/tree/main/demos/nextjs/code-monkey"
   />
-  <Card
-    icon={<FaGlobe />}
-    title="Cranky is trapped inside ASCII (Next.js)"
+  <ImageCard
+    title="Cranky is trapped inside ASCII"
+    src="/images/guide/learn-by-example/cranky.webp"
     href="https://github.com/opensouls/community/tree/main/demos/nextjs/cranky"
   />
-  <Card
-    icon={<FaGlobe />}
-    title="Reggie, a living regular expression (Next.js)"
+  <ImageCard
+    title="Reggie, a living regular expression"
+    src="/images/guide/learn-by-example/reggie-is-regex.webp"
     href="https://github.com/opensouls/community/tree/main/demos/nextjs/reggie-is-regex"
   />
-  <Card
-    icon={<FaGlobe />}
-    title="Millenial Simulator (Next.js)"
+  <ImageCard
+    title="Millenial Simulator"
+    src="/images/guide/learn-by-example/thinking-meme.webp"
     href="https://github.com/opensouls/community/tree/main/demos/nextjs/thinking-meme"
   />
 </Cards>
