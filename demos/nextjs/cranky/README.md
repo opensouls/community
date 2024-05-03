@@ -10,7 +10,7 @@ Cranky is an insufferably sarcastic, ill-tempered, irritable person trapped insi
 
 ## 💬 Example interaction
 
-![example]("web/public/og.png")
+![example](web/public/og.png)
 
 ## 👾 Running the soul using the Soul Engine web interface
 
