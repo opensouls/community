@@ -30,6 +30,6 @@ AI Souls are agentic and embodied digital beings, one day comprising thousands o
 
 ## 📜 License
 
-The documentation is included under CC-BY-4.0 license.
+The documentation (`/docs`) is included under CC-BY-4.0 license.
 
 Unless otherise noted, the remainder of the repository - i.e. the `/library`, `/demos`, and `/souls` are included under MIT license.
