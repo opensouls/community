@@ -6,6 +6,5 @@
   "models": "Models",
   "community-library": "Community Library",
   "perception-processor": "Perception Processor",
-  "stores": "Vector Search & Pipelines",
-  "upgrading": "Upgrading"
+  "stores": "Vector Search & Pipelines"
 }
