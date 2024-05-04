@@ -27,3 +27,9 @@ AI Souls are agentic and embodied digital beings, one day comprising thousands o
 1. Ask someone from OPEN SOULS to join the waitlist
 1. Meet with us
 1. Build something cool with the [Soul Engine](https://docs.souls.chat)
+
+## 📜 License
+
+The documentation (`/docs`) is included under CC-BY-4.0 license.
+
+Unless otherise noted, the remainder of the repository - i.e. the `/library`, `/demos`, and `/souls` are included under MIT license.
