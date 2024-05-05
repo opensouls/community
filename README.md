@@ -18,15 +18,23 @@ npx soul-engine dev
 
 AI Souls are agentic and embodied digital beings, one day comprising thousands of mental processes (managed by the Soul Engine). Unlike traditional chatbots, this code will give digital souls personality, drive, ego, and will.
 
+## 🔑 Getting Soul Engine access
+1. Join the [OPEN SOULS Discord](http://discord.gg/opensouls)
+1. That's it! Now you can login to the Soul Engine with Discord auth when running `npx soul-engine dev`
+
+Make sure to checkout the [Soul Engine guide](https://docs.souls.chat)!
+
 ## 🙋 Contributing
 
-1. Open up a PR!
+Check out [CONTRIBUTING](./CONTRIBUTING.md) and open up a PR!
 
-## 🔑 Getting access
-1. Join the [Discord](http://discord.gg/opensouls)
-1. Ask someone from OPEN SOULS to join the waitlist
-1. Meet with us
-1. Build something cool with the [Soul Engine](https://docs.souls.chat)
+We're excited for contributions, such as:
+  - Reporting bugs
+  - Suggesting enhancements
+  - Submitting new example souls
+  - Contributing cognitive steps and other code to the library
+  - Improving documentation
+  - Providing feedback
 
 ## 📜 License
 
