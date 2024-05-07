@@ -1,0 +1,168 @@
+import { Callout } from "nextra/components";
+
+# Connect an external app
+
+Let's connect the modified Samantha soul to an external application. In this guide we'll connect the soul to Telegram.
+
+<Callout type="info" emoji="ℹ️">
+If you're interested in connecting a soul to Discord or to a web application, check out the [integration demos](https://github.com/opensouls/community/tree/main/demos).
+
+You'll also find the this guide's [finished code](https://github.com/opensouls/community/tree/main/demos/telegram/graham) there.
+
+</Callout>
+
+## Create a blank new soul
+
+Run the following command to create a new soul named. In this guide our soul's name will be "Graham", but you can choose any name you want:
+
+```bash
+npx soul-engine init graham
+```
+
+As a result you'll get a project folder that looks like this:
+
+![](/images/guide/connect-external-app/01-init-soul.webp)
+
+Graham's blueprint doesn't exist in the Soul Engine yet, so let's run `soul-engine dev` to upload the code and also start the local development server:
+
+```bash
+npx soul-engine dev
+```
+
+If everything is working correctly, a new browser window should open with the Soul Engine debugger. You should also see confirmation that the code was uploaded in your terminal:
+
+![](/images/guide/connect-external-app/02-soul-created.webp)
+
+Before working on the Graham's blueprint and code, we'll first get him connected to Telegram.
+
+## Get a Telegram token for your soul
+
+Start by searching the user `@BotFather` in Telegram and sending the `/newbot` command. Follow the instructions to create a new Telebram bot:
+
+![](/images/guide/connect-external-app/03-botfather.webp)
+
+At the end of this process, you'll receive a token. Create a new `.env` file in the same folder as `index.ts` and add the token there:
+
+```env filename=".env"
+TELEGRAM_TOKEN="123456789:AbCdefGhIJKlmNoPQRsTUVwxyZ"
+```
+
+## Install the necessary libraries
+
+We'll need to install two libraries:
+- `telegraf`, to simplify the process of connecting the soul to Telegram.
+- `dotenv`, to load environment variables from the `.env` file, such as the Telegram token and other stuff we'll add later.
+
+Make sure you're inside the project folder and run `npm i telegraf dotenv`:
+
+![](/images/guide/connect-external-app/04-install-deps.webp)
+
+## Structure your project
+
+Create a new `telegram` folder next to the `soul` folder in your project. This folder will contain the code to connect the soul to Telegram. Add an `index.ts` file to the new folder:
+
+![](/images/guide/connect-external-app/05-project-structure.webp)
+
+Paste the following code into `telegram/index.ts`:
+
+```typescript filename="telegram/index.ts"
+import { Soul } from "@opensouls/engine";
+import { config } from "dotenv";
+import { Context, Telegraf } from "telegraf";
+import { message } from "telegraf/filters";
+
+async function connectToTelegram() {
+  const telegraf = new Telegraf<Context>(process.env.TELEGRAM_TOKEN!);
+  telegraf.launch();
+
+  const { username } = await telegraf.telegram.getMe();
+  console.log(`Start chatting here: https://t.me/${username}`);
+
+  process.once("SIGINT", () => telegraf.stop("SIGINT"));
+  process.once("SIGTERM", () => telegraf.stop("SIGTERM"));
+
+  return telegraf;
+}
+
+async function connectTelegramToSoul(telegram: Telegraf<Context>) {
+  // this is temporary, we will connect to the soul later
+  
+  telegram.start(async (ctx) => ctx.reply("👋"));
+  telegram.on(message("text"), async (ctx) => ctx.reply("👍"));
+}
+
+async function run() {
+  config();
+  const telegram = await connectToTelegram();
+  connectTelegramToSoul(telegram);
+}
+
+run();
+```
+
+Open another terminal window and start the app:
+  
+```bash
+npx tsx telegram/index.ts
+```
+
+Make sure that the Telegram bot is working by opening the chat link that was printed in the terminal and sending a message:
+
+![](/images/guide/connect-external-app/06-telegram-works.webp)
+
+## Infuse your Telegram bot with a soul
+
+Chatbots are super boring, so it's now time to infuse Graham's soul into the Telegram bot. We'll start by connecting our Telegram app to the Soul Engine, and then we'll make some changes to Graham's blueprint and code.
+
+Add these two new environment variables to the `.env` file:
+
+```env filename=".env"
+TELEGRAM_TOKEN="123456789:AbCdefGhIJKlmNoPQRsTUVwxyZ"
+SOUL_ENGINE_BLUEPRINT="graham"
+SOUL_ENGINE_ORGANIZATION="add your Soul Engine organization id here"
+```
+
+Not sure what's your Soul Engine organization id? Take a look at the terminal output when you run `soul-engine dev`. You'll see a link there - your organization id is the first part of the path after `/chats`:
+
+![](/images/guide/connect-external-app/08-url-parts.webp)
+
+Now let's finally connect the Telegram app to the Soul Engine. Replace the `connectTelegramToSoul` function in `telegram/index.ts` with the following code:
+
+```typescript filename="telegram/index.ts"
+// ...
+
+async function connectTelegramToSoul(telegram: Telegraf<Context>) {
+  const soul = new Soul({
+    organization: process.env.SOUL_ENGINE_ORGANIZATION!,
+    blueprint: process.env.SOUL_ENGINE_BLUEPRINT!,
+  });
+
+  await soul.connect();
+
+  let telegramChatId: number | null = null;
+
+  telegram.on(message("text"), async (ctx) => {
+    telegramChatId = ctx.message.chat.id;
+
+    soul.dispatch({
+      action: "said",
+      content: ctx.message.text,
+    });
+  });
+
+  soul.on("says", async (event) => {
+    const content = await event.content();
+    await telegram.telegram.sendMessage(Number(telegramChatId), content);
+  });
+}
+
+// ...
+```
+
+Stop the previous script by pressing `Ctrl+C` in the terminal, and then run the app again with `npx tsx telegram/index.ts`. Now, when you send a message to the Graham, it should be his soul that replies:
+
+![](/images/guide/connect-external-app/09-soul-connected.webp)
+
+## Making Graham more interesting
+
+🚧 WIP 🚧
