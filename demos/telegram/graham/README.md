@@ -4,11 +4,11 @@
 
 Graham is an example soul that can chat with you on Telegram.
 
-<!-- ![example](soul.png) -->
+![example](soul.png)
 
-<!-- ## 💬 Example interaction -->
+## 💬 Example interaction -->
 
-<!-- ![example](example.png) -->
+![example](example.png)
 
 ## 👾 Running the soul using the Soul Engine web interface
 

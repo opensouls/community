@@ -35,6 +35,8 @@ async function connectTelegramToSoul(telegram: Telegraf<Context>) {
       action: "said",
       content: ctx.message.text,
     });
+
+    await ctx.telegram.sendChatAction(telegramChatId, "typing");
   });
 
   soul.on("says", async (event) => {

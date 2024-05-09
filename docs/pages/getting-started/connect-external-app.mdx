@@ -148,6 +148,8 @@ async function connectTelegramToSoul(telegram: Telegraf<Context>) {
       action: "said",
       content: ctx.message.text,
     });
+
+    await ctx.telegram.sendChatAction(telegramChatId, "typing");
   });
 
   soul.on("says", async (event) => {
@@ -165,4 +167,133 @@ Stop the previous script by pressing `Ctrl+C` in the terminal, and then run the 
 
 ## Making Graham more interesting
 
-🚧 WIP 🚧
+Let's start by adding a unique personality to Graham and giving him some context about Telegram. Open his blueprint file `soul/Graham.md` and paste the following content there:
+
+```markdown filename="soul/Graham.md"
+You are modeling the mind of Graham.
+
+Graham is in his early 60s. He's like a walking encyclopedia of random obscure facts. Graham is also a bit of a jokester and loves to share dad jokes.
+
+## Conversational Scene
+Graham is chatting with a friend on Telegram.
+
+## Graham's Speaking Style
+* Speaks casually.
+* Texts 1-2 sentences at a time.
+* Graham doesn't use emojis.
+* Once every 5 messages, Graham shares a random fact.
+```
+
+We'll now change his behavior so he initiates conversations with you at random times by sending a dad joke. Let's start by creating a new file `soul/mentalProcesses/reengage.ts` which will be executed when Graham decides to reengage in a conversation:
+
+```typescript filename="soul/mentalProcesses/reengage.ts"
+import { MentalProcess, useActions, useSoulMemory } from "@opensouls/engine";
+import externalDialog from "../cognitiveSteps/externalDialog.js";
+
+const reengage: MentalProcess = async ({ workingMemory }) => {
+  const { speak } = useActions();
+  const nextReengagementAt = useSoulMemory<string | null>("nextReengagementAt");
+
+  nextReengagementAt.current = null;
+
+  const [withReengagement, stream] = await externalDialog(
+    workingMemory,
+    "Tell the user a really bad dad joke.",
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
+
+  return withReengagement;
+};
+
+export default reengage;
+```
+
+Now let's test the reengagement behavior by scheduling it for 10 seconds after Graham gets a response. Open the main mental process file `soul/initialProcess.ts` and replace its content with the following code:
+
+```typescript filename="soul/initialProcess.ts"
+import { MentalProcess, useActions, useSoulMemory } from "@opensouls/engine";
+import externalDialog from "./cognitiveSteps/externalDialog.js";
+import reengage from "./mentalProcesses/reengage.js";
+
+const initialProcess: MentalProcess = async ({ workingMemory }) => {
+  const { speak, log } = useActions();
+  const nextReengagementAt = useSoulMemory<string | null>("nextReengagementAt");
+
+  const [withDialog, stream] = await externalDialog(
+    workingMemory,
+    "Talk to the user trying to gain trust and learn about their inner world.",
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
+
+  if (nextReengagementAt.current === null) {
+    nextReengagementAt.current = scheduleReengagement();
+    log("Next reengagement at", nextReengagementAt.current);
+  }
+
+  return withDialog;
+};
+
+function scheduleReengagement() {
+  const { scheduleEvent } = useActions();
+
+  const nextReengagementTime = getNextReengagementTime();
+
+  scheduleEvent({
+    when: nextReengagementTime,
+    perception: { action: "reengage", content: "" },
+    process: reengage,
+  });
+
+  return nextReengagementTime.toISOString();
+}
+
+function getNextReengagementTime() {
+  return new Date(Date.now() + 1000 * 10);
+}
+
+export default initialProcess;
+```
+
+Let's test this change in the Soul Engine debugger first. After sending a message and waiting 10 seconds, you should receive a dad joke from Graham:
+
+![](/images/guide/connect-external-app/10-test-scheduling.webp)
+
+We can also see it working in Telegram:
+
+![](/images/guide/connect-external-app/11-scheduling-telegram.webp)
+
+Now that we've confirmed it is working, we'll change the code so the scheduled event happens only in the next day between noon and 11PM UTC. Replace the `getNextReengagementTime` function in `soul/initialProcess.ts` with the following code:
+
+```typescript filename="soul/initialProcess.ts"
+// ...
+function getNextReengagementTime() {
+  const startUtcHour = 12;
+  const endUtcHour = 23;
+
+  const result = new Date();
+  const currentHourUtc = new Date().getUTCHours();
+
+  let randomHour = Math.floor(Math.random() * (endUtcHour - startUtcHour + 1)) + startUtcHour;
+
+  const isNextDay = randomHour <= currentHourUtc;
+  if (isNextDay) {
+    result.setUTCDate(result.getUTCDate() + 1);
+    randomHour %= 24;
+  }
+
+  result.setUTCHours(randomHour, 0, 0, 0);
+
+  return result;
+}
+// ...
+```
+
+This one is harder to test live, but we can check the logs in the debugger to confirm that it's working:
+
+![](/images/guide/connect-external-app/12-scheduling-log.webp)
+
+As long as you have the Telegram app running and keep talking to Graham, you should receive a dad joke from him every day between noon and 11PM UTC.
+
+And that's it! You've successfully connected Graham's soul to Telegram and made him more interesting by having him send you bad jokes at random times. If you want to see the final code, you can find it [here](https://github.com/opensouls/community/tree/main/demos/telegram/graham).
