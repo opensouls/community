@@ -44,7 +44,7 @@ Start by searching the user `@BotFather` in Telegram and sending the `/newbot` c
 At the end of this process, you'll receive a token. Create a new `.env` file in the same folder as `index.ts` and add the token there:
 
 ```env filename=".env"
-TELEGRAM_TOKEN="123456789:AbCdefGhIJKlmNoPQRsTUVwxyZ"
+TELEGRAM_TOKEN="the token you received from BotFather"
 ```
 
 ## Install the necessary libraries
@@ -84,7 +84,7 @@ async function connectToTelegram() {
   return telegraf;
 }
 
-async function connectTelegramToSoul(telegram: Telegraf<Context>) {
+async function connectToSoulEngine(telegram: Telegraf<Context>) {
   // this is temporary, we will connect to the soul later
   
   telegram.start(async (ctx) => ctx.reply("👋"));
@@ -94,7 +94,7 @@ async function connectTelegramToSoul(telegram: Telegraf<Context>) {
 async function run() {
   config();
   const telegram = await connectToTelegram();
-  connectTelegramToSoul(telegram);
+  connectToSoulEngine(telegram);
 }
 
 run();
@@ -110,6 +110,8 @@ Make sure that the Telegram bot is working by opening the chat link that was pri
 
 ![](/images/guide/connect-external-app/06-telegram-works.webp)
 
+At this point, multiple people can message your Telegram bot, as long as you keep the app running. However, the bot doesn't do anything interesting yet because it still doesn't have a soul.
+
 ## Infuse your Telegram bot with a soul
 
 Chatbots are super boring, so it's now time to infuse Graham's soul into the Telegram bot. We'll start by connecting our Telegram app to the Soul Engine, and then we'll make some changes to Graham's blueprint and code.
@@ -117,7 +119,7 @@ Chatbots are super boring, so it's now time to infuse Graham's soul into the Tel
 Add these two new environment variables to the `.env` file:
 
 ```env filename=".env"
-TELEGRAM_TOKEN="123456789:AbCdefGhIJKlmNoPQRsTUVwxyZ"
+TELEGRAM_TOKEN="the token you received from BotFather"
 SOUL_ENGINE_BLUEPRINT="graham"
 SOUL_ENGINE_ORGANIZATION="add your Soul Engine organization id here"
 ```
@@ -126,12 +128,12 @@ Not sure what's your Soul Engine organization id? Take a look at the terminal ou
 
 ![](/images/guide/connect-external-app/08-url-parts.webp)
 
-Now let's finally connect the Telegram app to the Soul Engine. Replace the `connectTelegramToSoul` function in `telegram/index.ts` with the following code:
+Now let's finally connect the Telegram app to the Soul Engine. Replace the `connectToSoulEngine` function in `telegram/index.ts` with the following code:
 
 ```typescript filename="telegram/index.ts"
 // ...
 
-async function connectTelegramToSoul(telegram: Telegraf<Context>) {
+async function connectToSoulEngine(telegram: Telegraf<Context>) {
   const soul = new Soul({
     organization: process.env.SOUL_ENGINE_ORGANIZATION!,
     blueprint: process.env.SOUL_ENGINE_BLUEPRINT!,
@@ -161,11 +163,11 @@ async function connectTelegramToSoul(telegram: Telegraf<Context>) {
 // ...
 ```
 
-Stop the previous script by pressing `Ctrl+C` in the terminal, and then run the app again with `npx tsx telegram/index.ts`. Now, when you send a message to the Graham, it should be his soul that replies:
+Find the terminal that's running your Telegram app (attention: this is not the one running `soul-engine dev`!). Stop the app by pressing `Ctrl+C` in the terminal, and then run it again with `npx tsx telegram/index.ts`. Now, when you send a message to the Graham, it should be his soul that replies:
 
 ![](/images/guide/connect-external-app/09-soul-connected.webp)
 
-## Making Graham more interesting
+## Make Graham more interesting
 
 Let's start by adding a unique personality to Graham and giving him some context about Telegram. Open his blueprint file `soul/Graham.md` and paste the following content there:
 
@@ -290,10 +292,83 @@ function getNextReengagementTime() {
 // ...
 ```
 
-This one is harder to test live, but we can check the logs in the debugger to confirm that it's working:
+This one is harder to test live but if we test this using the debugger, we can check the logs to confirm that it's working:
 
 ![](/images/guide/connect-external-app/12-scheduling-log.webp)
 
 As long as you have the Telegram app running and keep talking to Graham, you should receive a dad joke from him every day between noon and 11PM UTC.
 
-And that's it! You've successfully connected Graham's soul to Telegram and made him more interesting by having him send you bad jokes at random times. If you want to see the final code, you can find it [here](https://github.com/opensouls/community/tree/main/demos/telegram/graham).
+## Give Graham a long-term memory
+
+There's still one problem: every time you restart the Telegram app, it'll be like Graham is meeting you for the first time, even if you're still seeing the messages in Telegram.
+
+This happens because we're not specifying a soul id when connecting to the Soul Engine, which means we're creating a **new blank soul with a random id** every time the Telegram app is started. We can fix this by using the Telegram chat id as the soul's id.
+
+First, let's create an object to store the corresponding soul for each Telegram chat id. Add this code to the top of the `telegram/index.ts` file:
+
+```typescript filename="telegram/index.ts"
+const souls: Record<string, Soul> = {};
+```
+
+Then, we'll create a new function `setupTelegramSoulBridge` in the `telegram/index.ts` file. This function will create a new soul for the Telegram chat id if it doesn't exist yet, or return the existing soul if it does:
+
+```typescript filename="telegram/index.ts"
+// ...
+
+async function setupTelegramSoulBridge(telegram: Telegraf<Context>, telegramChatId: number) {
+  if (souls[telegramChatId]) {
+    return souls[telegramChatId];
+  }
+
+  const soul = new Soul({
+    soulId: String(telegramChatId),
+    organization: process.env.SOUL_ENGINE_ORGANIZATION!,
+    blueprint: process.env.SOUL_ENGINE_BLUEPRINT!,
+  });
+
+  soul.on("says", async (event) => {
+    const content = await event.content();
+    await telegram.telegram.sendMessage(Number(telegramChatId), content);
+  });
+
+  await soul.connect();
+
+  souls[telegramChatId] = soul;
+
+  return soul;
+}
+
+// ...
+```
+
+And finally, we need to replace `connectToSoulEngine` to use the new function instead of creating a new soul directly:
+
+```typescript filename="telegram/index.ts"
+// ...
+
+async function connectToSoulEngine(telegram: Telegraf<Context>) {
+  telegram.on(message("text"), async (ctx) => {
+    const telegramChatId = ctx.message.chat.id;
+    const soul = await setupTelegramSoulBridge(telegram, ctx.message.chat.id);
+
+    soul.dispatch({
+      action: "said",
+      content: ctx.message.text,
+    });
+
+    await ctx.telegram.sendChatAction(telegramChatId, "typing");
+  });
+}
+
+// ...
+```
+
+Now you just need to restart your Telegram app and start talking to Graham again. You should see that he remembers the conversations you had with him before:
+
+![](/images/guide/connect-external-app/13-app-restarted.webp)
+
+And that's it! You've successfully connected Graham's soul to Telegram and made him more interesting by having him send you bad jokes at random times. 
+
+Graham is also able to talk to many people at the same time, and he'll remember the conversations he had with each one of them.
+
+If you want to see the final code, you can find it [here](https://github.com/opensouls/community/tree/main/demos/telegram/graham).
