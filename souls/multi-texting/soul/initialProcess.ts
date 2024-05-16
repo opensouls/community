@@ -19,7 +19,7 @@ const multiTexts: MentalProcess = async ({ workingMemory }) => {
   const [,countString] = await decision(
     workingMemory,
     {
-      description: "How many additional sentence fragments will Texty want to text next. Make sure to mix up the number of fragments so it feels natural. Last batch of texts was 0 additional fragments long. Most responses should be 0. Sometimes 1 or maybe 2-5 fragments long.",
+      description: `How many additional sentence fragments will Texty want to text next. Make sure to mix up the number of fragments so it feels natural. Last batch of texts was ${fragmentNo.current} additional fragments long. Most responses should be 0. Sometimes 1 or maybe 2-5 fragments long.`,
       choices: ['5', '4', '3', '2', '1', '0'],
     },
     { model: "quality" }
