@@ -4,6 +4,10 @@ import { Callout } from 'nextra/components'
 
 > Designing a mind is an inherently complex task, but understanding individual components of the Soul Engine should be straightforward.
 
+<Callout type="warning" emoji="⚠️">
+  Open Souls is in Alpha. Pricing is subject to change as we experiment and learn! Let us know what you think on [our discord](https://discord.gg/opensouls).
+</Callout>
+
 <div className="flex flex-col-reverse lg:flex-row items-center justify-between mt-8">
   <div>
     At Open Souls, we believe that pricing should be simple, transparent, and fair. Our goal is to make the incredible power of AI souls accessible to as many developers and creators as possible.
@@ -30,15 +34,16 @@ Simple!
 ### Usage Calculation
 We add a nominal markup to our costs in order to fund continued improvements to our technology. Here's how we calculate credit usage:
 
-- **LLM calls**: 1x + 0.75% proxy fee
-  - We add a 0.75% proxy fee to cover the cost of our networking infrastructure.
-  - Otherwise, we pass through the cost of the LLM API call.
+- **Model Proxy**: 1x + 0.75% proxy fee
+  - We add a 0.75% proxy fee to cover the cost of our model proxy.
+  - Otherwise, we pass through the cost of any LLM API call.
 - **Storage**: 0.15 credits/gigabtye
   - Storage is cheap! We transfer that savings to our customers.
   - We add a fee to cover the cost of Databases, Backups, and Object Storage.
-- **Execution time**: ??? //TODO: Coming in the next revision
-
-
+- **Compute**: 0.0015 credits/second of execution time
+- **Data Transfer**
+  - **Inbound**: Free
+  - **Outbound**: 500MB free, then 0.02 credits/gigabyte 
 
 ## Tiers
 We offer three tiers of service, designed to accomodate projects of any size, from hobbyists to large enterprises. 
@@ -56,11 +61,15 @@ You'll also gain access to Soul Hours, the weekly live virtual event hosted by o
 
 ### Pay what you want
 - Everything in **Free**
+- Priority Feature Requests
 - Priority Support
+- Discord Role
 
-With our "Pay what you want" subscription offering, you gain access to Priority Support in Discord through our private, dedicated channel. That means faster response times, more in-depth responses, and more personalized attention from our team.
+With our "Pay what you want" subscription offering, you gain access to Priority Support and Priority Feature Requests in through our private Discord channels.That means faster response times, more space to make suggestions, and more personalized attention from our team.
 
-You can buy credits directly from us at any time, in any amount, from $5 to $2000. You can also set up a recurring monthly purchase if you'd like to automatically top off your credits each month. This is a great way to support Open Souls and ensure you always have enough credits to power your projects.
+You can buy credits directly from us at any time, in any amount, from $5 to $2000. You can also set up a recurring monthly purchase if you'd like to automatically top off your credits each month. This is a great way to support Open Souls, and ensures you always have enough credits to power your projects.
+
+You'll also recieve a special Discord role as our token of thanks for your support!
 
 ### Enterprise
 If you have a larger-scale project (like Movies or Games) and know you'll need features like:
