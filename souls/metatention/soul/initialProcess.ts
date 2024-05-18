@@ -1,9 +1,8 @@
 
-import { html } from "common-tags";
 import { MentalProcess, useActions, useProcessMemory, useProcessManager, WorkingMemory, createCognitiveStep, indentNicely, ChatMessageRoleEnum, z } from "@opensouls/engine";
-import externalDialog from "./lib/externalDialog";
-import brainstorm from "./lib/brainstorm";
-import decision from "./lib/decision";
+import externalDialog from "./cognitiveSteps/externalDialog";
+import brainstorm from "./cognitiveSteps/brainstorm";
+import decision from "./cognitiveSteps/decision";
 
 const generateIntention = createCognitiveStep((goal: string) => {
   return {
