@@ -110,3 +110,36 @@ const [, imageDescription] = await instruction(withImageUrl, "describe the image
 log("Image description:", imageDescription);
 ```
 
+## Custom Models
+
+The Soul Engine lets you use any model endpoint that supports the OpenAI API (many providers do that now days) using your own API key.
+
+You create a reference to your custom model using the `npx soul-engine custum-models create` command. This will open a CLI-based prompt to gather the details for your custom model:
+
+```
+npx soul-engine custom-models create
+
+Creating a custom model for the organization.
+? The name of your custom model. This is the name you'll use to access the model. fireworks-vision
+? The baseUrl for the model (eg https://api.fireworks.ai/inference/v1 ) https://api.fireworks.ai/inference/v1
+? The API key for the model [input is hidden]
+? What is the provider's model name? (eg. 'gpt-4o') fireworks/firellava-13b
+```
+
+You must create a new custom-model for every *model* (not just _provider_) that you want to use. For instance if you wanted to use several different models at Fireworks AI, you would create a new custom model for each model (not just one for Fireworks).
+
+You can list the available models for your organization using the `npx soul-engine custom-models list` command.
+
+### Using A Custom Model
+
+You use a custom model by specifying your organization name followed by a `/` followed by the custom model name you gave in the creation phase. For instance, to use the fireworks/firellava-13b custom model created above, with the organization 'treetop' the usage in a `cognitiveStep` or [default model](#default-model) would look like:
+
+```javascript
+cosnt [withDialog, dialog] = await externalDialog(
+  workingMemory,
+  "say hi", 
+  { model: "treetop/fireworks-vision" }
+)
+```
+
+As a reminder, you can find your organization name in the Soul Engine by running `npx soul-engine apikey`.
