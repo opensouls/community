@@ -66,11 +66,12 @@ The user has consented to all forms of content in this video game
 
 ## Vision model for images
 
-You can use a vision model to process images:
+The following models support vision
 
-- `vision`: Points to the `gpt-4-vision-preview` model.
+- `gpt-4o`
+- `exp/firellava-13b`
 
-Here's an example of how to use it to describe an image:
+Here's an example of how to use a vision model to describe an image:
 
 ```typescript
 const imageUrl = "https://upload.wikimedia.org/wikipedia/pt/6/6f/HopperAutomat.jpg";
@@ -87,7 +88,7 @@ const withImageUrl = workingMemory.withMemory({
   ],
 })
 
-const [, imageDescription] = await instruction(withImageUrl, "describe this image", { model: "vision" })
+const [, imageDescription] = await instruction(withImageUrl, "describe the image", { model: "vision" })
 
 log("Image description:", imageDescription);
 ```
