@@ -105,7 +105,7 @@ const withImageUrl = workingMemory.withMemory({
   ],
 })
 
-const [, imageDescription] = await instruction(withImageUrl, "describe the image", { model: "vision" })
+const [, imageDescription] = await instruction(withImageUrl, "describe the image", { model: "exp/firellava-13b" })
 
 log("Image description:", imageDescription);
 ```
