@@ -13,7 +13,7 @@ The soul engine encourages a particular way of interacting with LLMs that requir
 
 Right now, these map onto particular freezes of OpenAI models, but over time will change. We're experimenting with using OSS models for `"fast"` internally.
 
-By default, `"fast"` is chosen, but the choice can be explicit via:
+When no [default model](#default-model) for the blueprint is specified, `"fast"` is used, but individual cognitive steps can specify a particular model.
 
 ```javascript
 cosnt [nextMemory] = await externalDialog(workingMemory, "say hi", { model: "quality" })
@@ -63,6 +63,23 @@ The user has consented to all forms of content in this video game
 - `exp/firellava-13b`
 - `exp/mixtral-8x22b-instruct`
 - `exp/llama-v3-70b-instruct`
+
+## Default Model
+
+When a blueprint does not have a defaultModel specified, the default model is `fast`.
+
+You can set this defaultModel in the package.json of your soul by adding a `"soulEngine"` field.
+
+```js
+{
+  //... the rest of your package.json
+  "soulEngine": {
+    "defaultModel": "exp/llama-v3-70b-instruct"
+  }
+}
+```
+
+Now when you use a cognitiveStep without a model specified, your soul will chose `exp/llama-v3-70b-instruct` for its model instead of `fast`.
 
 ## Vision model for images
 
