@@ -136,7 +136,7 @@ You can list the available models for your organization using the `npx soul-engi
 You use a custom model by specifying your organization name followed by a `/` followed by the custom model name you gave in the creation phase. For instance, to use the fireworks/firellava-13b custom model created above, with the organization 'treetop' the usage in a `cognitiveStep` or [default model](#default-model) would look like:
 
 ```javascript
-cosnt [withDialog, dialog] = await externalDialog(
+const [withDialog, dialog] = await externalDialog(
   workingMemory,
   "say hi", 
   { model: "treetop/fireworks-vision" }
