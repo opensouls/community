@@ -1,0 +1,27 @@
+{
+  "name": "@opensouls/react",
+  "version": "0.1.0",
+  "description": "React library for web souls.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opensouls/community.git"
+  },
+  "keywords": [
+    "opensouls",
+    "soulengine",
+    "soul-engine",
+    "AI",
+    "framework"
+  ],
+  "author": "",
+  "license": "LGPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/opensouls/community/issues"
+  },
+  "homepage": "https://github.com/opensouls/community#readme"
+
+}

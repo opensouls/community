@@ -126,7 +126,7 @@ const soulToURI = (soul: Soul, soulProps: SoulProps) => {
     return `https://souls.chat/chats/${soulProps.organization}/${soulProps.blueprint}/${soul.soulId}`;
 }
 
-export const useSoulSimple = ({
+const useSoul = ({
     soulProps: soulProps,
     character: characterSettings,
     initEnv = {},
@@ -661,3 +661,5 @@ function ageString(fromDate: Date, toDate: Date): string {
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     return `${days} day${days > 1 ? 's' : ''}` || "0 days";
 }
+
+export default useSoul;
