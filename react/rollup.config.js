@@ -11,11 +11,13 @@ export default [
     output: [
       {
         file: packageJson.main,
+        inlineDynamicImports: true,
         format: "cjs",
         sourcemap: true,
       },
       {
         file: packageJson.module,
+        inlineDynamicImports: true,
         format: "esm",
         sourcemap: true,
       },
@@ -31,6 +33,7 @@ export default [
     input: "dist/esm/types/index.d.ts",
     output: [{
       file: "dist/index.d.ts",
+      inlineDynamicImports: true,
       format: "esm",
     }],
     plugins: [dts()],
