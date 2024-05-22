@@ -39,7 +39,9 @@
     "typescript": "^5.4.5",
     "usehooks-ts": "^3.1.0",
     "uuid": "^9.0.1",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "net": "^1.0.2",
+    "tls": "^0.0.1"
   },
   "peerDependencies": {
     "react": "^18",
@@ -51,5 +53,7 @@
     "dist"
   ],
   "type": "module",
-  "types": "dist/index.d.ts"
+  "types": "dist/index.d.ts",
+  "dependencies": {
+  }
 }

@@ -417,23 +417,15 @@ export type SoulProperties = {
 
 }
 
+export type SoulHookProps = SoulOpts;
 
-const useSoul = ({
-    soulProps: soulProps,
-    character: characterSettings,
-    initEnv = {},
-    initHooks = {},
-    settings = DEFAULT_SOUL_SETTINGS,
-}: SoulSimpleProps) => {
+const useSoul = (soulProps: SoulHookProps) => {
 
-    
+
     const { messages, room, addEvent, setEvent, getEvent } = useSoulRoom();
 
     const [state, setState] = useState<SoulState>('waiting');
-    const [hooks, setHooks] = useState(initHooks);
-    const [env, setEnv] = useState(initEnv);
     const [metadata, setMetadata] = useState<SoulEvent['_metadata']>({});
-    const [character, setCharacter] = useState<CharacterProps>(characterSettings);
     const [soul, setSoul] = useState<Soul>();
     const [URI, setURI] = useState<string>('');
     const [lastMessage, setLocalRoomState] = useState<MessageProps>();
@@ -457,7 +449,7 @@ const useSoul = ({
             const newURI = soulToURI(initSoul, soulProps);
             setURI(newURI);
 
-            console.log(character.name, `(${soulProps.blueprint}) [soulID:${initSoul?.soulId}] [soul-engine:${newURI}]`, 'CONNECTED');
+            console.log(`(${soulProps.blueprint}) [soulID:${initSoul?.soulId}] [soul-engine:${newURI}]`, 'CONNECTED');
 
         }).catch((error: any) => {
             console.error("Error connecting to soul", initSoul, soulProps, error);
@@ -469,6 +461,10 @@ const useSoul = ({
         };
 
     }, [soulProps])
+
+    return {
+        soul,
+    }
 
 };
 
