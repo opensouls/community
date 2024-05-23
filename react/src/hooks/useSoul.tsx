@@ -2,24 +2,23 @@ import React, { useState, useEffect, useCallback, createContext, forwardRef } fr
 import { Soul, ActionEvent, SoulOpts } from "@opensouls/soul"
 import { v4 as uuidv4 } from 'uuid';
 import { SoulEvent } from "@opensouls/engine"
-import { ArrowUpIcon, CheckCircledIcon, CodeIcon, Cross1Icon, DiscordLogoIcon, EyeClosedIcon, EyeOpenIcon, FaceIcon, GitHubLogoIcon, OpenInNewWindowIcon, Pencil1Icon, QuestionMarkCircledIcon, ReaderIcon } from "@radix-ui/react-icons";
-import { useHover } from "@uidotdev/usehooks";
-import { useLocalStorage } from "usehooks-ts";
+
 import { create } from 'zustand'
-import { twMerge } from "tailwind-merge";
+
 
 
 const ACTIONS = ["says", "thinks", "does", "ambience", "feels", "metadata"] as const;
 export type ActionType = typeof ACTIONS[number];
 export type SoulState = 'waiting' | 'processing' | 'thinking' | 'speaking';
 
-export type SoulEditorProps = {
-    devMode: boolean, //whether or not to append a prod or dev-id to the soulId?
-}
 
 //TODO use getConnectedWebsocket to put multiple souls on the same connection
 
 export type SoulProps = SoulOpts;
+export type SoulHook = {
+    soul: Soul,
+    soulProps: SoulProps,
+};
 
 export type CharacterProps = {
     name: string,
@@ -118,12 +117,6 @@ export const DEFAULT_SOUL_SETTINGS: SoulSettings = {
 export const DEFAULT_PERCEPTION: PerceptionOptions = {
     sendSilently: false,
 }
-
-const soulToURI = (soul: Soul, soulProps: SoulProps) => {
-    //https://souls.chat/chats/neilsonnn/thinking-meme/4ee86bd0-d0eb-4f2f-808e-7ed9bf492925
-    return `https://souls.chat/chats/${soulProps.organization}/${soulProps.blueprint}/${soul.soulId}`;
-}
-
 
 
 // const useSoulWithMessages = ({
@@ -421,50 +414,25 @@ export type SoulHookProps = SoulOpts;
 
 const useSoul = (soulProps: SoulHookProps) => {
 
-
-    const { messages, room, addEvent, setEvent, getEvent } = useSoulRoom();
-
-    const [state, setState] = useState<SoulState>('waiting');
-    const [metadata, setMetadata] = useState<SoulEvent['_metadata']>({});
     const [soul, setSoul] = useState<Soul>();
-    const [URI, setURI] = useState<string>('');
-    const [lastMessage, setLocalRoomState] = useState<MessageProps>();
-    const [localMessages, setLocalMessages] = useState<MessageProps[]>([]);
-
-    function addLocalEvent(newMessage: MessageProps) {
-        const event = ingestEvent(newMessage);
-        setLocalMessages((last) => [...last, event]);
-    }
 
     useEffect(() => {
 
-        const initSoul = new Soul({
-            ...soulProps,
-        });
-
+        const initSoul = new Soul(soulProps);
         initSoul.connect().then(() => {
-
             setSoul(initSoul);
-
-            const newURI = soulToURI(initSoul, soulProps);
-            setURI(newURI);
-
-            console.log(`(${soulProps.blueprint}) [soulID:${initSoul?.soulId}] [soul-engine:${newURI}]`, 'CONNECTED');
-
+            console.log(`${soulProps.blueprint} [soulID:${initSoul?.soulId}]`, 'CONNECTED');
         }).catch((error: any) => {
             console.error("Error connecting to soul", initSoul, soulProps, error);
         });
 
         return () => {
-            // console.log(soulSettings.blueprint, soulSettings.soulId, 'DISCONNECTED');
             initSoul.disconnect();
         };
 
     }, [soulProps])
 
-    return {
-        soul,
-    }
+    return { soul, soulProps } as SoulHook
 
 };
 
