@@ -105,7 +105,7 @@ export default function SoulEditor({ children, souls = [], editor }: { children:
 
                     <div className={`flex flex-col gap-1 items-end pt-4 ${(isHovered) ? 'block' : 'hidden'}`}>
                         {souls.map((soul) => (
-                            soul?.soul?.soulId ? <SoulMapped key={soul?.soul?.soulId} soul={soul} /> : null
+                            soul?.soul?.soulId ? <SoulStatus key={soul?.soul?.soulId} soul={soul} /> : null
                         ))}
                     </div>
 
@@ -177,7 +177,7 @@ const soulToURI = (soul: Soul, soulProps: SoulProps) => {
     return `https://souls.chat/chats/${soulProps.organization}/${soulProps.blueprint}/${soul.soulId}`;
 }
 
-function SoulMapped({ soul }: { soul: SoulHook }) {
+function SoulStatus({ soul }: { soul: SoulHook }) {
 
     const [hoverRef, isHovered] = useHover();
     const [age, setAge] = useState<string>('');
@@ -197,7 +197,7 @@ function SoulMapped({ soul }: { soul: SoulHook }) {
 
     return (
         <BG
-            className={`w-full flex flex-row gap-4 justify-between px-3 py-1 ${isHovered ? 'opacity-100' : 'opacity-75'}`}
+            className={`w-full flex flex-row font-mono font-light gap-4 justify-between px-3 py-1 ${isHovered ? 'opacity-100' : 'opacity-75'}`}
             ref={hoverRef}
         >
 
