@@ -16,7 +16,7 @@ Right now, these map onto particular freezes of OpenAI models, but over time wil
 When no [default model](#default-model) for the blueprint is specified, `"fast"` is used, but individual cognitive steps can specify a particular model.
 
 ```javascript
-cosnt [nextMemory] = await externalDialog(workingMemory, "say hi", { model: "quality" })
+const [nextMemory] = await externalDialog(workingMemory, "say hi", { model: "quality" })
 ```
 
 Generally we recommend using `"fast"` for many internal thought processes and `"quality"` for the generation that a user or player interacts with.
