@@ -67,7 +67,7 @@ const vectorIntro: MentalProcess = async ({ workingMemory }) => {
 ```
 
 Additionally, `useBlueprintStore` has two more useful methods:
-- `delete: (key: string) => Promise<void>`
+- `remove: (key: string) => Promise<void>`
 - `createEmbedding: (content: string) => Promise<Embedding>`
 
 And metadata about an object can be accessed via `await fetch("key", { includeMetadata: true })`.

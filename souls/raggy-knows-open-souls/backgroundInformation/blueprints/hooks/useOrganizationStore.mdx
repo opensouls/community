@@ -72,7 +72,7 @@ const processInBlueprintTwo: MentalProcess = async ({ workingMemory }) => {
 ```
 
 Additionally, `useOrganizationStore` has two more useful methods:
-- `delete: (key: string) => Promise<void>`
+- `remove: (key: string) => Promise<void>`
 - `createEmbedding: (content: string) => Promise<Embedding>`
 
 And metadata about an object can be accessed via `await fetch("key", { includeMetadata: true })`.
