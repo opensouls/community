@@ -1,5 +1,5 @@
 {
-  "name": "schedule-tester",
+  "name": "schedule-interact",
   "version": "0.0.1",
   "type": "module",
   "private": true,
@@ -16,6 +16,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@opensouls/engine": "^0.1.4"
+    "@opensouls/engine": "^0.1.33"
   }
 }
