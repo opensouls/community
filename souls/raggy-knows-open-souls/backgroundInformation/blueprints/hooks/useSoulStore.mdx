@@ -4,7 +4,7 @@ The `useSoulStore` hook provides a convenient persistent memory store with embed
 
 Here is a basic usage of the store.
 
-```typescript filename="exampleProcess.ts" {1,5-9}
+```typescript filename="exampleProcess.ts"
 import { useSoulStore } from "@opensouls/engine"
 
 const exampleProcess: MentalProcess = async ({ workingMemory }) => {
@@ -25,7 +25,7 @@ export default exampleProcess
 
 Whenever a piece of content is added to the store, it is lazily embedded afterwards. Here's an example demonstrating trivial vector search post embedding:
 
-```typescript filename="vectorIntro.ts" {4-26}
+```typescript filename="vectorIntro.ts"
 import { externalDialog } from "./lib/cognitiveSteps.js"
 import { useActions, useProcessManager, useSoulStore } from "@opensouls/engine"
 

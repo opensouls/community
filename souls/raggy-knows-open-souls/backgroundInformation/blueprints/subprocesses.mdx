@@ -1,6 +1,8 @@
 # Subprocesses
 
-A set of `MentalProcess` functions can be launched to run continuously in the background following each run of the main-thread `MentalProcess` by placing them in the `subprocesses` directory of the soul. The behavior of `subprocesses` is the following:
+Subprocesses are a set of `MentalProcess` functions launched in the background following each run of the main-thread `MentalProcess` they are interrupted by any incoming perceptions.
+You create a subprocess by placing it in the `subprocesses` directory of the soul. The behavior of `subprocesses` is the following:
+
 - They operate on the `WorkingMemory`, identical to the main-threaded process
 - Each subprocess runs in order of the `subprocesses` directory (alphabetical).
 - Any new incoming `Perception` terminates execution of the entire `subprocesses` execution.
