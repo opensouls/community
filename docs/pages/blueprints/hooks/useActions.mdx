@@ -65,10 +65,10 @@ dispatch({
 
 ## scheduleEvent
 
-The `scheduleEvent` action is a powerful action that schedules a cognitive event, comprising a perception and a mental process to act on that perception, to occur at some time in the future.
+The `scheduleEvent` action is a powerful action that schedules a cognitive event, comprising a perception and a mental process to act on that perception, to occur at some time in the future. It returns an id of the event which can be used to cancel the event in the future.
 
 ```javascript copy
-scheduleEvent({
+const eventId = await scheduleEvent({
   in: 10, // seconds
   // the internal perception that will be queued
   perception: {
@@ -84,7 +84,7 @@ scheduleEvent({
 Alternatively, an event can be scheduled to run on a particular Date.
 
 ```javascript copy
-scheduleEvent({
+const eventId = await scheduleEvent({
   // run the event on the 21st of next month
   when: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 21),
   // the internal perception that will be queued
