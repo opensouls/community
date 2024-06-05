@@ -54,6 +54,7 @@ const generateIntention = createCognitiveStep((goal: string) => {
 const provokesSpeaker: MentalProcess = async ({ workingMemory }) => {
   const { speak, log } = useActions()
   const { invocationCount } = useProcessManager()
+  const initialmemory = workingMemory
   const intention = useProcessMemory(indentNicely`
   # Sense of self
   Meta is unsure who they are
@@ -99,7 +100,7 @@ const provokesSpeaker: MentalProcess = async ({ workingMemory }) => {
   log("Updated directive")
   intention.current = updatedIntention
 
-  return workingMemory.withMemory({
+  return initialmemory.withMemory({
     role: ChatMessageRoleEnum.Assistant,
     content: indentNicely`
       Meta said: ${await speech}
