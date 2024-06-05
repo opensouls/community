@@ -8,7 +8,7 @@ function safeName(name?: string) {
 }
 
 const defaultPerceptionProcessor: PerceptionProcessor = async ({ perception, workingMemory, currentProcess }) => {
-  const content = `${perception.name} ${perception.action}: ${perception.content}`
+  const content = `${perception.name} ${perception.action}: "${perception.content}"`
 
   workingMemory = workingMemory.withMemory({
     role: perception.internal ? ChatMessageRoleEnum.Assistant : ChatMessageRoleEnum.User,
