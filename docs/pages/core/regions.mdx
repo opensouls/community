@@ -1,0 +1,58 @@
+# WorkingMemory Regions
+
+WorkingMemory has the concept of memory regions which are a light weight way to update and order working memory for programatic sections (think system memory, or conversational summary, etc).
+
+A simple example is keeping the system region at the front of `WorkingMemory` updated:
+
+```ts
+let workingMemory = new WorkingMemory({ soulName: 'Alice' })
+
+workingMemory = workingMemory.withMemory({
+  role: ChatMessageRoleEnum.User,
+  content: "Hello!",
+})
+
+let withSystem = workingMemory.withRegion("system", {
+  role: ChatMessageRoleEnum.System,
+  content: "You are a helpful assistant",
+})
+// withSystem will now have 2 working memories, with "system" at the beginning of the memories list (since regions default to the beginning)
+
+withSystem = workingMemory.withRegion("system", {
+  role: ChatMessageRoleEnum.System,
+  content: "You are a an evil henchman",
+})
+// now the helpful assistant message has been replaced by the evil henchman memory
+```
+
+
+## Ordering
+
+Keep your various regions ordered using the `orderRegions` function. Any memories not marked as part of a region are part of the 'default' region.
+
+```ts
+let workingMemory = new WorkingMemory({ soulName: 'Alice' })
+
+workingMemory = workingMemory.withMemory({
+  role: ChatMessageRoleEnum.User,
+  content: "Hello!",
+})
+
+const withSystem = workingMemory.withRegion("system", {
+  role: ChatMessageRoleEnum.System,
+  content: "You are a helpful assistant",
+})
+// withSystem will now have 2 working memories, with "system" at the beginning of the memories list (since regions default to the beginning)
+
+const withSummary = workingMemory.withRegion("summary", {
+  role: ChatMessageRoleEnum.Assistant,
+  content: "This is a summary",
+})
+
+
+const orderedMemory = withSummary.orderRegions("system", "summary", "default")
+// the orderedMemory WorkingMemory now has the system region first, followed by summary, followed by the Hello!
+
+const reverseOrderd = withSummary.orderRegios("default", "summary", "system")
+// now reverseOrderd starts with the hello, followed by summary and the last memory is the system message.
+```

@@ -17,6 +17,9 @@
 * `concat(mem: WorkingMemory | Memory[])` - merges two instances of `WorkingMemory` into one, returning a new instance.
 * `prepend(otherWorkingMemory)` - Prepends the memories of another `WorkingMemory` (or an array of [Memory](working-memory#the-memory-interface) objects) to the memories of the current `WorkingMemory` instance, returning a new instance.
 * `withMonologue(content)` - Adds a [memory](working-memory#the-memory-interface) with the role of Assistant and the provided content to the `WorkingMemory`, returning a new instance.
+* `withRegion(regionName, ...memories)` - Adds or replaces a set of memories marked as being a part of a [region](regions) in the `WorkingMemory`
+* `orderRegions(...regionNames)` - Reorders the [regions](regions) of the `WorkingMemory` (the 'default' region will match all memories without a region).
+* `withoutRegions(...regionNames)` - Returns a `WorkingMemory` with the memories from the regionNames listed removed. (see [region](regions))
 
 ## Constructor and Initialization Options
 
