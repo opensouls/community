@@ -60,7 +60,7 @@ const compress: MentalProcess = async ({ workingMemory }) => {
       content: compressInstructions
     })
 
-    const [,newHistory] = await compressFn(compressStep, undefined, { model: "quality" })
+    const [,newHistory] = await compressFn(compressStep, undefined, { model: "gpt-4-0125-preview" })
     summary.current = newHistory
 
     memory = workingMemory.clone([

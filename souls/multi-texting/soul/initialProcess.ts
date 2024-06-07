@@ -9,7 +9,7 @@ const multiTexts: MentalProcess = async ({ workingMemory }) => {
   const { pendingPerceptions } = usePerceptions();
 
   let thought
-  [workingMemory, thought] = await externalDialog(workingMemory, "Texty sends a sentence fragment, part of a larger or greater thought to come", { model: "quality" })
+  [workingMemory, thought] = await externalDialog(workingMemory, "Texty sends a sentence fragment, part of a larger or greater thought to come", { model: "gpt-4-0125-preview" })
 
   if (pendingPerceptions.current.length > 0) {
     return workingMemory
@@ -22,7 +22,7 @@ const multiTexts: MentalProcess = async ({ workingMemory }) => {
       description: `How many additional sentence fragments will Texty want to text next. Make sure to mix up the number of fragments so it feels natural. Last batch of texts was ${fragmentNo.current} additional fragments long. Most responses should be 0. Sometimes 1 or maybe 2-5 fragments long.`,
       choices: ['5', '4', '3', '2', '1', '0'],
     },
-    { model: "quality" }
+    { model: "gpt-4-0125-preview" }
   )
 
   let count = parseInt(countString)
@@ -41,7 +41,7 @@ const multiTexts: MentalProcess = async ({ workingMemory }) => {
         description: "How long should the next fragment be?",
         choices: ['very long', 'long', 'medium', 'short'],
       },
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     )
     count -= 1
     const preStep = workingMemory;
@@ -53,7 +53,7 @@ const multiTexts: MentalProcess = async ({ workingMemory }) => {
         - Make sure the fragment is ${lengthOfText} in length
         - Their last text was: "${workingMemory.slice(-1).memories[0].content}"
       `,
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     );
     if (pendingPerceptions.current.length > 0) {
       return preStep
@@ -65,7 +65,7 @@ const multiTexts: MentalProcess = async ({ workingMemory }) => {
       description: "Should Texty send another thought to finish their last text fragment?",
       choices: ["yes", "no"],
     }, 
-    { model: "quality" }
+    { model: "gpt-4-0125-preview" }
   )
 
   if (shouldText === "yes") {
@@ -76,7 +76,7 @@ const multiTexts: MentalProcess = async ({ workingMemory }) => {
       indentNicely`
         - Texty needs to finish their last sentence fragment in this message
       `,
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     );
     if (pendingPerceptions.current.length > 0) {
       return preStep

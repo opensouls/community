@@ -12,7 +12,7 @@ const introduction: MentalProcess = async ({ workingMemory }) => {
     const [withDialog, stream] = await externalDialog(
       workingMemory, 
       "Welcome the user and ask them what they need help naming", 
-      { stream: true, model: "quality" }
+      { stream: true, model: "gpt-4-0125-preview" }
     );
     speak(stream);
     return withDialog
@@ -20,7 +20,7 @@ const introduction: MentalProcess = async ({ workingMemory }) => {
     const [memoryAfterQuery, moveOn] = await internalMonologue(
       workingMemory, 
       "The user has said the object or thing that they need help naming.", 
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     )
     log("Move on?", moveOn)
     if (moveOn) {
@@ -28,7 +28,7 @@ const introduction: MentalProcess = async ({ workingMemory }) => {
       const [withDialog, stream] = await externalDialog(
         memoryAfterQuery, 
         "Ask the user an insightful question about what they have named.", 
-        { model: "quality" }
+        { model: "gpt-4-0125-preview" }
       )
       speak(stream)
       return withDialog
@@ -43,7 +43,7 @@ const introduction: MentalProcess = async ({ workingMemory }) => {
     const [finalMemory, stream] = await externalDialog(
       memoryAfterMonologue, 
       "Say to the user your only ability is to help them name a thing.", 
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     )
     speak(stream)
     return finalMemory

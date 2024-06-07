@@ -4,15 +4,21 @@ import { Callout } from 'nextra/components'
 
 The engine supports many different GPT-based models for working memory transformations (`CognitiveStep`s).
 
+<<<<<<< Updated upstream
 ## Recommended models
 
 The soul engine encourages a particular way of interacting with LLMs that requires some baseline level of intelligence that not all models have. These are the ones we like working with the most:
 
 - `fast`: Points to `gpt-3.5-turbo-0125`.
 - `quality`: Points to `gpt-4-0125-preview`.
+=======
+- `"gpt-3.5-turbo-0125"`
+- `"gpt-4-0125-preview"`
+>>>>>>> Stashed changes
 
-Right now, these map onto particular freezes of OpenAI models, but over time will change. We're experimenting with using OSS models for `"fast"` internally.
+Right now, these map onto particular freezes of OpenAI models, but over time will change. We're experimenting with using OSS models for `"gpt-3.5-turbo-0125"` internally.
 
+<<<<<<< Updated upstream
 When no [default model](#default-model) for the blueprint is specified, `"fast"` is used, but individual cognitive steps can specify a particular model.
 
 ```javascript
@@ -144,3 +150,12 @@ const [withDialog, dialog] = await externalDialog(
 ```
 
 As a reminder, you can find your organization name in the Soul Engine by running `npx soul-engine apikey`.
+=======
+By default, `"gpt-3.5-turbo-0125"` is chosen, but the choice can be explicit via:
+
+```javascript
+cosnt [nextMemory] = await externalDialog(workingMemory, "say hi", { model: "gpt-4-0125-preview" })
+```
+
+Generally we recommend using `"gpt-3.5-turbo-0125"` for many internal thought processes and `"gpt-4-0125-preview"` for the generation that a user or player interacts with.
+>>>>>>> Stashed changes

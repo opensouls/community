@@ -55,11 +55,11 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
   )
 
   // reflect on the message from the user and what it says about them
-  const [withLearnings, learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last message?", { model: "quality" })
+  const [withLearnings, learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last message?", { model: "gpt-4-0125-preview" })
   log("Learnings:", learnings)
 
   // use that reflection to help update the user model
-  const [, notes] = await userNotes(withLearnings, undefined, { model: "quality"})
+  const [, notes] = await userNotes(withLearnings, undefined, { model: "gpt-4-0125-preview"})
   log("Notes:", notes)
   userModel.current = notes
 
@@ -70,7 +70,7 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
       instructions: "Reflect on the recent learnings about the user and my behavior", 
       verb: "thinks",
     },
-    { model: "quality" }
+    { model: "gpt-4-0125-preview" }
   );
   log("Thought:", thought)
 

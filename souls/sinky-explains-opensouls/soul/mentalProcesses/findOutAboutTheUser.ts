@@ -12,7 +12,7 @@ const findsOutAboutTheUser: MentalProcess = async ({ workingMemory: memory }) =>
   [memory, stream] = await externalDialog(
     memory,
     "Sinky tries to learn as much as they can about the user (what's their name, their programming experience, etc).",
-    { stream: true, model: "quality" }
+    { stream: true, model: "gpt-4-0125-preview" }
   );
   speak(stream);
 

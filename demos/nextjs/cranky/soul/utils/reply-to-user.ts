@@ -11,7 +11,7 @@ export async function replyToUser(workingMemory: WorkingMemory, prompt: string, 
 
   let response;
   [memory, response] = await externalDialog(memory, prompt, {
-    model: "quality",
+    model: "gpt-4-0125-preview",
   });
 
   const formatWithAscii = mood !== "less cranky";

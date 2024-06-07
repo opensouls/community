@@ -37,7 +37,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
 
   log(`Processing image perception from ${userName}`);
 
-  const visionStep = workingMemory.withMemory({
+  const gpt-4-vision-previewStep = workingMemory.withMemory({
     role: ChatMessageRoleEnum.User,
     content: [
       {
@@ -49,13 +49,13 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
     ],
   })
 
-  const [, visionResp] = await instruction(visionStep, "describe this image", { model: "vision" })
+  const [, gpt-4-vision-previewResp] = await instruction(gpt-4-vision-previewStep, "describe this image", { model: "gpt-4-vision-preview" })
 
-  log("Image description:", visionResp);
+  log("Image description:", gpt-4-vision-previewResp);
 
   workingMemory = workingMemory.withMemory({
     role: ChatMessageRoleEnum.Assistant,
-    content: "FoodCritic saw this: " + visionResp,
+    content: "FoodCritic saw this: " + gpt-4-vision-previewResp,
   });
 
   [workingMemory] = await internalMonologue(workingMemory,
@@ -67,7 +67,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
     "FoodCritic compliments the food he saw in a very exacerbated way.",
     {
       stream: true,
-      model: "quality",
+      model: "gpt-4-0125-preview",
     }
   );
 

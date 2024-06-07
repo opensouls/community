@@ -31,7 +31,7 @@ const makesMemories: MentalProcess = async ({ workingMemory }) => {
         instructions: "What is a poignant event in this conversation that I'd like to remember?",
         verb: "noted"
       },
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     )
 
     log("Poignant memory:", poignantMemory)

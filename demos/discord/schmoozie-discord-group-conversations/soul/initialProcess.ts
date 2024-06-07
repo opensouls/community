@@ -41,7 +41,7 @@ const initialProcess: MentalProcess = async ({ workingMemory: memory }) => {
   log(`Answering message from ${userName}`);
   [memory, stream] = await externalDialog(memory, `Schmoozie answers ${userName}'s message`, {
     stream: true,
-    model: "quality",
+    model: "gpt-4-0125-preview",
   });
 
   dispatch({
@@ -85,7 +85,7 @@ async function isUserTalkingToSchmoozie(
       choices: ["schmoozie, for sure", "schmoozie, possibly", "someone else", "not sure"],
     },
     {
-      model: "quality",
+      model: "gpt-4-0125-preview",
     }
   );
 

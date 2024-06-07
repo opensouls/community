@@ -48,7 +48,7 @@ const brainstorms: MentalProcess = async ({ workingMemory}) => {
         Get offended if the user isn't liking your questions or names
         DO NOT EVER SUGGEST A NAME
       `,
-      { stream: true, model: "quality" }
+      { stream: true, model: "gpt-4-0125-preview" }
     )
 
     speak(stream);
@@ -79,7 +79,7 @@ const brainstorms: MentalProcess = async ({ workingMemory}) => {
         DO NOT EVER SUGGEST A NAME
         DO NOT BE A SYCHOPHANT
       `,
-      { stream: true, model: "quality" }
+      { stream: true, model: "gpt-4-0125-preview" }
     )
     speak(stream);
   

@@ -58,11 +58,11 @@ const modelsTheThing: MentalProcess = async ({ workingMemory }) => {
     let learnings, notes, name, rating;
     [memory, learnings] = await internalMonologue(memoryAfterQuery, { instructions: "What have I learned specifically about the user from the last few messages?", verb: "noted" })
     log("Learnings:", learnings);
-    [memory, notes] = await thingNotes(memory, undefined, { model: "quality" })
+    [memory, notes] = await thingNotes(memory, undefined, { model: "gpt-4-0125-preview" })
     thingModel.current = notes;
 
     // possibly generate a name
-    [memory, name] = await internalMonologue(memory, {instructions: "Generate a potentially fitting name and explain why", verb: "brainstorms"}, { model: "quality" })
+    [memory, name] = await internalMonologue(memory, {instructions: "Generate a potentially fitting name and explain why", verb: "brainstorms"}, { model: "gpt-4-0125-preview" })
     log("Considering the name", name);
     [memory, rating] = await internalMonologue(
       memory, 
@@ -80,7 +80,7 @@ const modelsTheThing: MentalProcess = async ({ workingMemory }) => {
         ${memory.soulName} just thought of the name ${name}
         Offer this name as a suggestion
         Explain why the suggestion is interesting
-      `, { stream: true, model: "quality" })
+      `, { stream: true, model: "gpt-4-0125-preview" })
       speak(stream)
       return withDialog
     } else {
@@ -93,7 +93,7 @@ const modelsTheThing: MentalProcess = async ({ workingMemory }) => {
           `, 
           verb: "mused"
         },
-        { model: "quality" }
+        { model: "gpt-4-0125-preview" }
       )
       return memory.withMemory({
         role: ChatMessageRoleEnum.Assistant,

@@ -40,7 +40,7 @@ const playPoker: MentalProcess = async ({ workingMemory: memory }) => {
   [memory, stream] = await externalDialog(
     memory,
     `- Do this: ${hypothesis}`,
-    { stream: true, model: "quality" }
+    { stream: true, model: "gpt-4-0125-preview" }
   );
   speak(stream);
 

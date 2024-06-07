@@ -8,7 +8,7 @@ const pitchesTheSoulEngine: MentalProcess = async ({ workingMemory: memory }) =>
   [memory, stream] = await externalDialog(
     memory,
     "Respond directly to any questions the user might have asked, or describe something interesting about the SOUL ENGINE.",
-    { stream: true, model: "quality" }
+    { stream: true, model: "gpt-4-0125-preview" }
   );
   speak(stream);
 

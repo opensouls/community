@@ -18,7 +18,7 @@ const introducesThemself: MentalProcess = async ({ workingMemory }) => {
     })
   }
   
-  const [withDialog, stream] = await externalDialog(workingMemory, "Raggy introduces themself, and asks the user if they have heard of the soul engine before.", { stream: true, model: "quality" });
+  const [withDialog, stream] = await externalDialog(workingMemory, "Raggy introduces themself, and asks the user if they have heard of the soul engine before.", { stream: true, model: "gpt-4-0125-preview" });
   speak(stream);
 
   setNextProcess(pitchesTheSoulEngine)

@@ -95,7 +95,7 @@ const useBadFaith: MentalProcess = async ({ workingMemory }) => {
       - Upset because "${originalMeanComment.current}" was said to them.
       - Thinks short thought, only a sentence or so.
       `,
-      { stream: true, model: "quality", });
+      { stream: true, model: "gpt-4-0125-preview", });
 
     dispatch({
       name: workingMemory.soulName, 

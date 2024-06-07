@@ -10,7 +10,7 @@ const playsPokerWithUser: MentalProcess = async ({ workingMemory: memory }) => {
 
   [memory, stream] = await externalDialog(memory, "Greets or continues a normal conversation with the user.", {
     stream: true,
-    model: "quality",
+    model: "gpt-4-0125-preview",
   });
   speak(stream);
 
