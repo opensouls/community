@@ -56,3 +56,24 @@ const orderedMemory = withSummary.orderRegions("system", "summary", "default")
 const reverseOrderd = withSummary.orderRegios("default", "summary", "system")
 // now reverseOrderd starts with the hello, followed by summary and the last memory is the system message.
 ```
+
+## Removing
+
+You can remove entire regions of the memory using the `removeRegions` function.
+
+```ts
+let workingMemory = new WorkingMemory({ soulName: 'Alice' })
+
+workingMemory = workingMemory.withMemory({
+  role: ChatMessageRoleEnum.User,
+  content: "Hello!",
+})
+
+const withSystem = workingMemory.withRegion("system", {
+  role: ChatMessageRoleEnum.System,
+  content: "You are a helpful assistant",
+})
+
+const withoutSystem = workingMemory.withoutRegions("system")
+// withoutSystem and workingMemory are now equivalent.
+```

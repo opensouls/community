@@ -10,6 +10,7 @@
 
 * `withMemory(memory)` - adds a new [memory](working-memory#the-memory-interface) to the `WorkingMemory` and returns a new instance
 * `slice(begin, end)` - returns a new `WorkingMemory` with memories sliced between the begin and end indices.
+* `splice(start, deleteCount, ...replacementItems)` - returns a new `WorkingMemory` with memories spliced and (optionally, replaced).
 * `map(callback)` - applies a callback function to each [memory](working-memory#the-memory-interface), returning a new `WorkingMemory` with the results.
 * `asyncMap(callback)` - Applies a provided asynchronous function to each [memory](working-memory#the-memory-interface), producing a new `WorkingMemory` instance with the results.
 * `filter(callback)` - filters memories based on a callback function, returning a new `WorkingMemory` with the filtered results.
