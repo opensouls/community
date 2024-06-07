@@ -50,8 +50,8 @@ Any breach of the terms of this agreement shall be a cause for termination, prov
 In the event of termination and without limitation of any remedies under law or equity, you must delete the Font Software and all copies thereof. Proof of this must be provided upon request of the Licensor.  
 We reserve the right to claim damages for the violation of the conditions. 
 
-09. Final Progpt-4-vision-previews
-If individual progpt-4-vision-previews of this agreement are or become invalid, the validity of the remaining progpt-4-vision-previews shall remain unaffected. Invalid progpt-4-vision-previews shall be replaced by mutual agreement by such progpt-4-vision-previews that are suitable to achieve the desired economic purpose, taking into account the interests of both parties. The same shall apply mutatis mutandis to the filling of any gaps which may arise in this agreement.
+09. Final Provisions
+If individual provisions of this agreement are or become invalid, the validity of the remaining provisions shall remain unaffected. Invalid provisions shall be replaced by mutual agreement by such provisions that are suitable to achieve the desired economic purpose, taking into account the interests of both parties. The same shall apply mutatis mutandis to the filling of any gaps which may arise in this agreement.
 This contract is subject to laws of the Republic of India. Place of performance and exclusive place of jurisdiction for all disputes between the parties arising out of or in connection with this contract is, as far as legally permissible, Ahmedabad, India.
 - 
 Last Updated on 22 March 2021

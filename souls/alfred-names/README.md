@@ -10,7 +10,7 @@ The idea behind this soul is that naming a thing goes back and forth between:
 
 Here, name suggestion is pushed off into a subprocess that does extra work and thinking behind the scenes
 
-The `modelsTheThing` subprocess learns a model of what the user wants in the name and uses that model to help generate the name. When it generates names of sufficient gpt-4-0125-preview they're said, otherwise the process of choosing a bad name guides the cognition with an internal thought
+The `modelsTheThing` subprocess learns a model of what the user wants in the name and uses that model to help generate the name. When it generates names of sufficient quality they're said, otherwise the process of choosing a bad name guides the cognition with an internal thought
 
 ## In detail
 

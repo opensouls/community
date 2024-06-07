@@ -11,7 +11,7 @@ The soul-engine provides the library `@opensouls/core` to interact with `Working
 ```ts
 interface Memory<MetaDataType = Record<string, unknown>> {
   role: ChatMessageRoleEnum; // see below, OpenAI standards "role"
-  content: ChatMessageContent; // follows OpenAI standards for content which can be a string or an array of "content objects" (to support gpt-4-vision-preview).
+  content: ChatMessageContent; // follows OpenAI standards for content which can be a string or an array of "content objects" (to support vision).
   name?: string;
   metadata?: MetaDataType; // user-settable metadata
 
