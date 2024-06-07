@@ -22,7 +22,7 @@ const isBadFaith = async (memory: WorkingMemory) => {
   log('is bad faith?', lastComment);
   return await mentalQuery(memory,
     `"${lastComment}" was said about me AND was a really nasty, mean, upsetting, or unexpected thing.`,
-    { model: "quality" }
+    { model: "gpt-4-0125-preview" }
   );
 }
 

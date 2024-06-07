@@ -19,7 +19,7 @@ const assists: MentalProcess = async ({ workingMemory: memory }) => {
       - If the user is looking for a poker game to play, ask them what type of poker game they want to play and then start a game with them.
       - Let the user know that you currently only support playing against the house (yourself) as the only opponent.
     `,
-    { stream: true, model: "quality" }
+    { stream: true, model: "gpt-4-0125-preview" }
   );
   speak(stream);
 

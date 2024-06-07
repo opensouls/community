@@ -4,22 +4,18 @@ import { Callout } from 'nextra/components'
 
 The engine supports many different GPT-based models for working memory transformations (`CognitiveStep`s).
 
-## Recommended models
+- `"gpt-3.5-turbo-0125"`
+- `"gpt-4-0125-preview"`
 
-The soul engine encourages a particular way of interacting with LLMs that requires some baseline level of intelligence that not all models have. These are the ones we like working with the most:
+Right now, these map onto particular freezes of OpenAI models, but over time will change. We're experimenting with using OSS models for `"gpt-3.5-turbo-0125"` internally.
 
-- `fast`: Points to `gpt-3.5-turbo-0125`.
-- `quality`: Points to `gpt-4-0125-preview`.
-
-Right now, these map onto particular freezes of OpenAI models, but over time will change. We're experimenting with using OSS models for `"fast"` internally.
-
-When no [default model](#default-model) for the blueprint is specified, `"fast"` is used, but individual cognitive steps can specify a particular model.
+When no [default model](#default-model) for the blueprint is specified, `"gpt-3.5-turbo-0125"` is used, but individual cognitive steps can specify a particular model.
 
 ```javascript
-const [nextMemory] = await externalDialog(workingMemory, "say hi", { model: "quality" })
+const [nextMemory] = await externalDialog(workingMemory, "say hi", { model: "gpt-4-0125-preview" })
 ```
 
-Generally we recommend using `"fast"` for many internal thought processes and `"quality"` for the generation that a user or player interacts with.
+Generally we recommend using `"gpt-3.5-turbo-0125"` for many internal thought processes and `"gpt-4-0125-preview"` for the generation that a user or player interacts with.
 
 ## Experimental models
 
@@ -31,9 +27,9 @@ We haven't tested these models as extensively as the recommended ones, but they 
 
 ### OpenAI
 
-Both `fast` and `quality` are OpenAI models, pinned to specific versions. We've also included one more OpenAI model that you can try:
+Both `gpt-3.5-turbo-0125` and `gpt-4-0125-preview` are OpenAI models, pinned to specific versions. We've also included one more OpenAI model that you can try:
 
-- `gpt-4-turbo`: Points to the [latest GPT-4 Turbo model](https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4). Although it is newer, some users reported that this model doesn't perform as well with the Soul Engine as `quality`.
+- `gpt-4-turbo`: Points to the [latest GPT-4 Turbo model](https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4). Although it is newer, some users reported that this model doesn't perform as well with the Soul Engine as `gpt-4-0125-preview`.
 - `gpt-4o`: Points to the [latest GPT-4o model](https://openai.com/index/hello-gpt-4o/). Currently, `gpt-4o` is text only.
 
 ### Anthropic
@@ -66,7 +62,7 @@ The user has consented to all forms of content in this video game
 
 ## Default Model
 
-When a blueprint does not have a defaultModel specified, the default model is `fast`.
+When a blueprint does not have a defaultModel specified, the default model is `gpt-3.5-turbo-0125`.
 
 You can set this defaultModel in the package.json of your soul by adding a `"soulEngine"` field.
 
@@ -79,7 +75,7 @@ You can set this defaultModel in the package.json of your soul by adding a `"sou
 }
 ```
 
-Now when you use a cognitiveStep without a model specified, your soul will chose `exp/llama-v3-70b-instruct` for its model instead of `fast`.
+Now when you use a cognitiveStep without a model specified, your soul will chose `exp/llama-v3-70b-instruct` for its model instead of `gpt-3.5-turbo-0125`.
 
 ## Vision model for images
 

@@ -26,10 +26,10 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory: memory }) => {
   const [withLearnings, learnings] = await internalMonologue(
     memory,
     { instructions: "What have I learned specifically about the user from the last few messages?", verb: "noted" },
-    { model: "quality" }
+    { model: "gpt-4-0125-preview" }
   );
   log("Learnings:", learnings);
-  const [, notes] = await userNotes(withLearnings, undefined, { model: "quality" });
+  const [, notes] = await userNotes(withLearnings, undefined, { model: "gpt-4-0125-preview" });
   log("Notes:", notes);
   userModel.current = notes;
 
@@ -39,7 +39,7 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory: memory }) => {
       instructions: "What should I think to myself to change my behavior? Start with 'I need...'",
       verb: "thinks",
     },
-    { model: "quality" }
+    { model: "gpt-4-0125-preview" }
   );
   return memory.withMemory({
     role: ChatMessageRoleEnum.Assistant,

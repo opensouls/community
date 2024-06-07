@@ -22,7 +22,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
       description: "What is the intent of the user with their latest message?",
       choices: [code, info, question, chat],
     },
-    { model: "quality" }
+    { model: "gpt-4-0125-preview" }
   );
 
   log("Intent:", intent);
@@ -32,7 +32,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
       memory,
       "CodeMonkey has enough information to write an outline of the code.",
       {
-        model: "quality",
+        model: "gpt-4-0125-preview",
       }
     );
 
@@ -44,13 +44,13 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
   } else if (intent === question) {
     log("Thinking about the user's question");
     [memory] = await internalMonologue(memory, "Think step by step about the answer to the user's question.", {
-      model: "quality",
+      model: "gpt-4-0125-preview",
     });
   }
 
   [memory, stream] = await externalDialog(memory, "CodeMonkey answers the user's message.", {
     stream: true,
-    model: "quality",
+    model: "gpt-4-0125-preview",
   });
 
   speak(stream);
@@ -75,7 +75,7 @@ const withCodeOutline = async ({ memory }: { memory: WorkingMemory }) => {
         2.2. OR if he has all the information he needs, says something like 'let's start coding!'
     `,
     {
-      model: "quality",
+      model: "gpt-4-0125-preview",
       stream: true,
     }
   );
@@ -87,7 +87,7 @@ const withCodeOutline = async ({ memory }: { memory: WorkingMemory }) => {
     memory,
     "CodeMonkey needs more information before he can start coding.",
     {
-      model: "quality",
+      model: "gpt-4-0125-preview",
     }
   );
 
@@ -105,7 +105,7 @@ async function withMoreInformationRequest({ memory }: { memory: WorkingMemory })
 
   log("Asking for more information");
   [memory, stream] = await externalDialog(memory, "CodeMonkey asks the user for more information.", {
-    model: "quality",
+    model: "gpt-4-0125-preview",
     stream: true,
   });
   speak(stream);
@@ -123,7 +123,7 @@ async function withCodeWriting({ memory }: { memory: WorkingMemory }) {
     memory,
     "CodeMonkey writes the code based on all the available information, enclosing code in ```",
     {
-      model: "quality",
+      model: "gpt-4-0125-preview",
       stream: true,
     }
   );

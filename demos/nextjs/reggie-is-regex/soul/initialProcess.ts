@@ -35,7 +35,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ workingMemory }) => {
       Reggie reacts to the change in his body, searching for meaning.
       Reggie's thought should be 1-3 sentences long, erring on the short side.
     `,
-    { stream: true, model: "quality"  } // "exp/nous-hermes-2-mixtral-fp8"
+    { stream: true, model: "gpt-4-0125-preview"  } // "exp/nous-hermes-2-mixtral-fp8"
   );
   speak(stream);
 

@@ -82,7 +82,7 @@ export default initialProcess;
 //emotions, maybe explore more later
 // [, stream] = await emojiEmotion(memory,
 //   `How are you feeling at this exact moment? Your last emotion was ${emotion.current}`,
-//   { stream: false, model: "quality" });
+//   { stream: false, model: "gpt-4-0125-preview" });
 // emotion.current = stream;
 // dispatch({name: workingMemory.soulName, action: "feels", content: stream});
 

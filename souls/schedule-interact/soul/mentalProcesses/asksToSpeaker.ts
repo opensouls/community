@@ -15,7 +15,7 @@ const asksToSpeaker: MentalProcess = async ({
   log("don't poke? ", pokeQuery);
   if (pokeQuery) {
     set("ignoringPokes", true)
-    const [internalThought, persuasion] = await internalMonologue(workingMemory, "What can I say to make the user accept to be poked?", { model: "quality" });
+    const [internalThought, persuasion] = await internalMonologue(workingMemory, "What can I say to make the user accept to be poked?", { model: "gpt-4-0125-preview" });
     log("persuade:", persuasion);
 
     const [nextStep, stream] = await externalDialog(internalThought, "Samantha asks the user politely if she can poke them.", { stream: true });

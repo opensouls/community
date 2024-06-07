@@ -49,7 +49,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
     ],
   })
 
-  const [, visionResp] = await instruction(visionStep, "describe this image", { model: "vision" })
+  const [, visionResp] = await instruction(visionStep, "describe this image", { model: "gpt-4-vision-preview" })
 
   log("Image description:", visionResp);
 
@@ -67,7 +67,7 @@ const initialProcess: MentalProcess = async ({ workingMemory }) => {
     "FoodCritic compliments the food he saw in a very exacerbated way.",
     {
       stream: true,
-      model: "quality",
+      model: "gpt-4-0125-preview",
     }
   );
 

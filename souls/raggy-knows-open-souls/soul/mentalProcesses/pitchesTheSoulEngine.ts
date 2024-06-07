@@ -9,7 +9,7 @@ const pitchesTheSoulEngine: MentalProcess = async ({ workingMemory }) => {
 
   const standardMessage = "Respond directly to any questions the user might have asked, or describe something interesting about the soul engine."
 
-  const [, needsRag] = await mentalQuery(workingMemory, "The interlocutor has asked a question that Raggy can't answer with his current memories.", { model: "quality" })
+  const [, needsRag] = await mentalQuery(workingMemory, "The interlocutor has asked a question that Raggy can't answer with his current memories.", { model: "gpt-4-0125-preview" })
   if (needsRag) {
     log("raggy needs more info, so he'll update his memory")
     const [, stream, fillerText] = await externalDialog(workingMemory, "Raggy needs time to think. Say something like 'gimme a sec' or 'hmmm' that kind of thing. Do NOT respond directly to the conversation, just filler.", { stream: true });
@@ -22,14 +22,14 @@ const pitchesTheSoulEngine: MentalProcess = async ({ workingMemory }) => {
     })
 
     {
-      const [nextStep, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "quality" });
+      const [nextStep, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "gpt-4-0125-preview" });
       speak(stream);
 
       return nextStep;
     }
   }
 
-  const [nextStep, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "quality" });
+  const [nextStep, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "gpt-4-0125-preview" });
   speak(stream);
 
   return nextStep

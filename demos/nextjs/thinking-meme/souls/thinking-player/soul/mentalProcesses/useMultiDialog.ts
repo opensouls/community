@@ -22,13 +22,13 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
 
   [memory, thought] = await externalDialog(memory,
     "Speaks a sentence fragment, part of a larger or greater thought to come",
-    { model: "quality" })
+    { model: "gpt-4-0125-preview" })
   speak(thought);
 
   const [, countString] = await decision(memory, {
     description: `Pick a random number, you picked ${fragmentNo.current} last time.`,
     choices: ['5', '4', '3', '2', '1', '0'],
-  }, { model: "fast" });
+  }, { model: "gpt-3.5-turbo-0125" });
   let count = parseInt(countString);
 
   fragmentNo.current = count;
@@ -42,7 +42,7 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
     const [, lengthOfText] = await decision(workingMemory, {
       description: "Pick a random length.",
       choices: ['very long', 'long', 'medium', 'short'],
-    }, { model: "fast" })
+    }, { model: "gpt-3.5-turbo-0125" })
 
     const preStep = memory;
     const lastThought = memory.slice(-1).memories[0].content;
@@ -55,7 +55,7 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
         - Make sure the fragment is ${lengthOfText} in length
         - Their last text was: "${lastThought}"
       `,
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     );
 
     if (pendingPerceptions.current.length > 0) {
@@ -69,7 +69,7 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
   const [, shouldText] = await decision(memory, {
     description: "Should one more thing be said to finish their last text fragment?",
     choices: ["yes", "no"],
-  }, { model: "fast" })
+  }, { model: "gpt-3.5-turbo-0125" })
 
   if (shouldText === "yes") {
     let speech;
@@ -80,7 +80,7 @@ const useMultiDialog: MentalProcess = async ({ workingMemory }) => {
       indentNicely`
         - Says one more thing to finish their last sentence fragment
       `,
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     );
 
     if (pendingPerceptions.current.length > 0) {

@@ -10,7 +10,7 @@ const reengage: MentalProcess = async ({ workingMemory }) => {
   const [withReengagement, stream] = await externalDialog(
     workingMemory,
     "Tell the user a dad joke or share an obscure fact to restart the conversation.",
-    { stream: true, model: "quality" }
+    { stream: true, model: "gpt-4-0125-preview" }
   );
   speak(stream);
 

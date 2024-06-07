@@ -54,9 +54,9 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
   const [, shouldUpdateModel] = await mentalQuery(mem, `${mem.soulName} has learned something new and they need to update the mental model of the user.`);
   log("Update model?", shouldUpdateModel)
   if (shouldUpdateModel) {
-    const [withLearnings,learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last few messages?", { model: "quality" })
+    const [withLearnings,learnings] = await internalMonologue(mem, "What have I learned specifically about the user from the last few messages?", { model: "gpt-4-0125-preview" })
     log("Learnings:", learnings)
-    const [, notes] = await userNotes(withLearnings, undefined, { model: "quality"})
+    const [, notes] = await userNotes(withLearnings, undefined, { model: "gpt-4-0125-preview"})
     log("Notes:", notes)
     userModel.current = notes
   }
@@ -70,7 +70,7 @@ const learnsAboutTheUser: MentalProcess = async ({ workingMemory }) => {
         instructions: "What should I think to myself to change my behavior? Start with 'I need...'", 
         verb: "thinks",
       },
-      { model: "quality" }
+      { model: "gpt-4-0125-preview" }
     );
     return mem.withMemory({
       role: ChatMessageRoleEnum.Assistant,

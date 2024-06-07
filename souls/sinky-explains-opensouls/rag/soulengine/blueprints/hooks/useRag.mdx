@@ -14,7 +14,7 @@ const speaksWithRag: MentalProcess = async ({ workingMemory }) => {
   // generate some new speech having the RAG context
 
   let stream;
-  [workingMemory, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "quality" })
+  [workingMemory, stream] = await externalDialog(workingMemory, standardMessage, { stream: true, model: "gpt-4-0125-preview" })
 
   speak(stream);
 

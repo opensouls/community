@@ -46,12 +46,12 @@ const initialProcess: MentalProcess = async ({ workingMemory }: { workingMemory:
 
   [memory, stream] = await think(memory,
     "Beautifully appreciate what has been said and forms lovely thought, a longish sentence.",
-    { stream: true, model: "quality" }
+    { stream: true, model: "gpt-4-0125-preview" }
   );
 
   [memory, stream] = await talk(memory,
     "Give a lowkey response to what has last been said, disregarding what your thoughts about it were.",
-    { stream: true, model: "quality" }
+    { stream: true, model: "gpt-4-0125-preview" }
   );
 
 
@@ -83,19 +83,19 @@ export default initialProcess;
 //talk / think boilerplate
 // [memory, stream] = await internalMonologue(memory,
 //   "Beautifully appreciate what has been said and forms lovely thought, a longish sentence.",
-//   { stream: true, model: "quality" });
+//   { stream: true, model: "gpt-4-0125-preview" });
 // dispatch({ name: workingMemory.soulName, action: "thinks", content: stream, _metadata: { state: 'thinks' } });
 
 // [memory, stream] = await externalDialog(memory,
 //   "Give a lowkey response at what has been said, disregarding what your thoughts about it were.",
-//   { stream: true, model: "quality", });
+//   { stream: true, model: "gpt-4-0125-preview", });
 // speak(stream);
 
 // const emotion = useSoulMemory("emotion", '😐')
 //emotions, maybe explore more later
 // [, stream] = await emojiEmotion(memory,
 //   `How are you feeling at this exact moment? Your last emotion was ${emotion.current}`,
-//   { stream: false, model: "quality" });
+//   { stream: false, model: "gpt-4-0125-preview" });
 // emotion.current = stream;
 // dispatch({name: workingMemory.soulName, action: "feels", content: stream});
 

@@ -13,7 +13,7 @@ export type BuildingBlock = {
 const talk = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
 
     const { dispatch, log } = useActions();
-    const [memory, stream] = await externalDialog(workingMemory, description, { ...params, model: 'quality'});
+    const [memory, stream] = await externalDialog(workingMemory, description, { ...params, model: 'gpt-4-0125-preview'});
     dispatch({
         name: workingMemory.soulName,
         action: "says",
@@ -30,7 +30,7 @@ const talk = async (workingMemory: WorkingMemory, description: string, params?: 
 const think = async (workingMemory: WorkingMemory, description: string, params?: BuildingBlock) => {
 
     const { dispatch, log } = useActions();
-    const [memory, stream] = await internalMonologue(workingMemory, description, { ...params, model: 'quality'});
+    const [memory, stream] = await internalMonologue(workingMemory, description, { ...params, model: 'gpt-4-0125-preview'});
     dispatch({
         name: workingMemory.soulName,
         action: "thinks",
