@@ -1,0 +1,194 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 95%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 49 95% 64%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+
+  /* styles.css or a CSS module */
+  .matrix-green {
+    color: #00ff00; /* Matrix green color */
+    font-family: 'Courier New', Courier, monospace; /* Optional: Matrix-like font */
+    text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; /* Optional: Glowing effect */
+  }
+
+  .custom-apricot {
+    background-color: #FDBF6F; /* APRICOT */
+  }
+
+  .tyrian-purple {
+    color: #66023C !important; /* Tyrian purple color */
+    text-shadow: none !important; /* Remove any text shadow */
+    transition: box-shadow 0.3s ease-in-out; /* Smooth transition for the glow effect */
+    font-size: 1.2em;
+  }
+
+  .tyrian-purple:hover {
+    color: #7A1F5C !important; /* Slightly lighter Tyrian purple for hover effect */
+    box-shadow: 0 0 5px rgba(122, 31, 92, 0.8), 0 0 10px rgba(122, 31, 92, 0.6); /* Glow effect */
+  }
+
+  .faq-answer-background {
+    background-color: rgba(133, 24, 151, 0.75); /* Midpoint color between purple and Tyrian purple */
+    color: #f0f0f0; /* Lighter text color for better contrast */
+    padding: 1.2rem; /* Increased padding for more breathing space */
+    border-radius: 1rem; /* Gently rounded corners */
+    font-size: 1.2em;
+    line-height:1.6em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+
+  }
+
+  .faq-question-custom {
+    color: #00ff00 !important; 
+    font-family: 'Courier New', Courier, monospace !important; 
+    text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00 !important; 
+    font-size: 1.2em !important; 
+    transition: all 0.3s ease;
+    transform-origin: left center; /* Specify the origin point */
+  }
+
+  .faq-question-custom:hover {
+    color: #FFEB3B !important; /* Light Bulb Yellow */
+    text-shadow: 0 0 10px rgba(255, 235, 59, 0.8) !important; /* Light Bulb Yellow shadow */
+    transform: scale(1.025); /* Optional: Add a slight scale effect on hover */
+  }
+    .faq-item {
+    margin-bottom: 10px;
+  }
+  
+  .large-button {
+    height: 3.5rem !important; 
+    font-size: 1.5rem !important; /* Match the font size */
+    font-family: 'Courier New', Courier, monospace !important; /* Match the font family */
+    font-weight: bold !important; /* Match the font weight */
+    padding: 0 2rem !important; 
+    max-width: 8em; /* Set a maximum width relative to the font size */
+    margin: 0 auto; /* Center the button */
+  }
+
+  .large-heading {
+    font-size: 2.5rem !important;
+  }
+
+  .seal-of-minos-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .seal-of-minos-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 105%;
+    height: 105%;
+    border-radius: 50%;
+    background-color: rgba(133, 24, 151, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .seal-of-minos-container:hover .seal-of-minos-glow {
+    opacity: 1;
+    animation: glowPulse 2s infinite;
+  }
+  
+  @keyframes glowPulse {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.1);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.8;
+    }
+  }
+  
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  .faq-question {
+    transition: all 0.3s ease;
+  }
+
+  .faq-question:hover {
+
+  }
+}
+
+
+
