@@ -16,9 +16,9 @@
   "author": "OpenSouls",
   "license": "MIT",
   "dependencies": {
-    "@opensouls/core": "^0.1.23",
-    "@opensouls/engine": "^0.1.23",
-    "@opensouls/pipeline": "^0.1.23",
+    "@opensouls/core": "^0.1.45",
+    "@opensouls/engine": "^0.1.45",
+    "@opensouls/pipeline": "^0.1.45",
     "gpt-tokenizer": "^2.1.2"
   },
   "devDependencies": {
