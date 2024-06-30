@@ -1,5 +1,4 @@
-import { WorkingMemory } from "@opensouls/core";
-import { useActions } from "@opensouls/engine";
+import { WorkingMemory, useActions } from "@opensouls/engine";
 import externalDialog from "../lib/externalDialog.js";
 import { formatResponse } from "../lib/formatResponse.js";
 import { Mood } from "./types.js";

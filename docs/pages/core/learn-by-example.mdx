@@ -7,7 +7,7 @@ Here we will walk through progressively more complex systems built using [Workin
 Using WorkingMemory and cognitive steps can be thought of as building up a set of memories, and then performing functional, append-only manipulations on those memories. Here is a simple example that initializes a WorkingMemory with memories of being a helpful AI assistant and applies a cognitive step to process new messages.
 
 ```ts
-import { WorkingMemory, ChatMessageRoleEnum, Memory } from "@opensouls/core";
+import { WorkingMemory, ChatMessageRoleEnum, Memory } from "@opensouls/engine";
 import { externalDialog } from "./lib/cogntiveSteps.js";
 
 // Initialize WorkingMemory with initial memories
@@ -133,7 +133,7 @@ async function makeDishSuggestions(ingredientsMemories: ChatMessage[]): Promise<
 Here's an example of a simplified internal monologue which makes a progressive sequence of branching decisions and while maintaining prior context.
 
 ```ts
-import { WorkingMemory, ChatMessageRoleEnum } from "@opensouls/core";
+import { WorkingMemory, ChatMessageRoleEnum } from "@opensouls/engine";
 
 const initialMemories = [
   {
@@ -183,167 +183,3 @@ if (quest === "slay dragon") {
 
 console.log(quest);
 ```
-
-## Cognitive Steps Used In These Examples 
-
-import { Callout } from 'nextra/components'
-
-<Callout type="info" emoji="ℹ️">
-  These cognitiveSteps (and more) are available in our [community library!](https://github.com/opensouls/soul-engine/tree/main/community)
-</Callout>
-
-Below are the cognitive steps used in the examples above.
-
-```ts filename="./lib/cognitiveSteps.ts"
-import { z, WorkingMemory, createCognitiveStep, indentNicely, stripEntityAndVerb, stripEntityAndVerbFromStream, ChatMessageRoleEnum } from "@opensouls/core"
-
-export const externalDialog = createCognitiveStep((instructions: string | { instructions: string; verb: string }) => {
-  let instructionString: string, verb: string;
-  if (typeof instructions === "string") {
-    instructionString = instructions;
-    verb = "said";
-  } else {
-    instructionString = instructions.instructions;
-    verb = instructions.verb;
-  }
-  return {
-    command: ({ soulName: name }: WorkingMemory) => {
-      return {
-        role: ChatMessageRoleEnum.System,
-        name: name,
-        content: indentNicely`
-            Model the mind of ${name}.
-    
-            ## Instructions
-            * DO NOT include actions (for example, do NOT add non-verbal items like *John Smiles* or *John Nods*, etc).
-            * DO NOT include internal thoughts (for example, do NOT respond with John thought: "...").
-            * If necessary, use all CAPS to emphasize certain words.
-    
-            ${instructionString}
-    
-            Please reply with the next utterance from ${name}. Use the format: ${name} ${verb}: "..."
-          `
-      };
-    },
-    streamProcessor: stripEntityAndVerbFromStream,
-    postProcess: async (memory: WorkingMemory, response: string) => {
-      const stripped = stripEntityAndVerb(memory.soulName, verb, response);
-      const newMemory = {
-        role: ChatMessageRoleEnum.Assistant,
-        content: `${memory.soulName} ${verb}: "${stripped}"`
-      };
-      return [newMemory, stripped];
-    }
-  }
-})
-
-export const internalMonologue = createCognitiveStep((instructions: string | { instructions: string; verb: string }) => {
-  let instructionString: string, verb: string;
-  if (typeof instructions === "string") {
-    instructionString = instructions;
-    verb = "thought";
-  } else {
-    instructionString = instructions.instructions;
-    verb = instructions.verb;
-  }
-
-  return {
-    command: ({ soulName: name }: WorkingMemory) => {
-      return {
-        role: ChatMessageRoleEnum.System,
-        name: name,
-        content: indentNicely`
-          Model the mind of ${name}.
-
-          ## Description
-          ${instructionString}
-
-          ## Rules
-          * Internal monologue thoughts should match the speaking style of ${name}.
-          * Only respond with the format '${name} ${verb}: "..."', no additional commentary or text.
-          * Follow the Description when creating the internal thought!
-
-          Please reply with the next internal monologue thought of ${name}. Use the format: ${name} ${verb}: "..."
-        `
-      };
-    },
-    streamProcessor: stripEntityAndVerbFromStream,
-    postProcess: async (memory: WorkingMemory, response: string) => {
-      const stripped = stripEntityAndVerb(memory.soulName, verb, response);
-      const newMemory = {
-        role: ChatMessageRoleEnum.Assistant,
-        content: `${memory.soulName} ${verb}: "${stripped}"`
-      };
-      return [newMemory, stripped];
-    }
-  }
-})
-
-export const decision = createCognitiveStep(({ description, choices, verb = "decided" }: { description: string, choices: z.EnumLike | string[], verb?: string }) => {
-  const params = z.object({
-    decision: z.string().describe(`The decision made by the entity.`)
-  });
-  return {
-    schema: params,
-    command: ({ soulName: name }: WorkingMemory) => {
-      return {
-        role: ChatMessageRoleEnum.System,
-        name: name,
-        content: indentNicely`
-          ${name} is deciding between the following options:
-          ${Array.isArray(choices) ? choices.map((c) => `* ${c}`).join('\n') : JSON.stringify(choices, null, 2)}
-
-          ## Description
-          ${description}
-
-          ## Rules
-          * ${name} must decide on one of the options. Return ${name}'s decision.
-        `
-      };
-    },
-    streamProcessor: stripEntityAndVerbFromStream,
-    postProcess: async (memory: WorkingMemory, response: z.infer<typeof params>) => {
-      const stripped = stripEntityAndVerb(memory.soulName, verb, response.decision);
-      const newMemory = {
-        role: ChatMessageRoleEnum.Assistant,
-        content: `${memory.soulName} ${verb}: "${stripped}"`
-      };
-      return [newMemory, stripped];
-    }
-  }
-})
-
-export const brainstorm = createCognitiveStep((description: string) => {
-  const params = z.object({
-    newIdeas: z.array(z.string()).describe(`The new brainstormed ideas.`)
-  });
-
-  return {
-    command: ({ soulName: name }: WorkingMemory) => {
-      return {
-        role: ChatMessageRoleEnum.System,
-        name: name,
-        content: indentNicely`
-          ${name} is brainstorming new ideas.
-
-          ## Idea Description
-          ${description}
-
-          Reply with the new ideas that ${name} brainstormed.
-        `
-      };
-    },
-    schema: params,
-    postProcess: async (memory: WorkingMemory, response: z.output<typeof params>) => {
-      const newIdeas = response.newIdeas;
-      const newMemory = {
-        role: ChatMessageRoleEnum.Assistant,
-        content: `${memory.soulName} brainstormed: ${newIdeas.join("\n")}`
-      };
-      return [newMemory, newIdeas];
-    }
-  }
-})
-
-```
-

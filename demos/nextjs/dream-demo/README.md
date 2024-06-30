@@ -87,7 +87,7 @@ The webapp features **5 different voice IDs** which you can manage or modify in 
 Be sure to update your `.env` file with the correct `model_id` and `voice_id` for your desired voices.
 
 ## 🔑 Getting Soul Engine access
-1. Join the [OPEN SOULS Discord](http://discord.gg/opensouls)
+1. Join the [Open Souls Discord](http://discord.gg/opensouls)
 1. That's it! Now you can login to the Soul Engine with Discord auth when running `npx soul-engine dev`
 
 Make sure to checkout the [Soul Engine guide](https://docs.souls.chat)!
