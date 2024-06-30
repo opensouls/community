@@ -4,7 +4,7 @@
 
 ## 🤔 What is this?
 
-This repository is a place for sharing knowledge on how to create AI souls. This repository holds docs, snippets, and examples for building AI souls with `@opensouls/core` and the **Soul Engine**.
+This repository is a place for sharing knowledge on how to create AI souls. This repository holds docs, snippets, and examples for building AI souls with the **Soul Engine**.
 
 If you have access to the **Soul Engine**, any soul in the repo can be run from its root directory
 
