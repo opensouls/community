@@ -6,23 +6,20 @@
 
 This repository is a place for sharing knowledge on how to create AI souls. This repository holds docs, snippets, and examples for building AI souls with `@opensouls/core` and the **Soul Engine**.
 
-
 If you have access to the **Soul Engine**, any soul in the repo can be run from its root directory
 
 ```bash
-cd souls/example-twenty-questions
+cd souls/samantha-learns
 npx soul-engine dev
 ```
+
+## 🔑 Getting Soul Engine access
+
+> The Soul Engine is currently in private alpha! [Join our mailing list](https://opensouls.beehiiv.com/subscribe) to be the first to hear about the next updates!
 
 ## 💫 AI Souls
 
 AI Souls are agentic and embodied digital beings, one day comprising thousands of mental processes (managed by the Soul Engine). Unlike traditional chatbots, this code will give digital souls personality, drive, ego, and will.
-
-## 🔑 Getting Soul Engine access
-1. Join the [Open Souls Discord](http://discord.gg/opensouls)
-1. That's it! Now you can login to the Soul Engine with Discord auth when running `npx soul-engine dev`
-
-Make sure to checkout the [Soul Engine guide](https://docs.souls.chat)!
 
 ## 🙋 Contributing
 
