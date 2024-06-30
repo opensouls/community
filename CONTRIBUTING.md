@@ -1,5 +1,7 @@
 # Contributing to opensouls/community
 
+> The Soul Engine is currently in private alpha! [Join our mailing list](https://opensouls.beehiiv.com/subscribe) to be the first to hear about the next updates!
+
 Thank you for your interest in contributing to the opensouls/community project! We welcome contributions from everyone who shares our goals and wants to collaborate in a healthy and constructive manner within our community.
 
 Please take a moment to review this document to ensure a smooth contribution process.
