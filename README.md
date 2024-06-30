@@ -35,6 +35,4 @@ We're excited for contributions, such as:
 
 ## 📜 License
 
-The documentation (`/docs`) is included under CC-BY-4.0 license.
-
-Unless otherise noted, the remainder of the repository - i.e. the `/library`, `/demos`, and `/souls` are included under MIT license.
+Unless otherise noted, the majority of the repository - i.e. the `/library`, `/demos`, and `/souls` are included under MIT license.
