@@ -35,4 +35,4 @@ We're excited for contributions, such as:
 
 ## 📜 License
 
-Unless otherise noted, the majority of the repository - i.e. the `/library`, `/demos`, and `/souls` are included under MIT license.
+Unless otherwise noted, the majority of the repository - i.e. the `/library`, `/demos`, and `/souls` are included under MIT license.
