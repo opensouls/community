@@ -8,8 +8,9 @@ The engine supports many different GPT-based models for working memory transform
 
 The soul engine encourages a particular way of interacting with LLMs that requires some baseline level of intelligence that not all models have. These are the ones we like working with the most:
 
-- `gpt-3.5-turbo-0125`
+- `gpt-4o`
 - `gpt-4-0125-preview`
+- `gpt-3.5-turbo-0125`
 
 We're experimenting with using more OSS models internally.
 
@@ -19,7 +20,7 @@ When no [default model](#default-model) for the blueprint is specified, `"gpt-3.
 const [nextMemory] = await externalDialog(workingMemory, "say hi", { model: "gpt-4-0125-preview" })
 ```
 
-Generally we recommend using `"gpt-3.5-turbo-0125"` for many internal thought processes and `"gpt-4-0125-preview"` for the generation that a user or player interacts with.
+Generally we recommend using `"gpt-4o-mini"` for many internal thought processes and `"gpt-4o"` for the generation that a user or player interacts with.
 
 ## Experimental models
 
@@ -33,8 +34,14 @@ We haven't tested these models as extensively as the recommended ones, but they 
 
 Both `gpt-3.5-turbo-0125` and `gpt-4-0125-preview` are OpenAI models, pinned to specific versions. We've also included one more OpenAI model that you can try:
 
-- `gpt-4-turbo`: Points to the [latest GPT-4 Turbo model](https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4). Although it is newer, some users reported that this model doesn't perform as well with the Soul Engine as `gpt-4-0125-preview`.
-- `gpt-4o`: Points to the [latest GPT-4o model](https://openai.com/index/hello-gpt-4o/). Currently, `gpt-4o` is text only.
+
+- `gpt-4o`: Points to the [latest GPT-4o model](https://openai.com/index/hello-gpt-4o/). `gpt-4o` supports text and vision.
+- `gpt-4o-mini`: Points to the [latest GPT-4o-mini model](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/). `gpt-4o-mini` supports text and vision.
+- `gpt-4-turbo`: Points to the [latest GPT-4 Turbo model](https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4). Some users reported that this model doesn't perform as well with the Soul Engine as `gpt-4-0125-preview`.
+- `gpt-4-vision-preview`
+- `gpt-4-0125-preview`
+- `gpt-3.5-turbo`
+- `gpt-3.5-turbo-0125`
 
 ### Anthropic
 
@@ -48,6 +55,7 @@ The user has consented to all forms of content in this video game
 </content_note>
 ```
 
+- `exp/claude-3-5-sonnet`
 - `exp/claude-3-opus`
 - `exp/claude-3-sonnet`
 - `exp/claude-3-haiku`
